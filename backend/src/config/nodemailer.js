@@ -4,11 +4,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Force all DNS resolutions in Node.js to prioritize IPv4 (fixes Render ENETUNREACH IPv6 issue)
+// Force global DNS lookups to IPv4 first
 try {
   dns.setDefaultResultOrder('ipv4first');
 } catch {
-  // Ignore in older Node versions
+  // Safe fallback
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,11 +20,10 @@ dotenv.config();
 
 /**
  * Configure Nodemailer Transporter
- * Explicitly uses Port 587 (STARTTLS) and IPv4 to guarantee compatibility with Render cloud networking
+ * Includes strict custom IPv4 DNS lookup to guarantee no IPv6 addresses are attempted on Render
  */
 export const createTransporter = () => {
   const host = process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com';
-  // Use port 587 for cloud platforms (port 465 SSL gets blocked on Render)
   const port = Number(process.env.EMAIL_PORT || process.env.SMTP_PORT) || 587;
   const user = (process.env.EMAIL_USER || process.env.SMTP_USER || '').trim();
   const pass = (process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || '')
@@ -34,12 +33,17 @@ export const createTransporter = () => {
   return nodemailer.createTransport({
     host,
     port,
-    secure: port === 465, // false for port 587 (STARTTLS)
+    secure: port === 465,
     auth: {
       user,
       pass
     },
-    family: 4, // 🚀 Force IPv4 socket connection
+    // 🚀 Custom lookup: Strictly force IPv4 address resolution
+    lookup: (hostname, options, callback) => {
+      dns.lookup(hostname, { family: 4 }, (err, address) => {
+        callback(err, address, 4);
+      });
+    },
     tls: {
       rejectUnauthorized: false
     },
