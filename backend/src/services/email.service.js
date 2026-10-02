@@ -1,4 +1,4 @@
-import { createTransporter } from '../config/nodemailer.js';
+﻿import { createTransporter } from '../config/nodemailer.js';
 import {
   getWelcomeEmailHtml,
   getAppointmentConfirmationHtml,
@@ -18,7 +18,7 @@ const getEmailFrom = () =>
  */
 const sendMailSafe = async ({ to, subject, html, emailType }) => {
   if (!to) {
-    console.warn(`⚠️ [EmailService] Skipping ${emailType}: No recipient email provided.`);
+    console.warn(`âš ï¸ [EmailService] Skipping ${emailType}: No recipient email provided.`);
     return { success: false, reason: 'No recipient email' };
   }
 
@@ -26,13 +26,13 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
 
   try {
     const user = (process.env.EMAIL_USER || process.env.SMTP_USER || '').trim();
-    const pass = (process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || '').trim();
+    const pass = (process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || '').trim();
     const isConfigured = user && pass && pass !== 'app_password_here' && pass !== 'your_email_app_password';
 
     if (!isConfigured) {
       if (process.env.NODE_ENV !== 'production') {
         console.log(
-          `\n📧 [DEV SIMULATED EMAIL - ${emailType}]\n` +
+          `\nðŸ“§ [DEV SIMULATED EMAIL - ${emailType}]\n` +
           `To: ${to}\n` +
           `Subject: ${subject}\n` +
           `From: ${emailFrom}\n` +
@@ -50,10 +50,10 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
       html
     });
 
-    console.log(`✅ [EmailService] ${emailType} sent to ${to} (MessageId: ${info.messageId})`);
+    console.log(`âœ… [EmailService] ${emailType} sent to ${to} (MessageId: ${info.messageId})`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error(`❌ [EmailService Error] Failed to send ${emailType} to ${to}: ${error.message}`);
+    console.error(`âŒ [EmailService Error] Failed to send ${emailType} to ${to}: ${error.message}`);
     // Non-blocking: We return failure object safely
     return { success: false, error: error.message };
   }
@@ -69,7 +69,7 @@ export const emailService = {
     if (process.env.NODE_ENV !== 'production') {
       console.log(
         `\n======================================================\n` +
-        `📧 [EMAIL OTP DISPATCH]\n` +
+        `ðŸ“§ [EMAIL OTP DISPATCH]\n` +
         `Recipient: ${user.email}\n` +
         `6-Digit OTP: ${otp}\n` +
         `Expires in: ${expiryMinutes} minutes\n` +
@@ -100,7 +100,7 @@ export const emailService = {
     if (process.env.NODE_ENV !== 'production') {
       console.log(
         `\n======================================================\n` +
-        `🔑 [PASSWORD RESET OTP DISPATCH]\n` +
+        `ðŸ”‘ [PASSWORD RESET OTP DISPATCH]\n` +
         `Recipient: ${user.email}\n` +
         `6-Digit OTP: ${otp}\n` +
         `Expires in: ${expiryMinutes} minutes\n` +
@@ -290,3 +290,4 @@ export const emailService = {
     });
   }
 };
+
