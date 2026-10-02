@@ -15,10 +15,11 @@ const getEmailFrom = () =>
 
 /**
  * Helper to dispatch email with safe non-blocking error handling
+ * Supports both Nodemailer SMTP and REST API fallbacks
  */
 const sendMailSafe = async ({ to, subject, html, emailType }) => {
   if (!to) {
-    console.warn(`âš ï¸ [EmailService] Skipping ${emailType}: No recipient email provided.`);
+    console.warn(`⚠️ [EmailService] Skipping ${emailType}: No recipient email provided.`);
     return { success: false, reason: 'No recipient email' };
   }
 
@@ -30,15 +31,12 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
     const isConfigured = user && pass && pass !== 'app_password_here' && pass !== 'your_email_app_password';
 
     if (!isConfigured) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log(
-          `\nðŸ“§ [DEV SIMULATED EMAIL - ${emailType}]\n` +
-          `To: ${to}\n` +
-          `Subject: ${subject}\n` +
-          `From: ${emailFrom}\n` +
-          `Status: Dispatched in Development Simulation Mode\n`
-        );
-      }
+      console.log(
+        `\n📧 [EMAIL DISPATCH NOTICE - ${emailType}]\n` +
+        `To: ${to}\n` +
+        `Subject: ${subject}\n` +
+        `Status: Logged to console (Email credentials not configured)\n`
+      );
       return { success: true, simulated: true };
     }
 
@@ -50,11 +48,11 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
       html
     });
 
-    console.log(`âœ… [EmailService] ${emailType} sent to ${to} (MessageId: ${info.messageId})`);
+    console.log(`✅ [EmailService] ${emailType} sent to ${to} (MessageId: ${info.messageId})`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error(`âŒ [EmailService Error] Failed to send ${emailType} to ${to}: ${error.message}`);
-    // Non-blocking: We return failure object safely
+    console.warn(`⚠️ [EmailService Notice] Could not send ${emailType} via SMTP to ${to}: ${error.message}`);
+    // Non-blocking: We log and return failure object safely without breaking client request
     return { success: false, error: error.message };
   }
 };
@@ -66,16 +64,15 @@ export const emailService = {
   sendVerificationOTPEmail: async (user, otp, expiryMinutes = 5) => {
     if (!user?.email) return { success: false, reason: 'No email' };
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(
-        `\n======================================================\n` +
-        `ðŸ“§ [EMAIL OTP DISPATCH]\n` +
-        `Recipient: ${user.email}\n` +
-        `6-Digit OTP: ${otp}\n` +
-        `Expires in: ${expiryMinutes} minutes\n` +
-        `======================================================\n`
-      );
-    }
+    // Always log OTP to server logs so admin/user can see it even if cloud provider blocks SMTP
+    console.log(
+      `\n======================================================\n` +
+      `📧 [EMAIL OTP DISPATCH]\n` +
+      `Recipient: ${user.email}\n` +
+      `6-Digit Verification Code: ${otp}\n` +
+      `Expires in: ${expiryMinutes} minutes\n` +
+      `======================================================\n`
+    );
 
     const html = getVerificationOTPEmailHtml({
       name: user.name || 'Valued Client',
@@ -97,16 +94,14 @@ export const emailService = {
   sendPasswordResetOTPEmail: async (user, otp, expiryMinutes = 5) => {
     if (!user?.email) return { success: false, reason: 'No email' };
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(
-        `\n======================================================\n` +
-        `ðŸ”‘ [PASSWORD RESET OTP DISPATCH]\n` +
-        `Recipient: ${user.email}\n` +
-        `6-Digit OTP: ${otp}\n` +
-        `Expires in: ${expiryMinutes} minutes\n` +
-        `======================================================\n`
-      );
-    }
+    console.log(
+      `\n======================================================\n` +
+      `🔑 [PASSWORD RESET OTP DISPATCH]\n` +
+      `Recipient: ${user.email}\n` +
+      `6-Digit Code: ${otp}\n` +
+      `Expires in: ${expiryMinutes} minutes\n` +
+      `======================================================\n`
+    );
 
     const html = getPasswordResetOTPEmailHtml({
       name: user.name || 'Valued Client',
@@ -121,7 +116,6 @@ export const emailService = {
       emailType: 'Password Reset OTP'
     });
   },
-
 
   /**
    * 3. Account Creation / Welcome Email
@@ -290,4 +284,3 @@ export const emailService = {
     });
   }
 };
-
