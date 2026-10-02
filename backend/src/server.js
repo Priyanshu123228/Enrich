@@ -1,3 +1,12 @@
+﻿import dns from 'dns';
+
+// Force all DNS lookups across the entire server to resolve IPv4 addresses first
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch {
+  // Safe fallback
+}
+
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';

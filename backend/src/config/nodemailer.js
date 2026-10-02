@@ -1,7 +1,15 @@
 ﻿import nodemailer from 'nodemailer';
+import dns from 'dns';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+// Force all DNS resolutions in Node.js to prioritize IPv4 (fixes Render ENETUNREACH IPv6 issue)
+try {
+  dns.setDefaultResultOrder('ipv4first');
+} catch {
+  // Ignore in older Node versions
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,40 +20,26 @@ dotenv.config();
 
 /**
  * Configure Nodemailer Transporter
- * Supports EMAIL_PASS / EMAIL_PASSWORD / SMTP_PASS and forces IPv4 (family: 4) for Render cloud hosting
+ * Explicitly uses Port 587 (STARTTLS) and IPv4 to guarantee compatibility with Render cloud networking
  */
 export const createTransporter = () => {
   const host = process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com';
+  // Use port 587 for cloud platforms (port 465 SSL gets blocked on Render)
   const port = Number(process.env.EMAIL_PORT || process.env.SMTP_PORT) || 587;
   const user = (process.env.EMAIL_USER || process.env.SMTP_USER || '').trim();
   const pass = (process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || '')
     .replace(/\s+/g, '')
     .trim();
-  const secure = process.env.EMAIL_SECURE === 'true' || process.env.SMTP_SECURE === 'true' || port === 465;
-
-  if (host === 'smtp.gmail.com' || user.endsWith('@gmail.com') || !process.env.EMAIL_HOST) {
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user,
-        pass
-      },
-      family: 4,
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
-  }
 
   return nodemailer.createTransport({
     host,
     port,
-    secure,
+    secure: port === 465, // false for port 587 (STARTTLS)
     auth: {
       user,
       pass
     },
-    family: 4,
+    family: 4, // 🚀 Force IPv4 socket connection
     tls: {
       rejectUnauthorized: false
     },
