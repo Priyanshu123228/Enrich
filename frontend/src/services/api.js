@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 /**
  * Global Axios API Client instance configured with base URL and timeouts
@@ -8,7 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 15000,
+  timeout: 60000,
   withCredentials: true
 });
 
@@ -203,3 +203,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+
