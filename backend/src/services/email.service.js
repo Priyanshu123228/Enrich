@@ -14,66 +14,74 @@ const getEmailFrom = () =>
   process.env.EMAIL_FROM || '"Enrich Salon" <enrichparlour1212@gmail.com>';
 
 /**
- * Dispatch email via HTTPS REST API (Resend / Brevo) to bypass Render Free tier SMTP port blocks (25/465/587)
+ * Dispatch email via HTTPS REST API (Brevo / Resend) to bypass Render Free tier SMTP port blocks (25/465/587)
  */
 const sendViaRestApi = async ({ to, subject, html, text }) => {
-  const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
   const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+  const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
 
-  // 1. Resend REST API (HTTPS Port 443)
-  if (resendApiKey) {
-    let from = (process.env.RESEND_FROM || process.env.EMAIL_FROM_ADDRESS || '').trim();
-    // Resend requires a verified domain; if unverified or public (@gmail/@yahoo/@outlook), fallback to onboarding@resend.dev
-    if (!from || from.includes('@gmail.') || from.includes('@yahoo.') || from.includes('@hotmail.') || from.includes('@outlook.')) {
-      from = 'onboarding@resend.dev';
+  // 1. Brevo / Sendinblue REST API (HTTPS Port 443 - sends to any email worldwide without custom domain)
+  if (brevoApiKey) {
+    try {
+      const fromEmail = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || 'enrichparlour1212@gmail.com';
+      const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': brevoApiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { name: fromName, email: fromEmail },
+          to: [{ email: to }],
+          subject,
+          htmlContent: html,
+          textContent: text
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Brevo API error: ' + JSON.stringify(data));
+      }
+      return { success: true, messageId: data.messageId, provider: 'Brevo HTTPS API' };
+    } catch (brevoErr) {
+      console.warn(`⚠️ [EmailService Brevo Notice] Brevo API error: ${brevoErr.message}`);
     }
-    const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
-
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: `${fromName} <${from}>`,
-        to: [to],
-        subject,
-        html,
-        text
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Resend API error: ' + JSON.stringify(data));
-    }
-    return { success: true, messageId: data.id, provider: 'Resend HTTPS API' };
   }
 
-  // 2. Brevo / Sendinblue REST API (HTTPS Port 443)
-  if (brevoApiKey) {
-    const fromEmail = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || 'enrichparlour1212@gmail.com';
-    const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        'api-key': brevoApiKey,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        sender: { name: fromName, email: fromEmail },
-        to: [{ email: to }],
-        subject,
-        htmlContent: html,
-        textContent: text
-      })
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Brevo API error: ' + JSON.stringify(data));
+  // 2. Resend REST API (HTTPS Port 443)
+  if (resendApiKey) {
+    try {
+      let from = (process.env.RESEND_FROM || process.env.EMAIL_FROM_ADDRESS || '').trim();
+      // Resend requires a verified domain; if unverified or public (@gmail/@yahoo/@outlook), fallback to onboarding@resend.dev
+      if (!from || from.includes('@gmail.') || from.includes('@yahoo.') || from.includes('@hotmail.') || from.includes('@outlook.')) {
+        from = 'onboarding@resend.dev';
+      }
+      const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
+
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: `${fromName} <${from}>`,
+          to: [to],
+          subject,
+          html,
+          text
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Resend API error: ' + JSON.stringify(data));
+      }
+      return { success: true, messageId: data.id, provider: 'Resend HTTPS API' };
+    } catch (resendErr) {
+      console.warn(`⚠️ [EmailService Resend Notice] Resend API error: ${resendErr.message}`);
     }
-    return { success: true, messageId: data.messageId, provider: 'Brevo HTTPS API' };
   }
 
   return null;
