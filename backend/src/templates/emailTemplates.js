@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Reusable Luxury HTML Email Base Layout
  */
 const renderBaseLayout = ({ title, preheader, content }) => `
@@ -178,7 +178,7 @@ const renderBaseLayout = ({ title, preheader, content }) => `
  */
 export const getWelcomeEmailHtml = ({ name, email }) => {
   const content = `
-    <h2 class="heading">Welcome to the Luxe Sanctuary, ${name.split(' ')[0]}</h2>
+    <h2 class="heading">Welcome to the Luxe Sanctuary, ${name ? String(name).split(' ')[0] : 'Valued Client'}</h2>
     <p>We are delighted to welcome you to <strong>LuxeParlour</strong>. Your account has been registered successfully.</p>
     <p>As a valued client, you now have exclusive access to:</p>
     <ul style="color: #57534e; padding-left: 20px; margin: 16px 0;">
@@ -535,7 +535,7 @@ export const getVerificationOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =>
         </span>
       </div>
       <p style="font-size: 12px; color: #78716c; margin-top: 12px; font-weight: 500;">
-        ⏱️ This code will expire in <strong>${expiryMinutes} minutes</strong>.
+        â±ï¸ This code will expire in <strong>${expiryMinutes} minutes</strong>.
       </p>
     </div>
 
@@ -569,7 +569,7 @@ export const getPasswordResetOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =
         </span>
       </div>
       <p style="font-size: 12px; color: #78716c; margin-top: 12px; font-weight: 500;">
-        ⏱️ This password reset code will expire in <strong>${expiryMinutes} minutes</strong>.
+        â±ï¸ This password reset code will expire in <strong>${expiryMinutes} minutes</strong>.
       </p>
     </div>
 
