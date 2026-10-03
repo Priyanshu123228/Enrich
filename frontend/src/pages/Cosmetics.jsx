@@ -439,10 +439,8 @@ export default function Cosmetics() {
               <div className="space-y-3">
                 <div className="aspect-square rounded-2xl overflow-hidden bg-stone-100 border border-stone-200">
                   <img
-                    src={
-                      (quickViewProduct.images && quickViewProduct.images[activeImageIndex]?.url) ||
-                      quickViewProduct.thumbnail
-                    }
+                    src={resolveImageUrl((quickViewProduct.images && quickViewProduct.images[activeImageIndex]?.url) || quickViewProduct.thumbnail)}
+                    onError={handleImageError}
                     alt={quickViewProduct.name}
                     className="w-full h-full object-cover"
                   />
