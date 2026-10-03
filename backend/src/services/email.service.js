@@ -13,32 +13,93 @@ import {
 const getEmailFrom = () =>
   process.env.EMAIL_FROM || '"Enrich Salon" <enrichparlour1212@gmail.com>';
 
+let cachedBrevoSender = null;
+
+/**
+ * Dynamically fetch or determine the verified sender email for Brevo
+ */
+const getBrevoSender = async (apiKey) => {
+  if (process.env.BREVO_SENDER_EMAIL) {
+    return {
+      name: process.env.EMAIL_FROM_NAME || 'Enrich Salon',
+      email: process.env.BREVO_SENDER_EMAIL.trim()
+    };
+  }
+
+  if (cachedBrevoSender) {
+    return cachedBrevoSender;
+  }
+
+  try {
+    const res = await fetch('https://api.brevo.com/v3/senders', {
+      method: 'GET',
+      headers: {
+        'api-key': apiKey,
+        'accept': 'application/json'
+      }
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const activeSender = data.senders?.find((s) => s.active) || data.senders?.[0];
+      if (activeSender?.email) {
+        cachedBrevoSender = {
+          name: process.env.EMAIL_FROM_NAME || activeSender.name || 'Enrich Salon',
+          email: activeSender.email
+        };
+        console.log(`📡 [Brevo Auto-Detect] Using verified sender from Brevo account: ${cachedBrevoSender.email}`);
+        return cachedBrevoSender;
+      }
+    }
+  } catch {
+    // Fallback to defaults
+  }
+
+  return {
+    name: process.env.EMAIL_FROM_NAME || 'Enrich Salon',
+    email: process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER || 'enrichparlour1212@gmail.com'
+  };
+};
+
 /**
  * Dispatch email via HTTPS REST API (Brevo / Resend) to bypass Render Free tier SMTP port blocks (25/465/587)
  */
 const sendViaRestApi = async ({ to, subject, html, text }) => {
-  const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
-  const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
+  const brevoApiKey = (
+    process.env.BREVO_API_KEY ||
+    process.env.BREVO_KEY ||
+    process.env.SIB_API_KEY ||
+    process.env.SENDINBLUE_API_KEY ||
+    ''
+  ).trim();
+
+  const resendApiKey = (
+    process.env.RESEND_API_KEY ||
+    process.env.RESEND_KEY ||
+    ''
+  ).trim();
 
   // 1. Brevo / Sendinblue REST API (HTTPS Port 443 - sends to any email worldwide without custom domain)
   if (brevoApiKey) {
     try {
-      const fromEmail = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || 'enrichparlour1212@gmail.com';
-      const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
+      const sender = await getBrevoSender(brevoApiKey);
+
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
           'api-key': brevoApiKey,
-          'Content-Type': 'application/json'
+          'accept': 'application/json',
+          'content-type': 'application/json'
         },
         body: JSON.stringify({
-          sender: { name: fromName, email: fromEmail },
+          sender,
           to: [{ email: to }],
           subject,
           htmlContent: html,
           textContent: text
         })
       });
+
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message || 'Brevo API error: ' + JSON.stringify(data));
