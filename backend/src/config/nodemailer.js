@@ -20,7 +20,7 @@ dotenv.config();
 
 /**
  * Configure Nodemailer Transporter
- * Includes strict custom IPv4 DNS lookup to guarantee no IPv6 addresses are attempted on Render
+ * Uses connection pooling and strict IPv4 DNS lookup to eliminate connection latency and IPv6 issues
  */
 export const createTransporter = () => {
   const host = process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -31,6 +31,9 @@ export const createTransporter = () => {
     .trim();
 
   return nodemailer.createTransport({
+    pool: true, // 🚀 Re-use persistent SMTP connection for fast, reliable delivery
+    maxConnections: 3,
+    maxMessages: 100,
     host,
     port,
     secure: port === 465,
@@ -38,7 +41,7 @@ export const createTransporter = () => {
       user,
       pass
     },
-    // 🚀 Custom lookup: Strictly force IPv4 address resolution
+    // Strictly force IPv4 address resolution
     lookup: (hostname, options, callback) => {
       dns.lookup(hostname, { family: 4 }, (err, address) => {
         callback(err, address, 4);
@@ -47,9 +50,9 @@ export const createTransporter = () => {
     tls: {
       rejectUnauthorized: false
     },
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 15000
+    connectionTimeout: 20000,
+    greetingTimeout: 20000,
+    socketTimeout: 20000
   });
 };
 
@@ -67,8 +70,7 @@ export const verifyEmailTransporter = async () => {
       console.log('⚠️ Nodemailer SMTP: Running in simulated development mode.');
       return false;
     }
-    const t = createTransporter();
-    await t.verify();
+    await transporter.verify();
     console.log(`✅ Nodemailer SMTP Transporter connected successfully [${user}].`);
     return true;
   } catch (error) {

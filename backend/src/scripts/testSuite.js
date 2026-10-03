@@ -147,7 +147,7 @@ function printSummary(abortedReason = null) {
 
 async function runTestSuite() {
   console.log('\n======================================================');
-  console.log('   LUXEPARLOUR SYSTEMATIC TEST SUITE - PHASE 14');
+  console.log('   ENRICH SYSTEMATIC TEST SUITE');
   console.log('======================================================\n');
 
   // 0. Pre-flight Backend Availability Check

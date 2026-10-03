@@ -1,4 +1,4 @@
-﻿import { createTransporter } from '../config/nodemailer.js';
+﻿import { transporter } from '../config/nodemailer.js';
 import {
   getWelcomeEmailHtml,
   getAppointmentConfirmationHtml,
@@ -15,7 +15,6 @@ const getEmailFrom = () =>
 
 /**
  * Helper to dispatch email with safe non-blocking error handling
- * Supports both Nodemailer SMTP and REST API fallbacks
  */
 const sendMailSafe = async ({ to, subject, html, emailType }) => {
   if (!to) {
@@ -40,7 +39,6 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
       return { success: true, simulated: true };
     }
 
-    const transporter = createTransporter();
     const info = await transporter.sendMail({
       from: emailFrom,
       to,
@@ -52,7 +50,6 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.warn(`⚠️ [EmailService Notice] Could not send ${emailType} via SMTP to ${to}: ${error.message}`);
-    // Non-blocking: We log and return failure object safely without breaking client request
     return { success: false, error: error.message };
   }
 };
@@ -64,7 +61,6 @@ export const emailService = {
   sendVerificationOTPEmail: async (user, otp, expiryMinutes = 5) => {
     if (!user?.email) return { success: false, reason: 'No email' };
 
-    // Always log OTP to server logs so admin/user can see it even if cloud provider blocks SMTP
     console.log(
       `\n======================================================\n` +
       `📧 [EMAIL OTP DISPATCH]\n` +
@@ -121,7 +117,15 @@ export const emailService = {
    * 3. Account Creation / Welcome Email
    */
   sendWelcomeEmail: async (user) => {
-    if (!user?.email) return;
+    if (!user?.email) return { success: false, reason: 'No email' };
+
+    console.log(
+      `\n======================================================\n` +
+      `🎉 [WELCOME EMAIL DISPATCH]\n` +
+      `Recipient: ${user.email} (${user.name})\n` +
+      `======================================================\n`
+    );
+
     const html = getWelcomeEmailHtml({
       name: user.name || 'Valued Client',
       email: user.email
@@ -139,12 +143,24 @@ export const emailService = {
    * 4. Appointment Confirmation Email
    */
   sendAppointmentConfirmationEmail: async (appointment) => {
-    const customer = appointment.customer;
-    const service = appointment.service;
-    const staff = appointment.staff;
+    const customer = appointment?.customer;
+    const service = appointment?.service;
+    const staff = appointment?.staff;
 
     const to = customer?.email;
-    if (!to) return;
+    if (!to) {
+      console.warn('⚠️ [EmailService] Cannot send Appointment Confirmation: No customer email on appointment object.');
+      return { success: false, reason: 'No customer email' };
+    }
+
+    console.log(
+      `\n======================================================\n` +
+      `📅 [APPOINTMENT CONFIRMATION EMAIL DISPATCH]\n` +
+      `Recipient: ${to} (${customer?.name})\n` +
+      `Booking ID: #${appointment.bookingId}\n` +
+      `Date & Time: ${appointment.date} at ${appointment.startTime}\n` +
+      `======================================================\n`
+    );
 
     const html = getAppointmentConfirmationHtml({
       customerName: customer?.name || 'Valued Client',
@@ -170,12 +186,12 @@ export const emailService = {
    * 5. Appointment Cancellation Email
    */
   sendAppointmentCancellationEmail: async (appointment, reason = '') => {
-    const customer = appointment.customer;
-    const service = appointment.service;
-    const staff = appointment.staff;
+    const customer = appointment?.customer;
+    const service = appointment?.service;
+    const staff = appointment?.staff;
 
     const to = customer?.email;
-    if (!to) return;
+    if (!to) return { success: false, reason: 'No customer email' };
 
     const html = getAppointmentCancellationHtml({
       customerName: customer?.name || 'Valued Client',
@@ -198,12 +214,12 @@ export const emailService = {
    * 6. Appointment Rescheduled Email
    */
   sendAppointmentRescheduledEmail: async (appointment, oldDetails = {}) => {
-    const customer = appointment.customer;
-    const service = appointment.service;
-    const staff = appointment.staff;
+    const customer = appointment?.customer;
+    const service = appointment?.service;
+    const staff = appointment?.staff;
 
     const to = customer?.email;
-    if (!to) return;
+    if (!to) return { success: false, reason: 'No customer email' };
 
     const html = getAppointmentRescheduledHtml({
       customerName: customer?.name || 'Valued Client',
@@ -227,11 +243,11 @@ export const emailService = {
    * 7. Payment Confirmation / Receipt Email
    */
   sendPaymentConfirmationEmail: async (appointment, payment = {}) => {
-    const customer = appointment.customer;
-    const service = appointment.service;
+    const customer = appointment?.customer;
+    const service = appointment?.service;
 
     const to = customer?.email;
-    if (!to) return;
+    if (!to) return { success: false, reason: 'No customer email' };
 
     const html = getPaymentReceiptHtml({
       customerName: customer?.name || 'Valued Client',
@@ -250,7 +266,7 @@ export const emailService = {
 
     return await sendMailSafe({
       to,
-      subject: `Payment Receipt: $${appointment.finalAmount || appointment.price} for #${appointment.bookingId}`,
+      subject: `Payment Receipt: ₹${appointment.finalAmount || appointment.price} for #${appointment.bookingId}`,
       html,
       emailType: 'Payment Receipt Email'
     });
@@ -260,12 +276,12 @@ export const emailService = {
    * 8. Appointment Reminder Email
    */
   sendAppointmentReminderEmail: async (appointment) => {
-    const customer = appointment.customer;
-    const service = appointment.service;
-    const staff = appointment.staff;
+    const customer = appointment?.customer;
+    const service = appointment?.service;
+    const staff = appointment?.staff;
 
     const to = customer?.email;
-    if (!to) return;
+    if (!to) return { success: false, reason: 'No customer email' };
 
     const html = getAppointmentReminderHtml({
       customerName: customer?.name || 'Valued Client',
