@@ -587,3 +587,84 @@ export const getPasswordResetOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =
   });
 };
 
+
+/**
+ * 9. New Customer Inquiry Notification (Sent to Admin / Concierge)
+ */
+export const getInquiryAdminNotificationHtml = ({ name, email, phone, message, date }) => {
+  const content = `
+    <h2 class="heading">New Customer Inquiry</h2>
+    <p>You have received a new consultation / treatment inquiry from the website contact concierge.</p>
+
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">Customer Name</span>
+        <span class="info-value"><strong>${name}</strong></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email Address</span>
+        <span class="info-value"><a href="mailto:${email}" style="color: #be123c; text-decoration: none;">${email}</a></span>
+      </div>
+      ${phone ? `
+      <div class="info-row">
+        <span class="info-label">Phone Number</span>
+        <span class="info-value"><a href="tel:${phone}" style="color: #be123c; text-decoration: none;">${phone}</a></span>
+      </div>
+      ` : ''}
+      <div class="info-row">
+        <span class="info-label">Received At</span>
+        <span class="info-value">${date || new Date().toLocaleString()}</span>
+      </div>
+    </div>
+
+    <div style="background-color: #fafaf9; border: 1px solid #e7e5e4; border-radius: 8px; padding: 16px; margin: 20px 0;">
+      <h4 style="margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: #78716c;">Client Message:</h4>
+      <p style="margin: 0; font-size: 14px; color: #292524; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="mailto:${email}?subject=Re:%20Inquiry%20at%20Enrich%20Beauty%20Parlour" class="btn">
+        Reply to ${name.split(' ')[0]}
+      </a>
+    </div>
+  `;
+
+  return renderBaseLayout({
+    title: 'New Customer Inquiry',
+    preheader: `New inquiry received from ${name}: "${message.substring(0, 50)}..."`,
+    content
+  });
+};
+
+/**
+ * 10. Inquiry Acknowledgment (Sent to Customer)
+ */
+export const getInquiryAcknowledgmentHtml = ({ name, message }) => {
+  const content = `
+    <h2 class="heading">We Received Your Inquiry</h2>
+    <p>Dear ${name ? name.split(' ')[0] : 'Valued Client'},</p>
+    <p>Thank you for reaching out to <strong>Enrich Beauty Parlour & Cosmetic Clinic</strong>. We have received your inquiry and our salon concierge is reviewing your request.</p>
+
+    <div style="background-color: #fafaf9; border-left: 3px solid #be123c; padding: 14px 18px; margin: 20px 0; border-radius: 4px;">
+      <p style="margin: 0; font-size: 13px; color: #57534e; font-style: italic;">
+        "${message.length > 200 ? message.substring(0, 200) + '...' : message}"
+      </p>
+    </div>
+
+    <p style="font-size: 14px; color: #44403c; line-height: 1.6;">
+      A specialist will respond to your email or call you within one business day. If your request is urgent, feel free to contact our direct concierge desk at <strong style="color: #be123c;">096679 00313</strong>.
+    </p>
+
+    <div style="text-align: center; margin-top: 28px;">
+      <a href="https://enrichbeautyparlour.com/services" class="btn">
+        Explore Treatments & Price List
+      </a>
+    </div>
+  `;
+
+  return renderBaseLayout({
+    title: 'Inquiry Received - Enrich Beauty Parlour',
+    preheader: 'Thank you for reaching out to Enrich Beauty Parlour. We will be in touch shortly.',
+    content
+  });
+};

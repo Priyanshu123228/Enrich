@@ -7,7 +7,9 @@ import {
   getPaymentReceiptHtml,
   getAppointmentReminderHtml,
   getVerificationOTPEmailHtml,
-  getPasswordResetOTPEmailHtml
+  getPasswordResetOTPEmailHtml,
+  getInquiryAdminNotificationHtml,
+  getInquiryAcknowledgmentHtml
 } from '../templates/emailTemplates.js';
 
 const getEmailFrom = () =>
@@ -469,6 +471,53 @@ export const emailService = {
       subject: `Reminder: Your Appointment Tomorrow (${appointment.date})`,
       html,
       emailType: 'Appointment Reminder Email'
+    });
+  },
+
+  /**
+   * 9. New Inquiry Admin Notification Email
+   */
+  sendInquiryAdminNotificationEmail: async (inquiry) => {
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.SALON_EMAIL || 'enrichparlour1212@gmail.com';
+    const html = getInquiryAdminNotificationHtml({
+      name: inquiry.name,
+      email: inquiry.email,
+      phone: inquiry.phone,
+      message: inquiry.message,
+      date: new Date(inquiry.createdAt || Date.now()).toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      })
+    });
+
+    return await sendMailSafe({
+      to: adminEmail,
+      subject: `[New Inquiry] ${inquiry.name} (${inquiry.email})`,
+      html,
+      emailType: 'Inquiry Admin Notification Email'
+    });
+  },
+
+  /**
+   * 10. Inquiry Customer Acknowledgment Email
+   */
+  sendInquiryCustomerAcknowledgmentEmail: async (inquiry) => {
+    if (!inquiry.email) return { success: false, reason: 'No customer email' };
+
+    const html = getInquiryAcknowledgmentHtml({
+      name: inquiry.name,
+      message: inquiry.message
+    });
+
+    return await sendMailSafe({
+      to: inquiry.email,
+      subject: `We Received Your Inquiry - Enrich Beauty Parlour`,
+      html,
+      emailType: 'Inquiry Customer Acknowledgment Email'
     });
   }
 };

@@ -29,6 +29,7 @@ import Profile from '../pages/Profile';
 // Admin Console Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminAppointments from '../pages/admin/AdminAppointments';
+import AdminInquiries from '../pages/admin/AdminInquiries';
 import AdminCustomers from '../pages/admin/AdminCustomers';
 import AdminStaff from '../pages/admin/AdminStaff';
 import AdminServices from '../pages/admin/AdminServices';
@@ -121,6 +122,7 @@ export default function AppRoutes() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="appointments" element={<AdminAppointments />} />
+        <Route path="inquiries" element={<AdminInquiries />} />
         <Route path="customers" element={<AdminCustomers />} />
         <Route path="staff" element={<AdminStaff />} />
         <Route path="services" element={<AdminServices />} />

@@ -2,6 +2,7 @@ import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard,
+  MessageSquare,
   CalendarCheck,
   Users,
   Scissors,
@@ -27,6 +28,7 @@ export default function AdminLayout() {
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, end: true },
     { name: 'Appointments', path: '/admin/appointments', icon: CalendarCheck },
+    { name: 'Inquiries / Contact', path: '/admin/inquiries', icon: MessageSquare },
     { name: 'Customers', path: '/admin/customers', icon: Users },
     { name: 'Stylists Roster', path: '/admin/staff', icon: Scissors },
     { name: 'Services Menu', path: '/admin/services', icon: Sparkles },

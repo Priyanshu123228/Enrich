@@ -13,6 +13,7 @@ import reviewRoutes from './review.routes.js';
 import paymentRoutes from './payment.routes.js';
 import mediaRoutes from './media.routes.js';
 import socialRoutes from './social.routes.js';
+import inquiryRoutes from './inquiry.routes.js';
 
 const router = Router();
 
@@ -32,5 +33,7 @@ router.use('/payments', paymentRoutes);
 router.use('/media', mediaRoutes);
 router.use('/social-links', socialRoutes);
 router.use('/social-media', socialRoutes); // Convenient alias
+router.use('/inquiries', inquiryRoutes);
+router.use('/contact', inquiryRoutes); // Convenient alias
 
 export default router;

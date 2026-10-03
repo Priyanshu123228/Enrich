@@ -4,7 +4,11 @@
  * Global Axios API Client instance configured with base URL and timeouts
  */
 const api = axios.create({
-  baseURL: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'http://localhost:5000/api/v1',
+  baseURL: (() => {
+    const env = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'http://localhost:5000/api/v1';
+    const clean = env.replace(/\/+$/, '');
+    return clean.endsWith('/api/v1') ? clean : (clean + '/api/v1');
+  })(),
   headers: {
     'Content-Type': 'application/json'
   },

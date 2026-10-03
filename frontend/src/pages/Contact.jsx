@@ -1,8 +1,14 @@
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle, Loader2, MessageSquare, Compass } from 'lucide-react';
+import { inquiryService } from '../services/inquiry.service';
+import { SALON_CONFIG } from '../config/salonConfig';
 
 export default function Contact() {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [submittedData, setSubmittedData] = useState(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -10,13 +16,26 @@ export default function Contact() {
     message: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormSubmitted(true);
-    setTimeout(() => {
-      setFormSubmitted(false);
+    setErrorMessage('');
+    setIsSubmitting(true);
+
+    try {
+      await inquiryService.submitInquiry(formData);
+      setSubmittedData({ ...formData });
+      setFormSubmitted(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
-    }, 4000);
+    } catch (err) {
+      console.error('Inquiry submission error:', err);
+      const apiErrMsg =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to submit inquiry. Please try again or call our front desk directly.';
+      setErrorMessage(apiErrMsg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -48,8 +67,20 @@ export default function Contact() {
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Location</h4>
                 <p className="text-sm text-stone-600">
-                  Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001<br /><span className="text-xs text-stone-500">(near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road)</span>
+                  {SALON_CONFIG.contact.address}<br />
+                  <span className="text-xs text-stone-500">({SALON_CONFIG.contact.directionsHint})</span>
                 </p>
+                <div className="mt-2">
+                  <a
+                    href={SALON_CONFIG.location.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-xs font-semibold text-rose-700 hover:text-rose-800 underline"
+                  >
+                    <Compass className="w-3.5 h-3.5 mr-1" />
+                    Open in Google Maps
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -59,8 +90,10 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Direct Phone</h4>
-                <p className="text-sm text-stone-600">096679 00313</p>
-                <p className="text-xs text-stone-400">Front desk assistance</p>
+                <a href={SALON_CONFIG.contact.phoneTel} className="text-sm text-stone-800 hover:text-rose-700 font-medium">
+                  {SALON_CONFIG.contact.phone}
+                </a>
+                <p className="text-xs text-stone-400">Front desk & appointment assistance</p>
               </div>
             </div>
 
@@ -70,7 +103,9 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Email Inquiries</h4>
-                <p className="text-sm text-stone-600">enrichparlour1212@gmail.com</p>
+                <a href={SALON_CONFIG.contact.emailMailto} className="text-sm text-stone-800 hover:text-rose-700 font-medium">
+                  {SALON_CONFIG.contact.email}
+                </a>
               </div>
             </div>
 
@@ -80,8 +115,8 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Salon Timings</h4>
-                <p className="text-sm text-stone-600">Mon - Sat: 10:00 AM - 8:00 PM</p>
-                <p className="text-sm text-stone-600">Sun: 10:00 AM - 5:00 PM</p>
+                <p className="text-sm text-stone-600">{SALON_CONFIG.hours.weekday}</p>
+                <p className="text-sm text-stone-600">{SALON_CONFIG.hours.sunday}</p>
               </div>
             </div>
           </div>
@@ -89,20 +124,50 @@ export default function Contact() {
 
         {/* Contact Form */}
         <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-xl border border-stone-200 shadow-xs">
-          <h2 className="text-2xl font-serif font-bold text-stone-900 mb-6">
-            Send an Inquiry
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-serif font-bold text-stone-900">
+              Send an Inquiry
+            </h2>
+            <MessageSquare className="w-5 h-5 text-stone-400" />
+          </div>
+
+          {errorMessage && (
+            <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg flex items-start space-x-3 text-rose-800 text-xs sm:text-sm">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold">Submission Issue</p>
+                <p className="mt-0.5 text-rose-700">{errorMessage}</p>
+              </div>
+            </div>
+          )}
 
           {formSubmitted ? (
-            <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-center space-y-2">
-              <h4 className="font-bold text-base">Inquiry Received</h4>
-              <p className="text-sm">Thank you for getting in touch. Our salon concierge will reply within one business day.</p>
+            <div className="p-8 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-center space-y-4 animate-in fade-in duration-300">
+              <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-xs">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-serif font-bold text-lg text-emerald-950">Inquiry Received Successfully</h4>
+                <p className="text-xs sm:text-sm text-emerald-800 mt-1 max-w-md mx-auto leading-relaxed">
+                  Thank you, <strong>{submittedData?.name}</strong>! We have saved your inquiry in our concierge system. A confirmation email has been sent to <strong>{submittedData?.email}</strong> and our team will get back to you within one business day.
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setFormSubmitted(false)}
+                  className="px-5 py-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                >
+                  Send Another Inquiry
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase text-stone-700 mb-1">
-                  Full Name
+                  Full Name <span className="text-rose-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -111,13 +176,14 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Sarah Jenkins"
                   className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
+                  disabled={isSubmitting}
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase text-stone-700 mb-1">
-                    Email Address
+                    Email Address <span className="text-rose-600">*</span>
                   </label>
                   <input
                     type="email"
@@ -126,6 +192,7 @@ export default function Contact() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="sarah@example.com"
                     className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -136,32 +203,44 @@ export default function Contact() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="(212) 555-0123"
+                    placeholder="096679 00313"
                     className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase text-stone-700 mb-1">
-                  Your Message or Inquiry
+                  Your Message or Inquiry <span className="text-rose-600">*</span>
                 </label>
                 <textarea
                   rows="4"
                   required
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Inquire about treatments, appointments, or special bridal services..."
+                  placeholder="Inquire about treatments, appointments, bridal packages, or custom clinic services..."
                   className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
+                  disabled={isSubmitting}
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 disabled:bg-stone-500 text-white text-xs font-semibold shadow-sm transition-colors cursor-pointer"
               >
-                <Send className="w-3.5 h-3.5 mr-2 text-rose-300" />
-                Submit Inquiry
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin text-rose-300" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-3.5 h-3.5 mr-2 text-rose-300" />
+                    Submit Inquiry
+                  </>
+                )}
               </button>
             </form>
           )}
