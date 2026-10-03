@@ -42,33 +42,42 @@ dotenv.config();
 
 /**
  * Configure Nodemailer Transporter
- * Uses connection pooling and strict IPv4 DNS resolution to eliminate connection latency and ENETUNREACH errors.
+ * Uses service: 'gmail' or direct port 465 SSL with connection pooling
+ * to prevent port 587 STARTTLS timeouts and IPv6 ENETUNREACH errors on cloud hosting.
  */
 export const createTransporter = () => {
   const host = process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = Number(process.env.EMAIL_PORT || process.env.SMTP_PORT) || 587;
+  const port = Number(process.env.EMAIL_PORT || process.env.SMTP_PORT) || 465;
   const user = (process.env.EMAIL_USER || process.env.SMTP_USER || '').trim();
   const pass = (process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || '')
     .replace(/\s+/g, '')
     .trim();
 
+  const isGmail = host.toLowerCase().includes('gmail');
+
+  const baseConfig = isGmail
+    ? {
+        service: 'gmail',
+        auth: { user, pass }
+      }
+    : {
+        host,
+        port,
+        secure: port === 465,
+        auth: { user, pass }
+      };
+
   return nodemailer.createTransport({
-    pool: true,
+    ...baseConfig,
+    pool: true, // Re-use persistent SMTP connection for fast, reliable delivery
     maxConnections: 3,
     maxMessages: 100,
-    host,
-    port,
-    secure: port === 465,
-    auth: {
-      user,
-      pass
-    },
     tls: {
       rejectUnauthorized: false
     },
-    connectionTimeout: 20000,
-    greetingTimeout: 20000,
-    socketTimeout: 20000
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 15000
   });
 };
 
