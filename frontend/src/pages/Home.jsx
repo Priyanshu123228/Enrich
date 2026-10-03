@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { serviceService } from '../services/service.service';
 import { staffService } from '../services/staff.service';
 import { offerService } from '../services/offer.service';
 import { reviewService } from '../services/review.service';
 import { mediaService } from '../services/media.service';
+import { SALON_CONFIG } from '../config/salonConfig';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import VideoModal from '../components/gallery/VideoModal';
-import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider'; 
+import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
 import SocialMediaSection from '../components/SocialMediaSection';
 import { CardSkeleton } from '../components/common/SkeletonLoader';
 import {
@@ -28,351 +29,371 @@ import {
   Star,
   Compass,
   Car,
-  Train
+  Train,
+  Award,
+  HeartHandshake
 } from 'lucide-react';
 
+const ICON_MAP = {
+  ShieldCheck,
+  CheckCircle,
+  Sparkles,
+  Clock,
+  Award,
+  HeartHandshake,
+  MapPin
+};
+
 export default function Home() {
-  // State for dynamic sections
-  const [popularServices, setPopularServices] = useState([]);
-  const [featuredStaff, setFeaturedStaff] = useState([]);
-  const [activeOffers, setActiveOffers] = useState([]);
-  const [approvedReviews, setApprovedReviews] = useState([]);
-  const [featuredMedia, setFeaturedMedia] = useState({ photos: [], videos: [], beforeAfters: [] });
-  
-  // UI states
-  const [activeGalleryTab, setActiveGalleryTab] = useState('photos'); // 'photos' | 'videos' | 'transformations'
+  // ---------------------------------------------------------------------------
+  // Data States
+  // ---------------------------------------------------------------------------
+  const [services, setServices] = useState([]);
+  const [staffList, setStaffList] = useState([]);
+  const [offers, setOffers] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [mediaItems, setMediaItems] = useState({
+    photos: [],
+    videos: [],
+    transformations: [],
+    all: []
+  });
+
+  // ---------------------------------------------------------------------------
+  // UI & Filter States
+  // ---------------------------------------------------------------------------
+  const [activeServiceCategory, setActiveServiceCategory] = useState('All');
+  const [activeGalleryCategory, setActiveGalleryCategory] = useState('All');
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeVideo, setActiveVideo] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // ---------------------------------------------------------------------------
+  // Fetch dynamic data on mount
+  // ---------------------------------------------------------------------------
   useEffect(() => {
-    const loadHomepageData = async () => {
-      setLoading(true);
+    let isMounted = true;
+
+    async function loadHomepageData() {
       try {
-        const [servicesRes, staffRes, offersRes, reviewsRes, mediaRes] = await Promise.allSettled([
-          serviceService.getServices({ limit: 6 }),
-          staffService.getStaff({ status: 'active', limit: 4 }),
-          offerService.getActiveOffers({ limit: 3 }),
-          reviewService.getPublicReviews({ limit: 3 }),
+        setIsLoading(true);
+
+        const [
+          servicesRes,
+          staffRes,
+          offersRes,
+          reviewsRes,
+          mediaRes
+        ] = await Promise.allSettled([
+          serviceService.getAllServices({ limit: 50 }),
+          staffService.getStaff({ limit: 12 }),
+          offerService.getActiveOffers(),
+          reviewService.getPublicReviews({ limit: 8 }),
           mediaService.getFeaturedMedia()
         ]);
 
-        if (servicesRes.status === 'fulfilled' && servicesRes.value?.data?.services) {
-          setPopularServices(servicesRes.value.data.services.slice(0, 6));
+        if (!isMounted) return;
+
+        // 1. Process Services
+        if (servicesRes.status === 'fulfilled' && servicesRes.value?.data?.services?.length > 0) {
+          setServices(servicesRes.value.data.services.filter(s => s.isActive !== false));
+        } else if (servicesRes.status === 'fulfilled' && Array.isArray(servicesRes.value?.data) && servicesRes.value.data.length > 0) {
+          setServices(servicesRes.value.data.filter(s => s.isActive !== false));
+        } else {
+          setServices(SALON_CONFIG.defaultServices);
         }
-        if (staffRes.status === 'fulfilled' && staffRes.value?.data) {
-          const staffList = Array.isArray(staffRes.value.data) ? staffRes.value.data : staffRes.value.data?.staff || [];
-          setFeaturedStaff(staffList.slice(0, 4));
+
+        // 2. Process Staff / Stylists
+        if (staffRes.status === 'fulfilled' && staffRes.value?.data?.staff?.length > 0) {
+          setStaffList(staffRes.value.data.staff.filter(st => st.status !== 'inactive' && st.isActive !== false));
+        } else if (staffRes.status === 'fulfilled' && Array.isArray(staffRes.value?.data) && staffRes.value.data.length > 0) {
+          setStaffList(staffRes.value.data.filter(st => st.status !== 'inactive' && st.isActive !== false));
+        } else {
+          setStaffList(SALON_CONFIG.defaultStylists);
         }
-        if (offersRes.status === 'fulfilled' && offersRes.value?.data) {
-          const offersList = Array.isArray(offersRes.value.data) ? offersRes.value.data : offersRes.value.data?.offers || [];
-          setActiveOffers(offersList.slice(0, 3));
+
+        // 3. Process Offers (filter active & unexpired)
+        if (offersRes.status === 'fulfilled' && offersRes.value?.data?.offers?.length > 0) {
+          const now = new Date();
+          const activeOffers = offersRes.value.data.offers.filter(o => {
+            if (o.isActive === false) return false;
+            if (o.validUntil && new Date(o.validUntil) < now) return false;
+            if (o.expiryDate && new Date(o.expiryDate) < now) return false;
+            return true;
+          });
+          setOffers(activeOffers.length > 0 ? activeOffers : SALON_CONFIG.defaultOffers);
+        } else if (offersRes.status === 'fulfilled' && Array.isArray(offersRes.value?.data) && offersRes.value.data.length > 0) {
+          const now = new Date();
+          const activeOffers = offersRes.value.data.filter(o => {
+            if (o.isActive === false) return false;
+            if (o.validUntil && new Date(o.validUntil) < now) return false;
+            if (o.expiryDate && new Date(o.expiryDate) < now) return false;
+            return true;
+          });
+          setOffers(activeOffers.length > 0 ? activeOffers : SALON_CONFIG.defaultOffers);
+        } else {
+          setOffers(SALON_CONFIG.defaultOffers);
         }
-        if (reviewsRes.status === 'fulfilled' && reviewsRes.value?.data) {
-          const reviewsList = Array.isArray(reviewsRes.value.data) ? reviewsRes.value.data : reviewsRes.value.data?.reviews || [];
-          setApprovedReviews(reviewsList.slice(0, 3));
+
+        // 4. Process Reviews (published only)
+        if (reviewsRes.status === 'fulfilled' && reviewsRes.value?.data?.reviews?.length > 0) {
+          const published = reviewsRes.value.data.reviews.filter(r => r.isApproved !== false && r.isPublished !== false);
+          setReviews(published.length > 0 ? published : SALON_CONFIG.defaultReviews);
+        } else if (reviewsRes.status === 'fulfilled' && Array.isArray(reviewsRes.value?.data) && reviewsRes.value.data.length > 0) {
+          const published = reviewsRes.value.data.filter(r => r.isApproved !== false && r.isPublished !== false);
+          setReviews(published.length > 0 ? published : SALON_CONFIG.defaultReviews);
+        } else {
+          setReviews(SALON_CONFIG.defaultReviews);
         }
+
+        // 5. Process Media / Gallery
         if (mediaRes.status === 'fulfilled' && mediaRes.value?.data) {
-          setFeaturedMedia(mediaRes.value.data);
+          const data = mediaRes.value.data;
+          const photos = data.photos || [];
+          const videos = data.videos || [];
+          const transformations = data.transformations || [];
+          const all = [...photos, ...videos, ...transformations];
+          if (all.length > 0) {
+            setMediaItems({ photos, videos, transformations, all });
+          } else {
+            setMediaItems(SALON_CONFIG.defaultMedia);
+          }
+        } else {
+          setMediaItems(SALON_CONFIG.defaultMedia);
         }
+
       } catch (err) {
-        console.error('Homepage data loading notice:', err.message);
+        console.error('Error fetching homepage dynamic resources:', err);
+        if (isMounted) {
+          setServices(SALON_CONFIG.defaultServices);
+          setStaffList(SALON_CONFIG.defaultStylists);
+          setOffers(SALON_CONFIG.defaultOffers);
+          setReviews(SALON_CONFIG.defaultReviews);
+          setMediaItems(SALON_CONFIG.defaultMedia);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-    };
+    }
 
     loadHomepageData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+  // Dynamic categories
+  const serviceCategories = useMemo(() => {
+    const defaultCategories = ['All', 'Hair', 'Makeup', 'Skin', 'Nails', 'Bridal'];
+    const dynamicSet = new Set(defaultCategories);
+    services.forEach(s => {
+      if (s.category && typeof s.category === 'string') {
+        dynamicSet.add(s.category.trim());
+      }
+    });
+    return Array.from(dynamicSet);
+  }, [services]);
+
+  const filteredServices = useMemo(() => {
+    if (activeServiceCategory === 'All') {
+      return services.slice(0, 8);
+    }
+    return services.filter(
+      s => s.category && s.category.toLowerCase() === activeServiceCategory.toLowerCase()
+    );
+  }, [services, activeServiceCategory]);
+
+  const heroFeaturedServices = useMemo(() => {
+    return services.slice(0, 3);
+  }, [services]);
+
+  const galleryCategories = [
+    'All',
+    'Photos',
+    'Videos',
+    'Before & After',
+    'Hair',
+    'Makeup',
+    'Skin',
+    'Bridal',
+    'Nails'
+  ];
+
+  const filteredGalleryMedia = useMemo(() => {
+    const all = mediaItems.all || [];
+    if (activeGalleryCategory === 'All') {
+      return all;
+    }
+    if (activeGalleryCategory === 'Photos') {
+      return all.filter(m => m.mediaType === 'photo' || (!m.mediaType && !m.videoUrl && !m.beforeImage));
+    }
+    if (activeGalleryCategory === 'Videos') {
+      return all.filter(m => m.mediaType === 'video' || m.videoUrl);
+    }
+    if (activeGalleryCategory === 'Before & After') {
+      return all.filter(m => m.mediaType === 'before_after' || (m.beforeImage && m.afterImage));
+    }
+    return all.filter(
+      m => m.category && m.category.toLowerCase() === activeGalleryCategory.toLowerCase()
+    );
+  }, [mediaItems, activeGalleryCategory]);
+
+  const lightboxMediaList = useMemo(() => {
+    return filteredGalleryMedia.filter(
+      m => m.mediaType === 'photo' || (!m.mediaType && !m.videoUrl && !m.beforeImage)
+    );
+  }, [filteredGalleryMedia]);
 
   const handleCopyCode = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
+    setTimeout(() => {
+      setCopiedCode(null);
+    }, 2500);
   };
 
-  // Why Choose Us Pillars
-  const salonPillars = [
-    {
-      icon: ShieldCheck,
-      title: 'Licensed Professionals',
-      description: 'Every treatment is performed by certified cosmetologists and certified skin therapists.'
-    },
-    {
-      icon: CheckCircle,
-      title: 'Medical-Grade Sanitation',
-      description: 'Hospital-grade autoclaving for all metal implements and single-use sanitary kits for every client.'
-    },
-    {
-      icon: Sparkles,
-      title: 'Clean Formulations',
-      description: 'We partner with dermatologically tested, cruelty-free professional hair, nail, and skincare lines.'
-    },
-    {
-      icon: Clock,
-      title: 'Dedicated Consultations',
-      description: 'Every appointment begins with a focused assessment of your hair, skin, and personal styling goals.'
-    }
-  ];
-
-  // Default fallback services if database is booting
-  const fallbackServices = [
-    {
-      _id: 'fb1',
-      name: 'Custom Cut & Blowout',
-      category: 'Hair',
-      duration: 60,
-      price: 95,
-      description: 'Consultation, scalp massage, tailored precision cut, and professional blowout finish.'
-    },
-    {
-      _id: 'fb2',
-      name: 'Signature Deep Cleansing Facial',
-      category: 'Skin',
-      duration: 60,
-      price: 120,
-      description: 'Ultrasonic pore cleansing, targeted enzyme exfoliation, hydration mask, and facial massage.'
-    },
-    {
-      _id: 'fb3',
-      name: 'Structured Gel Manicure',
-      category: 'Nails',
-      duration: 50,
-      price: 65,
-      description: 'Cuticle care, apex-building builder gel overlay, and high-shine non-chip finish.'
-    }
-  ];
-
-  const displayServices = popularServices.length > 0 ? popularServices : fallbackServices;
-
   return (
-    <div className="space-y-24 pb-24">
+    <div className="space-y-16 sm:space-y-24 pb-20 bg-stone-50/50 text-stone-900 font-sans">
       
       {/* =========================================================================
-          SECTION 1: HERO
+          SECTION 1: HERO SECTION
           ========================================================================= */}
-      <section className="bg-stone-50 border-b border-stone-200 py-12 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-stone-900 text-white py-16 sm:py-24 border-b border-stone-800">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#d6d3d1_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left Hero Text */}
+            {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-stone-200 text-stone-800 text-xs font-semibold uppercase tracking-wider">
-                <MapPin className="w-3.5 h-3.5 text-rose-700" />
-                <span>Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan</span>
-              </div>
               
-              <div className="space-y-2">
-                <span className="text-xs font-bold tracking-widest text-rose-700 uppercase block">
-                  Enrich Beauty Parlour & Cosmetic Clinic
-                </span>
-                <h1 className="text-3xl sm:text-5xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-                  Hair, Makeup, Skin & Cosmetic Clinic Services in Sikar, Rajasthan
-                </h1>
+              {/* Location Badge */}
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-stone-800/80 border border-stone-700 text-stone-300 text-xs tracking-wide shadow-inner">
+                <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                <span className="truncate max-w-xs sm:max-w-md">{SALON_CONFIG.business.badge}</span>
               </div>
 
-              <p className="text-base text-stone-600 max-w-xl leading-relaxed">
-                A dedicated beauty boutique offering personalized hair color, precision styling, clinical skincare, and luxury nail services. Book your appointment online or visit our Midtown studio.
+              {/* Main Heading */}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-stone-50 leading-[1.15]">
+                Precision Hair, Skin &{' '}
+                <span className="italic font-light text-rose-300">Clinical Beauty</span>
+              </h1>
+
+              {/* Short Business Description */}
+              <p className="text-sm sm:text-base text-stone-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                {SALON_CONFIG.business.description}
               </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-start pt-2">
+
+              {/* CTAs */}
+              <div className="pt-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                 <Link
                   to="/book"
-                  className="btn-primary"
+                  id="hero-book-cta"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-lg text-sm font-semibold text-stone-900 bg-white hover:bg-stone-100 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer active:scale-98"
                 >
-                  <Calendar className="w-4 h-4 mr-2 text-rose-300" />
+                  <Calendar className="w-4 h-4 mr-2 text-rose-700" />
                   Book Appointment
                 </Link>
-                <Link
-                  to="/services"
-                  className="btn-secondary"
+
+                <a
+                  href="#services"
+                  id="hero-services-cta"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-lg text-sm font-semibold text-white bg-stone-800/90 hover:bg-stone-700 border border-stone-700 transition-all duration-200 shadow-sm cursor-pointer active:scale-98"
                 >
                   View Services
-                </Link>
+                  <ArrowRight className="w-4 h-4 ml-2 text-stone-300" />
+                </a>
               </div>
 
-              {/* Operational Callout */}
-              <div className="pt-6 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-                <div className="bg-white p-4 rounded-xl border border-stone-200">
-                  <p className="text-[11px] font-semibold uppercase text-stone-500 tracking-wider">Salon Hours</p>
-                  <p className="text-sm font-medium text-stone-900 mt-0.5">Mon - Sat: 9:00 AM - 8:00 PM</p>
-                  <p className="text-xs text-stone-500">Sun: 10:00 AM - 5:00 PM</p>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-stone-200">
-                  <p className="text-[11px] font-semibold uppercase text-stone-500 tracking-wider">Direct Concierge</p>
-                  <p className="text-sm font-medium text-stone-900 mt-0.5">096679 00313</p>
-                  <p className="text-xs text-stone-500">enrichparlour1212@gmail.com</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Hero Overview Card */}
-            <div className="lg:col-span-5">
-              <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-sm space-y-5">
-                <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              {/* Salon Hours & Concierge Info Badge */}
+              <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left border-t border-stone-800/80 max-w-xl mx-auto lg:mx-0">
+                <div className="flex items-start space-x-2.5 text-xs text-stone-300 bg-stone-800/40 p-2.5 rounded-lg border border-stone-800">
+                  <Clock className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-serif font-bold text-lg text-stone-900">Featured Salon Menu</h3>
-                    <p className="text-xs text-stone-500">Transparent pricing with real service durations</p>
+                    <span className="font-semibold text-white block">Salon Opening Hours</span>
+                    <span className="text-stone-400">{SALON_CONFIG.hours.weekday}</span>
                   </div>
                 </div>
-
-                <div className="space-y-3">
-                  <div className="p-3.5 bg-stone-50 rounded-lg border border-stone-200/60 flex justify-between items-center text-sm">
-                    <div>
-                      <p className="font-semibold text-stone-900">Balayage & Gloss Finish</p>
-                      <p className="text-xs text-stone-500">Duration: 120 mins</p>
-                    </div>
-                    <span className="text-stone-900 font-bold text-sm">$180</span>
-                  </div>
-                  <div className="p-3.5 bg-stone-50 rounded-lg border border-stone-200/60 flex justify-between items-center text-sm">
-                    <div>
-                      <p className="font-semibold text-stone-900">Hydrating Oxygen Facial</p>
-                      <p className="text-xs text-stone-500">Duration: 60 mins</p>
-                    </div>
-                    <span className="text-stone-900 font-bold text-sm">$110</span>
-                  </div>
-                  <div className="p-3.5 bg-stone-50 rounded-lg border border-stone-200/60 flex justify-between items-center text-sm">
-                    <div>
-                      <p className="font-semibold text-stone-900">Full Set Gel Extensions</p>
-                      <p className="text-xs text-stone-500">Duration: 75 mins</p>
-                    </div>
-                    <span className="text-stone-900 font-bold text-sm">$80</span>
+                <div className="flex items-start space-x-2.5 text-xs text-stone-300 bg-stone-800/40 p-2.5 rounded-lg border border-stone-800">
+                  <Phone className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold text-white block">Direct Concierge</span>
+                    <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-300 hover:text-white transition-colors">
+                      {SALON_CONFIG.contact.phone}
+                    </a>
                   </div>
                 </div>
-
-                <Link
-                  to="/services"
-                  className="w-full flex items-center justify-center py-2.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
-                >
-                  View All Services & Pricing
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Link>
               </div>
+
             </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 2: POPULAR SERVICES
-          ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-4 border-b border-stone-200">
-          <div className="space-y-1">
-            <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-              Service Menu
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-              Popular Salon Services
-            </h2>
-            <p className="text-xs text-stone-500">
-              Select a service to reserve a scheduled appointment with a specialist.
-            </p>
-          </div>
-          <Link
-            to="/services"
-            className="mt-3 md:mt-0 inline-flex items-center text-rose-700 font-semibold text-xs hover:text-rose-800"
-          >
-            View Complete Menu <ArrowRight className="w-3.5 h-3.5 ml-1" />
-          </Link>
-        </div>
-
-        {loading ? (
-          <CardSkeleton count={3} />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayServices.map((service) => (
-              <div
-                key={service._id}
-                className="bg-white rounded-xl border border-stone-200 p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-md transition-shadow"
-              >
-                <div className="space-y-2.5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium px-2.5 py-0.5 bg-stone-100 text-stone-800 rounded-md uppercase tracking-wider">
-                      {service.category}
+            {/* Right Card: Featured Salon Menu */}
+            <div className="lg:col-span-5 w-full">
+              <div className="rounded-2xl border border-stone-800 bg-stone-900/90 backdrop-blur-sm p-6 sm:p-7 shadow-2xl space-y-5">
+                <div className="flex items-center justify-between border-b border-stone-800 pb-4">
+                  <div>
+                    <span className="text-[11px] font-bold tracking-widest text-rose-400 uppercase">
+                      Featured Salon Menu
                     </span>
-                    <span className="text-xs text-stone-500 font-medium">
-                      {service.duration} mins
-                    </span>
+                    <h3 className="text-base font-serif font-bold text-white mt-0.5">
+                      Curated Signature Treatments
+                    </h3>
                   </div>
-                  <h3 className="text-lg font-bold font-serif text-stone-900">{service.name}</h3>
-                  <p className="text-xs text-stone-600 leading-relaxed line-clamp-2">
-                    {service.description}
-                  </p>
+                  <Sparkles className="w-5 h-5 text-rose-400 shrink-0" />
                 </div>
-                
-                <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                  <span className="text-xl font-bold text-stone-900">${service.price}</span>
-                  <Link
-                    to={`/book?serviceId=${service._id}`}
-                    className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-                  >
-                    Book Appointment
+
+                {/* Dynamic Featured Services List */}
+                <div className="space-y-3.5">
+                  {heroFeaturedServices.map((service, idx) => (
+                    <div
+                      key={service._id || idx}
+                      className="p-3.5 rounded-xl bg-stone-800/60 border border-stone-700/60 hover:border-stone-600 transition-all flex items-center justify-between gap-3 group"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-[10px] font-semibold text-rose-300 px-2 py-0.5 rounded bg-rose-950/60 border border-rose-800/50 uppercase tracking-wide">
+                            {service.category || 'Special'}
+                          </span>
+                          <span className="text-xs text-stone-400 flex items-center">
+                            <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
+                            {service.duration || 45} mins
+                          </span>
+                        </div>
+                        <h4 className="text-xs sm:text-sm font-semibold text-stone-100 truncate group-hover:text-white transition-colors mt-1">
+                          {service.name}
+                        </h4>
+                        <p className="text-[11px] text-stone-400 line-clamp-1 mt-0.5 font-light">
+                          {service.description || 'Specialized clinical and aesthetic service.'}
+                        </p>
+                      </div>
+
+                      <div className="text-right shrink-0 flex flex-col items-end justify-center pl-2">
+                        <span className="text-sm font-bold text-white font-mono">
+                          {SALON_CONFIG.currency.symbol}{service.price}
+                        </span>
+                        <Link
+                          to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
+                          className="text-[11px] font-medium text-rose-300 hover:text-rose-200 mt-1 inline-flex items-center group-hover:underline"
+                        >
+                          Book
+                          <ArrowRight className="w-3 h-3 ml-0.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-2 border-t border-stone-800 flex items-center justify-between text-xs text-stone-400">
+                  <span>Custom consultations available</span>
+                  <Link to="/services" className="text-rose-300 font-semibold hover:underline flex items-center">
+                    Full Price List
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
                   </Link>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* =========================================================================
-          SECTION 3: ABOUT SALON
-          ========================================================================= */}
-      <section className="bg-stone-100 py-16 border-y border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
-            <div className="lg:col-span-6 space-y-5">
-              <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-                About Enrich Beauty Parlour & Cosmetic Clinic
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                A Premier Salon & Cosmetic Clinic in Sikar, Rajasthan
-              </h2>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Founded with a commitment to technical precision and uncompromised client care, Enrich Beauty Parlour & Cosmetic Clinic provides tailored hair transformations, clinical skincare, and luxury nail services in a serene, private setting.
-              </p>
-              <p className="text-sm text-stone-600 leading-relaxed">
-                Our team consists exclusively of state-certified beauticians and master cosmetologists who participate in continuous advanced training to deliver modern, healthy, and enduring results.
-              </p>
-              
-              <div className="pt-2">
-                <Link
-                  to="/about"
-                  className="btn-secondary text-xs"
-                >
-                  Read Our Philosophy & Standards
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-2">
-                  <p className="text-2xl font-serif font-bold text-stone-900">100%</p>
-                  <p className="text-xs font-semibold text-stone-800">Licensed Cosmetologists</p>
-                  <p className="text-[11px] text-stone-500">Every team member holds full state certification and liability coverage.</p>
-                </div>
-                <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-2">
-                  <p className="text-2xl font-serif font-bold text-stone-900">Clean</p>
-                  <p className="text-xs font-semibold text-stone-800">Hospital Sanitation</p>
-                  <p className="text-[11px] text-stone-500">Medical-grade dry heat autoclaving and individual sealed tool kits.</p>
-                </div>
-                <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-2">
-                  <p className="text-2xl font-serif font-bold text-stone-900">Direct</p>
-                  <p className="text-xs font-semibold text-stone-800">Online Reservations</p>
-                  <p className="text-[11px] text-stone-500">Real-time schedule availability with instant email confirmation.</p>
-                </div>
-                <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-2">
-                  <p className="text-2xl font-serif font-bold text-stone-900">Sikar, RJ</p>
-                  <p className="text-xs font-semibold text-stone-800">Prime Location</p>
-                  <p className="text-[11px] text-stone-500">Steps away from Penn Station and Herald Square subway lines.</p>
-                </div>
-              </div>
             </div>
 
           </div>
@@ -380,520 +401,669 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          SECTION 4: WHY CHOOSE US
+          SECTION 2: POPULAR SERVICES & CATEGORY FILTERING
+          ========================================================================= */}
+      <section id="services" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-10">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200 pb-5">
+          <div className="space-y-1">
+            <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+              Treatment Catalog
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+              Popular Services & Treatments
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-500 max-w-xl">
+              Filter by category to explore precision haircuts, bridal makeovers, clinical skincare, and luxury nail styling.
+            </p>
+          </div>
+
+          <Link
+            to="/services"
+            className="inline-flex items-center text-xs sm:text-sm font-semibold text-rose-700 hover:text-rose-800 shrink-0 group"
+          >
+            Explore All Services
+            <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+          {serviceCategories.map((cat) => {
+            const isActive = activeServiceCategory.toLowerCase() === cat.toLowerCase();
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveServiceCategory(cat)}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                  isActive
+                    ? 'bg-stone-900 text-white shadow-xs'
+                    : 'bg-white text-stone-600 hover:text-stone-900 hover:bg-stone-100 border border-stone-200'
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Service Cards Grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((n) => (
+              <CardSkeleton key={n} />
+            ))}
+          </div>
+        ) : filteredServices.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredServices.map((service, idx) => {
+              const imageUrl =
+                service.images?.[0]?.url ||
+                service.image ||
+                'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
+
+              return (
+                <div
+                  key={service._id || idx}
+                  className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Card Image */}
+                    <div className="relative h-48 w-full overflow-hidden bg-stone-100">
+                      <img
+                        src={imageUrl}
+                        alt={service.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
+                        }}
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/95 text-stone-900 shadow-xs border border-stone-200/60 backdrop-blur-xs">
+                          {service.category || 'Specialty'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-5 space-y-2">
+                      <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
+                        <span className="flex items-center">
+                          <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
+                          {service.duration || 45} mins
+                        </span>
+                        <span className="text-sm font-bold text-stone-900 font-mono">
+                          {SALON_CONFIG.currency.symbol}{service.price}
+                        </span>
+                      </div>
+
+                      <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-1">
+                        {service.name}
+                      </h3>
+
+                      <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed font-light">
+                        {service.description || 'High-standard aesthetic service performed by certified beauticians.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card Footer CTA */}
+                  <div className="p-5 pt-0 border-t border-stone-100 mt-2">
+                    <Link
+                      to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
+                      className="w-full py-2.5 px-3 rounded-lg bg-stone-50 hover:bg-stone-900 text-stone-800 hover:text-white border border-stone-200 hover:border-stone-900 text-xs font-semibold flex items-center justify-center transition-colors shadow-2xs mt-3 cursor-pointer"
+                    >
+                      <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                      Book Appointment
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl border border-stone-200 p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
+            <p className="text-xs text-stone-500">
+              No services currently available under the `{activeServiceCategory}` category.
+            </p>
+            <button
+              onClick={() => setActiveServiceCategory('All')}
+              className="text-xs font-semibold text-rose-700 underline cursor-pointer"
+            >
+              View all services
+            </button>
+          </div>
+        )}
+      </section>
+      {/* =========================================================================
+          SECTION 3: ABOUT SECTION & STATS
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+        <div className="bg-white rounded-2xl border border-stone-200 p-8 sm:p-12 shadow-xs space-y-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            {/* Story Text */}
+            <div className="lg:col-span-7 space-y-4">
+              <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+                About Enrich
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
+                Where Salon Artistry Meets Clinical Precision
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+                Founded with a vision to combine modern hair styling, bespoke bridal aesthetics, and evidence-backed skincare, Enrich Beauty Parlour & Cosmetic Clinic delivers tailored transformations under strict hygiene and sterilization protocols.
+              </p>
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+                Every consultation begins with a personal assessment by our certified beauticians and cosmetic specialists to ensure your wellness, skin tone, and hair integrity are prioritized above all.
+              </p>
+            </div>
+
+            {/* Configurable Stats Grid */}
+            <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+              {SALON_CONFIG.aboutStats.map((stat, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-xl bg-stone-50 border border-stone-200/80 text-center space-y-1 shadow-2xs hover:bg-stone-100/60 transition-colors"
+                >
+                  <span className="block text-2xl sm:text-3xl font-serif font-bold text-stone-900 font-mono">
+                    {stat.value}
+                  </span>
+                  <span className="text-xs font-semibold text-stone-800 block">
+                    {stat.label}
+                  </span>
+                  <span className="text-[11px] text-stone-400 block">
+                    {stat.description}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 4: WHY CHOOSE US / STANDARDS
+          ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="text-center space-y-2 max-w-2xl mx-auto">
           <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-            Our Standards
+            Quality Assured
           </span>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
             Professional Care & Clean Standards
           </h2>
-          <p className="text-stone-600 text-xs sm:text-sm">
-            We focus on individualized client care, clean ingredients, and sanitary salon practices.
+          <p className="text-xs sm:text-sm text-stone-500">
+            We hold ourselves to rigorous clinical hygiene, professional grade ingredients, and continuous specialist education.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {salonPillars.map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-white p-6 rounded-xl border border-stone-200 shadow-xs flex flex-col justify-between space-y-4"
-            >
-              <div className="space-y-3">
-                <div className="w-10 h-10 rounded-lg bg-stone-100 text-stone-800 flex items-center justify-center border border-stone-200">
-                  <item.icon className="w-5 h-5 text-rose-700" />
+          {SALON_CONFIG.standards.map((standard, idx) => {
+            const IconComponent = ICON_MAP[standard.icon] || ShieldCheck;
+            return (
+              <div
+                key={idx}
+                className="bg-white rounded-xl border border-stone-200 p-6 space-y-3 shadow-xs hover:border-stone-300 transition-colors flex flex-col justify-between"
+              >
+                <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-100">
+                  <IconComponent className="w-5 h-5" />
                 </div>
-                <h3 className="text-base font-bold text-stone-900 font-serif">{item.title}</h3>
-                <p className="text-xs text-stone-600 leading-relaxed">{item.description}</p>
+                <div>
+                  <h3 className="font-serif font-bold text-sm text-stone-900">
+                    {standard.title}
+                  </h3>
+                  <p className="text-xs text-stone-500 leading-relaxed mt-1 font-light">
+                    {standard.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* =========================================================================
-          SECTION 5: FEATURED STAFF / STYLISTS
+          SECTION 5: STYLISTS / SPECIALISTS
           ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-4 border-b border-stone-200">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200 pb-5">
           <div className="space-y-1">
             <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-              Stylist Roster
+              Specialists & Artists
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-              Meet Our Specialists
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+              Meet Our Certified Team
             </h2>
-            <p className="text-xs text-stone-500">
-              Experienced practitioners dedicated to individualized consultations and exceptional service.
+            <p className="text-xs sm:text-sm text-stone-500 max-w-xl">
+              Book your session directly with our master colorists, skincare clinicians, and makeup artists.
             </p>
           </div>
+
           <Link
             to="/staff"
-            className="mt-3 md:mt-0 inline-flex items-center text-rose-700 font-semibold text-xs hover:text-rose-800"
+            className="inline-flex items-center text-xs sm:text-sm font-semibold text-rose-700 hover:text-rose-800 shrink-0 group"
           >
-            View All Stylists <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            All Staff Profiles
+            <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {(featuredStaff.length > 0 ? featuredStaff : [
-            {
-              _id: 'st1',
-              name: 'Elena Rostova',
-              specialization: ['Master Colorist', 'Balayage'],
-              experience: 12,
-              profileImage: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=600&q=80',
-              bio: 'Specializing in dimensional blondes, color corrections, and precision French haircuts.'
-            },
-            {
-              _id: 'st2',
-              name: 'Marcus Vance',
-              specialization: ['Precision Cutting', 'Hair Restructuring'],
-              experience: 9,
-              profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
-              bio: 'Expert in tailored razor cutting, texture management, and keratin smoothing treatments.'
-            },
-            {
-              _id: 'st3',
-              name: 'Aria Chen',
-              specialization: ['Clinical Esthetician', 'Hydrafacial'],
-              experience: 8,
-              profileImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
-              bio: 'Certified clinical esthetician focused on dermal barrier repair and custom anti-aging therapies.'
-            },
-            {
-              _id: 'st4',
-              name: 'Sophia Laurent',
-              specialization: ['Bridal Artistry', 'Editorial Makeup'],
-              experience: 10,
-              profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
-              bio: 'Master bridal stylist creating radiant, camera-ready bridal looks and modern occasion hair.'
-            }
-          ]).map((staff) => (
-            <div
-              key={staff._id}
-              className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between"
-            >
-              <div>
-                <div className="h-56 bg-stone-100 overflow-hidden relative">
-                  <img
-                    src={staff.profileImage || 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=600&q=80'}
-                    alt={staff.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                  {staff.experience > 0 && (
-                    <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-stone-900/80 text-white text-[10px] font-medium tracking-wide">
-                      {staff.experience} Years Exp
-                    </div>
-                  )}
-                </div>
+          {staffList.map((staff, idx) => {
+            const avatarUrl =
+              staff.avatar?.url ||
+              staff.avatar ||
+              staff.image ||
+              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
 
-                <div className="p-4 space-y-2">
-                  <h3 className="font-serif font-bold text-base text-stone-900">{staff.name}</h3>
-                  <div className="flex flex-wrap gap-1">
-                    {(staff.specialization || []).map((spec, i) => (
-                      <span key={i} className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[10px] font-medium">
-                        {spec}
+            const specializations = staff.specialization
+              ? (Array.isArray(staff.specialization) ? staff.specialization : [staff.specialization])
+              : (staff.specializations || ['Master Stylist']);
+
+            return (
+              <div
+                key={staff._id || idx}
+                className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
+              >
+                <div>
+                  {/* Photo */}
+                  <div className="relative h-64 w-full overflow-hidden bg-stone-100">
+                    <img
+                      src={avatarUrl}
+                      alt={staff.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-stone-900/30" />
+                    <div className="absolute top-3 left-3">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/95 text-stone-900 border border-stone-200/60 backdrop-blur-xs">
+                        {specializations[0]}
                       </span>
-                    ))}
+                    </div>
                   </div>
-                  <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed pt-1">
-                    {staff.bio}
-                  </p>
+
+                  {/* Details */}
+                  <div className="p-5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors">
+                        {staff.name}
+                      </h3>
+                      {staff.experience && (
+                        <span className="text-[11px] font-mono text-stone-500 bg-stone-100 px-2 py-0.5 rounded">
+                          {staff.experience} yrs
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed font-light">
+                      {staff.bio || 'Dedicated beauty specialist committed to providing bespoke parlour services.'}
+                    </p>
+
+                    {/* Skill tags */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {specializations.slice(0, 3).map((tag, tIdx) => (
+                        <span
+                          key={tIdx}
+                          className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-600 font-medium"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="p-4 pt-0">
-                <Link
-                  to={`/book?staffId=${staff._id}`}
-                  className="w-full btn-secondary text-xs py-2"
-                >
-                  Book with {staff.name.split(' ')[0]}
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 6: ACTIVE OFFERS & PACKAGES
-          ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-4 border-b border-stone-200">
-          <div className="space-y-1">
-            <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-              Special Packages
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-              Current Offers & Promotions
-            </h2>
-            <p className="text-xs text-stone-500">
-              Valid promotional discounts applied automatically at checkout or reception.
-            </p>
-          </div>
-          <Link
-            to="/offers"
-            className="mt-3 md:mt-0 inline-flex items-center text-rose-700 font-semibold text-xs hover:text-rose-800"
-          >
-            View All Offers <ArrowRight className="w-3.5 h-3.5 ml-1" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(activeOffers.length > 0 ? activeOffers : [
-            {
-              _id: 'off1',
-              title: 'Welcome Client Package',
-              discount: '15% OFF',
-              code: 'WELCOME15',
-              description: 'Enjoy 15% off your first hair styling, cut, or facial appointment at Enrich Beauty Parlour & Cosmetic Clinic.',
-              validUntil: 'Ongoing'
-            },
-            {
-              _id: 'off2',
-              title: 'Seasonal Skin Revitalization',
-              discount: '20% OFF',
-              code: 'GLOW20',
-              description: 'Save 20% on any signature clinical facial when booked with an add-on eye treatment.',
-              validUntil: 'Limited Seasonal'
-            },
-            {
-              _id: 'off3',
-              title: 'Bridal Trial Consultation',
-              discount: '$25 CREDIT',
-              code: 'BRIDAL25',
-              description: 'Receive a $25 credit toward wedding day bookings following your bridal preview session.',
-              validUntil: 'Active'
-            }
-          ]).map((offer) => (
-            <div
-              key={offer._id}
-              className="bg-white rounded-xl border border-stone-200 p-6 flex flex-col justify-between space-y-4 shadow-xs"
-            >
-              <div className="space-y-3">
-                <div className="flex justify-between items-start">
-                  <span className="px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 font-bold text-xs">
-                    {offer.discount}
-                  </span>
-                  <span className="text-[11px] text-stone-400 font-medium">
-                    {offer.validUntil || 'Active'}
-                  </span>
-                </div>
-                <h3 className="font-serif font-bold text-base text-stone-900">{offer.title}</h3>
-                <p className="text-xs text-stone-600 leading-relaxed">{offer.description}</p>
-              </div>
-
-              <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="font-mono text-xs font-bold px-2 py-1 bg-stone-100 rounded-md text-stone-800">
-                    {offer.code}
-                  </span>
-                  <button
-                    onClick={() => handleCopyCode(offer.code)}
-                    className="p-1 rounded text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
-                    title="Copy Promo Code"
+                {/* Book with Stylist CTA */}
+                <div className="p-5 pt-0 border-t border-stone-100 mt-2">
+                  <Link
+                    to={`/book?staff=${staff._id || encodeURIComponent(staff.name)}`}
+                    className="w-full py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center justify-center transition-colors shadow-xs mt-3 cursor-pointer"
                   >
-                    {copiedCode === offer.code ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
+                    <Calendar className="w-3.5 h-3.5 mr-1.5 text-rose-400" />
+                    Book with {staff.name.split(' ')[0]}
+                  </Link>
                 </div>
-
-                <Link
-                  to={`/book?offerCode=${offer.code}`}
-                  className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-medium transition-colors"
-                >
-                  Apply & Book
-                </Link>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* =========================================================================
-          SECTION 7: GALLERY (PHOTOS, VIDEOS, BEFORE & AFTER)
+          SECTION 6: OFFERS & PROMOTIONS
           ========================================================================= */}
-      <section className="bg-stone-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-stone-800 pb-6">
-            <div className="space-y-1.5">
-              <span className="text-xs font-bold tracking-widest text-rose-400 uppercase">
-                Studio Portfolio
+      {offers.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200 pb-5">
+            <div className="space-y-1">
+              <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+                Special Pricing
               </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold">
-                Our Work & Studio Environment
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+                Offers & Seasonal Packages
               </h2>
-              <p className="text-stone-400 text-xs sm:text-sm">
-                Authentic photographs and video previews of our salon interior and styling sessions.
+              <p className="text-xs sm:text-sm text-stone-500 max-w-xl">
+                Take advantage of limited-time discounts on beauty treatments and comprehensive bridal packages.
               </p>
             </div>
 
-            {/* Showcase Toggle Tabs */}
-            <div className="flex items-center gap-1.5 p-1 rounded-lg bg-stone-800 border border-stone-700">
-              <button
-                onClick={() => setActiveGalleryTab('photos')}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer ${
-                  activeGalleryTab === 'photos'
-                    ? 'bg-rose-700 text-white'
-                    : 'text-stone-300 hover:text-white'
-                }`}
-              >
-                <Camera className="w-3.5 h-3.5" />
-                <span>Photos</span>
-              </button>
-              <button
-                onClick={() => setActiveGalleryTab('videos')}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer ${
-                  activeGalleryTab === 'videos'
-                    ? 'bg-rose-700 text-white'
-                    : 'text-stone-300 hover:text-white'
-                }`}
-              >
-                <Video className="w-3.5 h-3.5" />
-                <span>Video Tours</span>
-              </button>
-              <button
-                onClick={() => setActiveGalleryTab('transformations')}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold flex items-center space-x-1.5 transition-colors cursor-pointer ${
-                  activeGalleryTab === 'transformations'
-                    ? 'bg-rose-700 text-white'
-                    : 'text-stone-300 hover:text-white'
-                }`}
-              >
-                <span>Before & After</span>
-              </button>
-            </div>
-          </div>
-
-          {/* TAB 1: Featured Photos */}
-          {activeGalleryTab === 'photos' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {(featuredMedia.photos.length > 0 ? featuredMedia.photos : [
-                {
-                  _id: 'sample1',
-                  title: 'Styling Floor & Reception',
-                  category: 'Salon Interior',
-                  url: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80',
-                  description: 'Spacious styling stations and consultation desk'
-                },
-                {
-                  _id: 'sample2',
-                  title: 'Dimensional Caramel Color',
-                  category: 'Hair',
-                  url: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&q=80',
-                  description: 'Balayage highlight application'
-                },
-                {
-                  _id: 'sample3',
-                  title: 'Bridal Hair & Makeup',
-                  category: 'Bridal',
-                  url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80',
-                  description: 'Bridal updo and dewy makeup'
-                },
-                {
-                  _id: 'sample4',
-                  title: 'Gel Nail Art Service',
-                  category: 'Nails',
-                  url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80',
-                  description: 'Hand-painted fine line gel art'
-                }
-              ]).map((photo, idx) => (
-                <div
-                  key={photo._id}
-                  onClick={() => setLightboxIndex(idx)}
-                  className="group relative h-72 rounded-xl overflow-hidden bg-stone-800 border border-stone-700 shadow-sm cursor-pointer flex flex-col justify-end"
-                >
-                  <img
-                    src={photo.thumbnail || photo.url}
-                    alt={photo.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-stone-950/60" />
-                  
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-0.5 rounded-md bg-stone-900/80 text-stone-200 text-[10px] font-semibold uppercase tracking-wider">
-                      {photo.category}
-                    </span>
-                  </div>
-
-                  <div className="relative p-4 space-y-1 z-10">
-                    <h3 className="font-serif font-bold text-sm leading-snug line-clamp-1">{photo.title}</h3>
-                    <p className="text-[11px] text-stone-300 line-clamp-1">{photo.description}</p>
-                    <div className="flex items-center text-[10px] text-rose-400 font-semibold pt-0.5">
-                      <Eye className="w-3 h-3 mr-1" />
-                      <span>Click to view</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* TAB 2: Featured Videos */}
-          {activeGalleryTab === 'videos' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(featuredMedia.videos.length > 0 ? featuredMedia.videos : [
-                {
-                  _id: 'vid1',
-                  title: 'Salon Walkthrough',
-                  category: 'Salon Tour',
-                  url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-                  thumbnail: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=800&q=80',
-                  duration: 60,
-                  description: 'Walkthrough of treatment suites and styling areas'
-                },
-                {
-                  _id: 'vid2',
-                  title: 'Hair Styling Demo',
-                  category: 'Hair Transformation',
-                  url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-                  thumbnail: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
-                  duration: 45,
-                  description: 'Layered cut and blowout technique demonstrated by stylist'
-                },
-                {
-                  _id: 'vid3',
-                  title: 'Nail Application Process',
-                  category: 'Nail Art',
-                  url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-                  thumbnail: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80',
-                  duration: 35,
-                  description: 'Builder gel overlay and finishing process'
-                }
-              ]).map((vid) => (
-                <div
-                  key={vid._id}
-                  onClick={() => setActiveVideo(vid)}
-                  className="group relative h-72 rounded-xl overflow-hidden bg-stone-800 border border-stone-700 shadow-sm cursor-pointer flex flex-col justify-end"
-                >
-                  <img
-                    src={vid.thumbnail || vid.url}
-                    alt={vid.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-stone-950/60" />
-
-                  {/* Play Trigger */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-lg bg-white/90 group-hover:bg-rose-700 text-stone-900 group-hover:text-white flex items-center justify-center shadow-md transition-colors">
-                      <Play className="w-5 h-5 fill-current ml-0.5" />
-                    </div>
-                  </div>
-
-                  {vid.duration > 0 && (
-                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-stone-900/80 text-white text-[10px] font-mono flex items-center">
-                      <Clock className="w-3 h-3 mr-1 text-rose-400" />
-                      {vid.duration}s
-                    </div>
-                  )}
-
-                  <div className="relative p-4 space-y-1 z-10">
-                    <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block">
-                      {vid.category}
-                    </span>
-                    <h3 className="font-serif font-bold text-sm leading-snug line-clamp-1">{vid.title}</h3>
-                    <p className="text-[11px] text-stone-300 line-clamp-2">{vid.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* TAB 3: Before & After */}
-          {activeGalleryTab === 'transformations' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <BeforeAfterSlider
-                beforeImage="https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=1200&q=80"
-                afterImage="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1200&q=80"
-                title="Color Correction: Warm Tone to Cool Beige"
-                category="Hair Color"
-              />
-              <BeforeAfterSlider
-                beforeImage="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1200&q=80"
-                afterImage="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80"
-                title="Bridal Makeup: Natural Evening Finish"
-                category="Bridal Makeup"
-              />
-            </div>
-          )}
-
-          {/* Action Button */}
-          <div className="text-center pt-2">
             <Link
-              to="/gallery"
-              className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-white font-semibold text-xs transition-colors border border-stone-700 cursor-pointer"
+              to="/offers"
+              className="inline-flex items-center text-xs sm:text-sm font-semibold text-rose-700 hover:text-rose-800 shrink-0 group"
             >
-              View Full Gallery
-              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+              View All Promotions
+              <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {offers.map((offer, idx) => {
+              const isCopied = copiedCode === offer.code;
+              return (
+                <div
+                  key={offer._id || idx}
+                  className="bg-white rounded-xl border border-rose-200/80 p-6 space-y-4 shadow-xs relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow group"
+                >
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-bl-full -z-0 pointer-events-none transition-transform group-hover:scale-110" />
+                  
+                  <div className="relative z-10 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200">
+                        {offer.discountType === 'percentage'
+                          ? `${offer.discountValue || 15}% OFF`
+                          : `${SALON_CONFIG.currency.symbol}${offer.discountValue || 200} OFF`}
+                      </span>
+                      {offer.validUntil && (
+                        <span className="text-[11px] text-stone-400 font-mono flex items-center">
+                          <Clock className="w-3 h-3 mr-1 text-stone-400" />
+                          Exp: {new Date(offer.validUntil).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-rose-700 transition-colors">
+                      {offer.title}
+                    </h3>
+                    <p className="text-xs text-stone-500 leading-relaxed font-light">
+                      {offer.description}
+                    </p>
+                  </div>
+
+                  {/* Promo Code & Action */}
+                  <div className="relative z-10 pt-3 border-t border-stone-100 space-y-3">
+                    <div className="flex items-center justify-between bg-stone-50 p-2 rounded-lg border border-stone-200">
+                      <code className="text-xs font-mono font-bold text-stone-800 tracking-wider pl-1">
+                        {offer.code}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyCode(offer.code)}
+                        className="inline-flex items-center px-2 py-1 rounded text-[11px] font-semibold text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+                      >
+                        {isCopied ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                            <span className="text-emerald-700">Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5 mr-1" />
+                            Copy
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    <Link
+                      to={`/book?promoCode=${offer.code}`}
+                      className="w-full py-2.5 px-3 rounded-lg bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                    >
+                      <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                      Book with Promo Code
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+      {/* =========================================================================
+          SECTION 7: GALLERY / PARLOUR MEDIA (DARK STUDIO PORTFOLIO)
+          ========================================================================= */}
+      <section className="bg-stone-950 text-white py-16 sm:py-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-8">
+          
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-800 pb-5">
+            <div className="space-y-1">
+              <span className="text-xs font-bold tracking-widest text-rose-400 uppercase">
+                Studio Portfolio
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
+                Lookbook & Parlour Media
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-400 max-w-xl">
+                Browse our real salon transformations, high-definition photo gallery, video tutorials, and bridal looks.
+              </p>
+            </div>
+
+            <Link
+              to="/gallery"
+              className="inline-flex items-center text-xs sm:text-sm font-semibold text-rose-400 hover:text-rose-300 shrink-0 group"
+            >
+              Full Media Archive
+              <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+
+          {/* Gallery Category Filter Tabs */}
+          <div className="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+            {galleryCategories.map((cat) => {
+              const isActive = activeGalleryCategory.toLowerCase() === cat.toLowerCase();
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveGalleryCategory(cat)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                    isActive
+                      ? 'bg-rose-700 text-white shadow-xs'
+                      : 'bg-stone-900 text-stone-300 hover:text-white hover:bg-stone-800 border border-stone-800'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Media Items Grid */}
+          {filteredGalleryMedia.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredGalleryMedia.slice(0, 6).map((item, idx) => {
+                const isVideo = item.mediaType === 'video' || !!item.videoUrl;
+                const isTransformation = item.mediaType === 'before_after' || (!!item.beforeImage && !!item.afterImage);
+                const thumbUrl = item.thumbnail || item.url || item.afterImage || item.beforeImage || 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80';
+
+                // Transformation component handling
+                if (isTransformation) {
+                  return (
+                    <div key={item._id || idx} className="rounded-xl overflow-hidden">
+                      <BeforeAfterSlider
+                        beforeImage={item.beforeImage}
+                        afterImage={item.afterImage}
+                        title={item.title || 'Salon Transformation'}
+                        category={item.category || 'Before & After'}
+                      />
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={item._id || idx}
+                    className="group relative bg-stone-900 rounded-xl border border-stone-800 overflow-hidden shadow-md flex flex-col justify-between cursor-pointer"
+                    onClick={() => {
+                      if (isVideo) {
+                        setActiveVideo(item);
+                      } else {
+                        const photoIndex = lightboxMediaList.findIndex(m => m._id === item._id || m.url === item.url);
+                        setLightboxIndex(photoIndex >= 0 ? photoIndex : 0);
+                      }
+                    }}
+                  >
+                    {/* Media Thumbnail Container */}
+                    <div className="relative h-60 w-full overflow-hidden bg-stone-950">
+                      <img
+                        src={thumbUrl}
+                        alt={item.title || 'Parlour gallery photo'}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/20 to-transparent" />
+
+                      {/* Top Badges */}
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                        <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-stone-900/80 border border-stone-700 text-stone-200 backdrop-blur-xs">
+                          {item.category || 'Studio'}
+                        </span>
+                        
+                        {isVideo && (
+                          <span className="px-2 py-1 rounded-md text-[10px] font-semibold bg-rose-950/80 border border-rose-800 text-rose-300 flex items-center shadow-xs">
+                            <Video className="w-3 h-3 mr-1 text-rose-400" />
+                            {item.duration ? `${item.duration}s` : 'Video'}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Play or View Overlay Icon */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        {isVideo ? (
+                          <div className="w-12 h-12 rounded-full bg-rose-700/90 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg border border-rose-500/40">
+                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-stone-900/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all border border-stone-700 shadow-md">
+                            <Eye className="w-4 h-4" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Text Details */}
+                    <div className="p-4 bg-stone-900 border-t border-stone-800">
+                      <h4 className="font-serif font-bold text-sm text-stone-100 group-hover:text-rose-300 transition-colors truncate">
+                        {item.title || 'Studio Showcase'}
+                      </h4>
+                      {item.description && (
+                        <p className="text-xs text-stone-400 line-clamp-1 mt-1 font-light">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-stone-900 rounded-xl border border-stone-800 p-8 text-center max-w-md mx-auto space-y-3">
+              <Camera className="w-8 h-8 text-stone-600 mx-auto" />
+              <p className="text-xs text-stone-400">
+                No gallery media found for `{activeGalleryCategory}`.
+              </p>
+              <button
+                onClick={() => setActiveGalleryCategory('All')}
+                className="text-xs font-semibold text-rose-400 underline cursor-pointer"
+              >
+                Show all media
+              </button>
+            </div>
+          )}
 
         </div>
       </section>
 
-      {/* =======================================================================
-          SECTION 7.5: SOCIAL MEDIA INTEGRATION ("Follow Our Journey")
-          ======================================================================= */}
-      <SocialMediaSection />
-
       {/* =========================================================================
-          SECTION 8: CUSTOMER REVIEWS
+          SECTION 8: SOCIAL MEDIA SECTION (Follow Our Journey)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-4 border-b border-stone-200">
-          <div className="space-y-1">
-            <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-              Verified Feedback
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-              Client Experiences
-            </h2>
-            <p className="text-xs text-stone-500">
-              Reviews submitted by clients following completed salon appointments.
-            </p>
-          </div>
+        <SocialMediaSection />
+      </section>
+
+      {/* =========================================================================
+          SECTION 9: CLIENT REVIEWS & EXPERIENCES
+          ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="text-center space-y-2 max-w-2xl mx-auto">
+          <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+            Testimonials
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
+            Client Experiences & Reviews
+          </h2>
+          <p className="text-xs sm:text-sm text-stone-500">
+            Read verified feedback from clients who have experienced our cosmetic clinic and beauty treatments.
+          </p>
         </div>
 
-        {approvedReviews.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {approvedReviews.map((rev) => (
-              <div
-                key={rev._id}
-                className="bg-white rounded-xl border border-stone-200 p-6 flex flex-col justify-between space-y-4 shadow-xs"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: rev.rating || 5 }).map((_, idx) => (
-                        <Star key={idx} className="w-4 h-4 fill-amber-400 text-amber-400" />
+        {reviews.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reviews.slice(0, 6).map((item, idx) => {
+              const rating = item.rating || 5;
+              return (
+                <div
+                  key={item._id || idx}
+                  className="bg-white rounded-xl border border-stone-200 p-6 space-y-4 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow"
+                >
+                  <div className="space-y-3">
+                    {/* Star Rating */}
+                    <div className="flex items-center space-x-1 text-amber-500">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < rating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'
+                          }`}
+                        />
                       ))}
                     </div>
-                    <span className="text-[11px] text-stone-400">
-                      {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : 'Verified Client'}
-                    </span>
+
+                    {/* Review Comment */}
+                    <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic font-serif font-normal">
+                      "{item.review || item.comment || 'Exceptional service and warm hospitality!'}"
+                    </p>
                   </div>
 
-                  <p className="text-xs text-stone-700 leading-relaxed italic">
-                    "{rev.comment}"
-                  </p>
+                  {/* Customer Info */}
+                  <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="font-bold text-stone-900 block">
+                        {item.customerName || item.author || (item.user?.name) || 'Verified Client'}
+                      </span>
+                      {item.service && (
+                        <span className="text-[11px] text-stone-400">
+                          {typeof item.service === 'object' ? item.service.name : item.service}
+                        </span>
+                      )}
+                    </div>
+                    {item.isVerified !== false && (
+                      <span className="inline-flex items-center text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Verified
+                      </span>
+                    )}
+                  </div>
                 </div>
-
-                <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-stone-900">
-                    {rev.customer?.name || 'Verified Client'}
-                  </span>
-                  <span className="text-stone-500">
-                    {rev.service?.name || 'Salon Treatment'}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-stone-200 p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
@@ -902,17 +1072,17 @@ export default function Home() {
             </div>
             <h3 className="font-serif font-bold text-base text-stone-900">Verified Client Reviews</h3>
             <p className="text-xs text-stone-500 leading-relaxed">
-              Reviews are collected directly from clients who have completed an appointment. After your visit, you will receive an invitation to leave feedback.
+              Reviews are collected directly from clients who have completed an appointment.
             </p>
           </div>
         )}
       </section>
 
       {/* =========================================================================
-          SECTION 9: LOCATION & VISIT INFORMATION
+          SECTION 10: LOCATION & VISIT INFORMATION
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs">
+        <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs">
           <div className="grid grid-cols-1 lg:grid-cols-12">
             
             {/* Location Text Information */}
@@ -922,10 +1092,10 @@ export default function Home() {
                   Studio Location
                 </span>
                 <h2 className="text-2xl font-serif font-bold text-stone-900">
-                  Visiting Enrich Beauty Parlour & Cosmetic Clinic
+                  Visiting {SALON_CONFIG.business.name}
                 </h2>
                 <p className="text-xs text-stone-500">
-                  Conveniently situated in the Midtown Fashion District.
+                  Conveniently situated in Sikar with dedicated parking and elevator access.
                 </p>
               </div>
 
@@ -934,17 +1104,16 @@ export default function Home() {
                   <MapPin className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-stone-900">Address</p>
-                    <p className="text-stone-600 mt-0.5">Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 10018</p>
+                    <p className="text-stone-600 mt-0.5">{SALON_CONFIG.contact.address}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3">
                   <Train className="w-4 h-4 text-stone-700 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-stone-900">Transit & Subway Access</p>
+                    <p className="font-semibold text-stone-900">Transit & Access</p>
                     <p className="text-stone-600 mt-0.5">
-                      Penn Station (1, 2, 3, A, C, E, LIRR, NJ Transit) - 2 blocks away.<br />
-                      Herald Square (N, Q, R, W, B, D, F, M) - 3 blocks away.
+                      {SALON_CONFIG.location.transitHint}
                     </p>
                   </div>
                 </div>
@@ -954,7 +1123,7 @@ export default function Home() {
                   <div>
                     <p className="font-semibold text-stone-900">Parking</p>
                     <p className="text-stone-600 mt-0.5">
-                      Covered garage parking available at 452 7th Ave and 224 W 35th St.
+                      {SALON_CONFIG.location.parkingHint}
                     </p>
                   </div>
                 </div>
@@ -963,40 +1132,55 @@ export default function Home() {
                   <Phone className="w-4 h-4 text-stone-700 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-stone-900">Concierge Desk</p>
-                    <p className="text-stone-600 mt-0.5">096679 00313 | enrichparlour1212@gmail.com</p>
+                    <p className="text-stone-600 mt-0.5">
+                      {SALON_CONFIG.contact.phone} | {SALON_CONFIG.contact.email}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2">
-                <Link
-                  to="/contact"
-                  className="btn-secondary text-xs"
+              <div className="pt-2 flex flex-wrap gap-3">
+                <a
+                  href={SALON_CONFIG.location.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer"
                 >
-                  <Compass className="w-3.5 h-3.5 mr-1.5" />
-                  Get Detailed Directions
-                </Link>
+                  <Compass className="w-3.5 h-3.5 mr-1.5 text-rose-400" />
+                  Get Directions
+                </a>
+
+                <a
+                  href={SALON_CONFIG.contact.phoneTel}
+                  className="inline-flex items-center px-4 py-2.5 bg-white hover:bg-stone-50 text-stone-800 border border-stone-300 rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+                >
+                  <Phone className="w-3.5 h-3.5 mr-1.5 text-stone-600" />
+                  Call Concierge
+                </a>
               </div>
             </div>
 
-            {/* Map Placeholder Graphic */}
-            <div className="lg:col-span-6 bg-stone-100 border-t lg:border-t-0 lg:border-l border-stone-200 p-8 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-12 h-12 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-rose-700 shadow-xs">
-                <MapPin className="w-6 h-6" />
+            {/* Map Card */}
+            <div className="lg:col-span-6 bg-stone-100 border-t lg:border-t-0 lg:border-l border-stone-200 p-8 flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-stone-200 flex items-center justify-center text-rose-700 shadow-sm">
+                <MapPin className="w-7 h-7" />
               </div>
               <div>
-                <h4 className="font-serif font-bold text-stone-900 text-sm">Shubham Apartment, Chandpol, Sikar</h4>
-                <p className="text-xs text-stone-500 mt-1 max-w-xs">
-                  Between 34th & 35th Streets, Suite 1800. Elevator access to 18th floor.
+                <h4 className="font-serif font-bold text-stone-900 text-base">
+                  {SALON_CONFIG.contact.addressShort}
+                </h4>
+                <p className="text-xs text-stone-500 mt-1.5 max-w-xs leading-relaxed">
+                  {SALON_CONFIG.contact.directionsHint}
                 </p>
               </div>
               <a
-                href="https://maps.google.com/?q=450+7th+Ave+New+York+NY"
+                href={SALON_CONFIG.location.googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-white hover:bg-stone-50 text-stone-800 border border-stone-300 rounded-lg text-xs font-semibold transition-colors shadow-xs"
+                className="px-5 py-2.5 bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 rounded-lg text-xs font-semibold transition-colors shadow-xs inline-flex items-center"
               >
                 Open in Google Maps
+                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </a>
             </div>
 
@@ -1005,10 +1189,10 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          SECTION 10: CALL TO ACTION (CTA)
+          SECTION 11: APPOINTMENT CTA
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-xl bg-stone-900 text-white p-8 sm:p-12 text-center space-y-5 border border-stone-800">
+        <div className="rounded-2xl bg-stone-900 text-white p-8 sm:p-12 text-center space-y-5 border border-stone-800 shadow-xl">
           <span className="text-xs font-bold tracking-widest text-rose-400 uppercase block">
             Appointments & Consultations
           </span>
@@ -1022,14 +1206,14 @@ export default function Home() {
           <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3.5">
             <Link
               to="/book"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-xs sm:text-sm font-semibold text-stone-900 bg-white hover:bg-stone-100 transition-colors shadow-sm cursor-pointer"
+              className="inline-flex items-center justify-center px-6 py-3.5 rounded-lg text-xs sm:text-sm font-semibold text-stone-900 bg-white hover:bg-stone-100 transition-colors shadow-sm cursor-pointer active:scale-98"
             >
               <Calendar className="w-4 h-4 mr-2 text-rose-700" />
               Book Appointment Online
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-xs sm:text-sm font-semibold text-white bg-stone-800 hover:bg-stone-700 border border-stone-700 transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center px-6 py-3.5 rounded-lg text-xs sm:text-sm font-semibold text-white bg-stone-800 hover:bg-stone-700 border border-stone-700 transition-colors cursor-pointer active:scale-98"
             >
               <Phone className="w-4 h-4 mr-2 text-stone-300" />
               Contact Concierge
@@ -1039,11 +1223,11 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          MODALS & LIGHTBOX
+          MODALS & LIGHTBOX (PhotoLightbox & VideoModal)
           ========================================================================= */}
       {lightboxIndex !== null && (
         <PhotoLightbox
-          mediaList={featuredMedia.photos.length > 0 ? featuredMedia.photos : []}
+          mediaList={lightboxMediaList.length > 0 ? lightboxMediaList : []}
           currentIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
           onNavigate={(newIdx) => setLightboxIndex(newIdx)}
