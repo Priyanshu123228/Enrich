@@ -18,6 +18,14 @@ export const inquiryService = {
   },
 
   /**
+   * Admin: Backward compatibility alias
+   */
+  getAllInquiries: async (params = {}) => {
+    const res = await api.get('/inquiries', { params });
+    return res?.data || res;
+  },
+
+  /**
    * Admin: Get single inquiry by ID
    */
   getInquiryById: async (id) => {
