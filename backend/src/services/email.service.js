@@ -22,8 +22,13 @@ const sendViaRestApi = async ({ to, subject, html, text }) => {
 
   // 1. Resend REST API (HTTPS Port 443)
   if (resendApiKey) {
-    const from = process.env.EMAIL_FROM_ADDRESS || process.env.RESEND_FROM || 'onboarding@resend.dev';
+    let from = (process.env.RESEND_FROM || process.env.EMAIL_FROM_ADDRESS || '').trim();
+    // Resend requires a verified domain; if unverified or public (@gmail/@yahoo/@outlook), fallback to onboarding@resend.dev
+    if (!from || from.includes('@gmail.') || from.includes('@yahoo.') || from.includes('@hotmail.') || from.includes('@outlook.')) {
+      from = 'onboarding@resend.dev';
+    }
     const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -38,6 +43,7 @@ const sendViaRestApi = async ({ to, subject, html, text }) => {
         text
       })
     });
+
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.message || 'Resend API error: ' + JSON.stringify(data));
@@ -47,7 +53,7 @@ const sendViaRestApi = async ({ to, subject, html, text }) => {
 
   // 2. Brevo / Sendinblue REST API (HTTPS Port 443)
   if (brevoApiKey) {
-    const fromEmail = process.env.EMAIL_USER || process.env.BREVO_SENDER_EMAIL || 'enrichparlour1212@gmail.com';
+    const fromEmail = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || 'enrichparlour1212@gmail.com';
     const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
