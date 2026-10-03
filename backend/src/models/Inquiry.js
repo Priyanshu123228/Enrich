@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 
 const inquirySchema = new mongoose.Schema(
   {
@@ -19,6 +19,16 @@ const inquirySchema = new mongoose.Schema(
       ]
     },
     phone: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    service: {
+      type: String,
+      trim: true,
+      default: 'General Inquiry'
+    },
+    subject: {
       type: String,
       trim: true,
       default: ''

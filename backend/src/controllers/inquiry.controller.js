@@ -1,4 +1,4 @@
-import { Inquiry } from '../models/Inquiry.js';
+﻿import { Inquiry } from '../models/Inquiry.js';
 import { ApiError } from '../utils/apiError.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -10,7 +10,7 @@ import { emailService } from '../services/email.service.js';
  * @access  Public
  */
 export const createInquiry = asyncHandler(async (req, res) => {
-  const { name, email, phone, message } = req.body;
+  const { name, email, phone, service, subject, message } = req.body;
 
   // 1. Validation
   if (!name || !name.trim()) {
@@ -35,6 +35,8 @@ export const createInquiry = asyncHandler(async (req, res) => {
     name: name.trim(),
     email: email.trim().toLowerCase(),
     phone: phone ? phone.trim() : '',
+    service: service ? service.trim() : (subject ? subject.trim() : 'General Inquiry'),
+    subject: subject ? subject.trim() : (service ? service.trim() : 'General Inquiry'),
     message: message.trim(),
     status: 'unread',
     ipAddress: req.ip || req.headers['x-forwarded-for'] || '',
@@ -72,7 +74,7 @@ export const getInquiries = asyncHandler(async (req, res) => {
     status,
     search,
     page = 1,
-    limit = 20,
+    limit = 50,
     sortBy = 'createdAt',
     sortOrder = 'desc'
   } = req.query;
@@ -91,6 +93,8 @@ export const getInquiries = asyncHandler(async (req, res) => {
       { name: { $regex: s, $options: 'i' } },
       { email: { $regex: s, $options: 'i' } },
       { phone: { $regex: s, $options: 'i' } },
+      { service: { $regex: s, $options: 'i' } },
+      { subject: { $regex: s, $options: 'i' } },
       { message: { $regex: s, $options: 'i' } }
     ];
   }
