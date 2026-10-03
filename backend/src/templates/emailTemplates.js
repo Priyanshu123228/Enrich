@@ -161,7 +161,7 @@ const renderBaseLayout = ({ title, preheader, content }) => `
             ${content}
           </div>
           <div class="footer">
-            <p style="margin: 0 0 6px 0;"><strong>LuxeParlour Salon & Spa Sanctuary</strong></p>
+            <p style="margin: 0 0 6px 0;"><strong>Enrich Salon</strong></p>
             <p style="margin: 0 0 6px 0;">450 Fashion Avenue, Suite 1800, New York, NY 10018</p>
             <p style="margin: 0;">Need assistance? Contact our concierge at <a href="mailto:concierge@luxeparlour.com">concierge@luxeparlour.com</a></p>
           </div>
@@ -178,7 +178,7 @@ const renderBaseLayout = ({ title, preheader, content }) => `
  */
 export const getWelcomeEmailHtml = ({ name, email }) => {
   const content = `
-    <h2 class="heading">Welcome to the Luxe Sanctuary, ${name ? String(name).split(' ')[0] : 'Valued Client'}</h2>
+    <h2 class="heading">Welcome to the Luxe Sanctuary, ${name.split(' ')[0]}</h2>
     <p>We are delighted to welcome you to <strong>LuxeParlour</strong>. Your account has been registered successfully.</p>
     <p>As a valued client, you now have exclusive access to:</p>
     <ul style="color: #57534e; padding-left: 20px; margin: 16px 0;">
@@ -201,7 +201,7 @@ export const getWelcomeEmailHtml = ({ name, email }) => {
     </div>
 
     <div class="btn-container">
-      <a href="http://localhost:5173/book" class="btn">Book Your First Treatment</a>
+      <a href="https://enrich-mu.vercel.app/book" class="btn">Book Your First Treatment</a>
     </div>
   `;
 
@@ -272,7 +272,7 @@ export const getAppointmentConfirmationHtml = ({
     </p>
 
     <div class="btn-container">
-      <a href="http://localhost:5173/dashboard?tab=upcoming" class="btn">View Appointment in Portal</a>
+      <a href="https://enrich-mu.vercel.app/dashboard?tab=upcoming" class="btn">View Appointment in Portal</a>
     </div>
   `;
 
@@ -326,7 +326,7 @@ export const getAppointmentCancellationHtml = ({
     <p>If you would like to reschedule or book an alternate treatment, we would love to welcome you at another time that suits you.</p>
 
     <div class="btn-container">
-      <a href="http://localhost:5173/book" class="btn">Reschedule or Book Again</a>
+      <a href="https://enrich-mu.vercel.app/book" class="btn">Reschedule or Book Again</a>
     </div>
   `;
 
@@ -383,7 +383,7 @@ export const getAppointmentRescheduledHtml = ({
     </div>
 
     <div class="btn-container">
-      <a href="http://localhost:5173/dashboard?tab=upcoming" class="btn">View Updated Booking</a>
+      <a href="https://enrich-mu.vercel.app/dashboard?tab=upcoming" class="btn">View Updated Booking</a>
     </div>
   `;
 
@@ -448,7 +448,7 @@ export const getPaymentReceiptHtml = ({
     </div>
 
     <div class="btn-container">
-      <a href="http://localhost:5173/dashboard" class="btn">View Customer Invoices</a>
+      <a href="https://enrich-mu.vercel.app/dashboard" class="btn">View Customer Invoices</a>
     </div>
   `;
 
@@ -508,7 +508,7 @@ export const getAppointmentReminderHtml = ({
     </p>
 
     <div class="btn-container">
-      <a href="http://localhost:5173/dashboard?tab=upcoming" class="btn">View Appointment Details</a>
+      <a href="https://enrich-mu.vercel.app/dashboard?tab=upcoming" class="btn">View Appointment Details</a>
     </div>
   `;
 
@@ -535,7 +535,7 @@ export const getVerificationOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =>
         </span>
       </div>
       <p style="font-size: 12px; color: #78716c; margin-top: 12px; font-weight: 500;">
-        â±ï¸ This code will expire in <strong>${expiryMinutes} minutes</strong>.
+        ⏱️ This code will expire in <strong>${expiryMinutes} minutes</strong>.
       </p>
     </div>
 
@@ -569,7 +569,7 @@ export const getPasswordResetOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =
         </span>
       </div>
       <p style="font-size: 12px; color: #78716c; margin-top: 12px; font-weight: 500;">
-        â±ï¸ This password reset code will expire in <strong>${expiryMinutes} minutes</strong>.
+        ⏱️ This password reset code will expire in <strong>${expiryMinutes} minutes</strong>.
       </p>
     </div>
 
