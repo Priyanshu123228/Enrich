@@ -12,7 +12,7 @@ const BASE_URL = 'http://localhost:5000/api/v1';
 
 async function runAuthTests() {
   console.log('\n======================================================');
-  console.log('   LUXEPARLOUR COMPLETE AUTH TEST SUITE');
+  console.log('   ENRICH BEAUTY PARLOUR & COSMETIC CLINIC COMPLETE AUTH TEST SUITE');
   console.log('======================================================\n');
 
   await mongoose.connect(process.env.MONGODB_URI);

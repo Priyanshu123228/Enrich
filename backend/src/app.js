@@ -104,7 +104,7 @@ app.use('/api/v1', routes);
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Welcome to LuxeParlour Salon & Spa API',
+    message: 'Welcome to Enrich Beauty Parlour & Cosmetic Clinic API',
     version: '1.0.0',
     environment: process.env.NODE_ENV || 'development',
     healthCheck: '/api/v1/health'

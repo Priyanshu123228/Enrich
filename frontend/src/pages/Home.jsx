@@ -96,7 +96,7 @@ export default function Home() {
     {
       icon: ShieldCheck,
       title: 'Licensed Professionals',
-      description: 'Every treatment is performed by New York state-licensed cosmetologists and certified skin therapists.'
+      description: 'Every treatment is performed by certified cosmetologists and certified skin therapists.'
     },
     {
       icon: CheckCircle,
@@ -159,15 +159,15 @@ export default function Home() {
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-stone-200 text-stone-800 text-xs font-semibold uppercase tracking-wider">
                 <MapPin className="w-3.5 h-3.5 text-rose-700" />
-                <span>450 Fashion Avenue, Suite 1800, New York, NY</span>
+                <span>Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan</span>
               </div>
               
               <div className="space-y-2">
                 <span className="text-xs font-bold tracking-widest text-rose-700 uppercase block">
-                  LuxeParlour Salon & Spa
+                  Enrich Beauty Parlour & Cosmetic Clinic
                 </span>
                 <h1 className="text-3xl sm:text-5xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-                  Hair, Makeup, Skin & Nail Services in Manhattan, NY
+                  Hair, Makeup, Skin & Cosmetic Clinic Services in Sikar, Rajasthan
                 </h1>
               </div>
 
@@ -200,8 +200,8 @@ export default function Home() {
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-stone-200">
                   <p className="text-[11px] font-semibold uppercase text-stone-500 tracking-wider">Direct Concierge</p>
-                  <p className="text-sm font-medium text-stone-900 mt-0.5">(212) 555-0198</p>
-                  <p className="text-xs text-stone-500">concierge@luxeparlour.com</p>
+                  <p className="text-sm font-medium text-stone-900 mt-0.5">096679 00313</p>
+                  <p className="text-xs text-stone-500">enrichparlour1212@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -326,13 +326,13 @@ export default function Home() {
             
             <div className="lg:col-span-6 space-y-5">
               <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-                About LuxeParlour
+                About Enrich Beauty Parlour & Cosmetic Clinic
               </span>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                A Refined Salon Environment in Midtown Manhattan
+                A Premier Salon & Cosmetic Clinic in Sikar, Rajasthan
               </h2>
               <p className="text-sm text-stone-600 leading-relaxed">
-                Founded with a commitment to technical precision and uncompromised client care, LuxeParlour provides tailored hair transformations, clinical skincare, and luxury nail services in a serene, private setting.
+                Founded with a commitment to technical precision and uncompromised client care, Enrich Beauty Parlour & Cosmetic Clinic provides tailored hair transformations, clinical skincare, and luxury nail services in a serene, private setting.
               </p>
               <p className="text-sm text-stone-600 leading-relaxed">
                 Our team consists exclusively of state-certified beauticians and master cosmetologists who participate in continuous advanced training to deliver modern, healthy, and enduring results.
@@ -367,7 +367,7 @@ export default function Home() {
                   <p className="text-[11px] text-stone-500">Real-time schedule availability with instant email confirmation.</p>
                 </div>
                 <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-2">
-                  <p className="text-2xl font-serif font-bold text-stone-900">Manhattan</p>
+                  <p className="text-2xl font-serif font-bold text-stone-900">Sikar, RJ</p>
                   <p className="text-xs font-semibold text-stone-800">Prime Location</p>
                   <p className="text-[11px] text-stone-500">Steps away from Penn Station and Herald Square subway lines.</p>
                 </div>
@@ -549,7 +549,7 @@ export default function Home() {
               title: 'Welcome Client Package',
               discount: '15% OFF',
               code: 'WELCOME15',
-              description: 'Enjoy 15% off your first hair styling, cut, or facial appointment at LuxeParlour.',
+              description: 'Enjoy 15% off your first hair styling, cut, or facial appointment at Enrich Beauty Parlour & Cosmetic Clinic.',
               validUntil: 'Ongoing'
             },
             {
@@ -916,7 +916,7 @@ export default function Home() {
                   Studio Location
                 </span>
                 <h2 className="text-2xl font-serif font-bold text-stone-900">
-                  Visiting LuxeParlour Manhattan
+                  Visiting Enrich Beauty Parlour & Cosmetic Clinic
                 </h2>
                 <p className="text-xs text-stone-500">
                   Conveniently situated in the Midtown Fashion District.
@@ -928,7 +928,7 @@ export default function Home() {
                   <MapPin className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-stone-900">Address</p>
-                    <p className="text-stone-600 mt-0.5">450 Fashion Avenue, Suite 1800, New York, NY 10018</p>
+                    <p className="text-stone-600 mt-0.5">Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 10018</p>
                   </div>
                 </div>
 
@@ -957,7 +957,7 @@ export default function Home() {
                   <Phone className="w-4 h-4 text-stone-700 shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-stone-900">Concierge Desk</p>
-                    <p className="text-stone-600 mt-0.5">(212) 555-0198 | concierge@luxeparlour.com</p>
+                    <p className="text-stone-600 mt-0.5">096679 00313 | enrichparlour1212@gmail.com</p>
                   </div>
                 </div>
               </div>
@@ -979,7 +979,7 @@ export default function Home() {
                 <MapPin className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-serif font-bold text-stone-900 text-sm">Fashion Avenue Midtown Manhattan</h4>
+                <h4 className="font-serif font-bold text-stone-900 text-sm">Shubham Apartment, Chandpol, Sikar</h4>
                 <p className="text-xs text-stone-500 mt-1 max-w-xs">
                   Between 34th & 35th Streets, Suite 1800. Elevator access to 18th floor.
                 </p>

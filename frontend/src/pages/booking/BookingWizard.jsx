@@ -246,7 +246,7 @@ export default function BookingWizard() {
         key: orderRes.data.keyId,
         amount: orderRes.data.amount,
         currency: orderRes.data.currency,
-        name: 'LuxeParlour Salon & Spa',
+        name: 'Enrich Beauty Parlour & Cosmetic Clinic',
         description: `${selectedService.name} Booking Reservation`,
         image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=200&q=80',
         order_id: orderRes.data.orderId,

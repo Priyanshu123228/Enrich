@@ -68,7 +68,7 @@ export default function StaffList() {
           Our Salon Stylists
         </h1>
         <p className="text-stone-600 text-sm sm:text-base">
-          Our team of licensed cosmetologists and aestheticians provide personalized treatments at our Manhattan location.
+          Our team of licensed cosmetologists and aestheticians provide personalized treatments at our Sikar, Rajasthan location.
         </p>
       </div>
 

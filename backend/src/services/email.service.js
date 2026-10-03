@@ -11,7 +11,7 @@ import {
 } from '../templates/emailTemplates.js';
 
 const getEmailFrom = () =>
-  process.env.EMAIL_FROM || '"Enrich Salon" <enrichparlour1212@gmail.com>';
+  process.env.EMAIL_FROM || '"Enrich Beauty Parlour & Cosmetic Clinic" <enrichparlour1212@gmail.com>';
 
 let cachedBrevoSender = null;
 
@@ -21,7 +21,7 @@ let cachedBrevoSender = null;
 const getBrevoSender = async (apiKey) => {
   if (process.env.BREVO_SENDER_EMAIL) {
     return {
-      name: process.env.EMAIL_FROM_NAME || 'Enrich Salon',
+      name: process.env.EMAIL_FROM_NAME || 'Enrich Beauty Parlour & Cosmetic Clinic',
       email: process.env.BREVO_SENDER_EMAIL.trim()
     };
   }
@@ -44,7 +44,7 @@ const getBrevoSender = async (apiKey) => {
       const activeSender = data.senders?.find((s) => s.active) || data.senders?.[0];
       if (activeSender?.email) {
         cachedBrevoSender = {
-          name: process.env.EMAIL_FROM_NAME || activeSender.name || 'Enrich Salon',
+          name: process.env.EMAIL_FROM_NAME || activeSender.name || 'Enrich Beauty Parlour & Cosmetic Clinic',
           email: activeSender.email
         };
         console.log(`📡 [Brevo Auto-Detect] Using verified sender from Brevo account: ${cachedBrevoSender.email}`);
@@ -56,7 +56,7 @@ const getBrevoSender = async (apiKey) => {
   }
 
   return {
-    name: process.env.EMAIL_FROM_NAME || 'Enrich Salon',
+    name: process.env.EMAIL_FROM_NAME || 'Enrich Beauty Parlour & Cosmetic Clinic',
     email: process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER || 'enrichparlour1212@gmail.com'
   };
 };
@@ -118,7 +118,7 @@ const sendViaRestApi = async ({ to, subject, html, text }) => {
       if (!from || from.includes('@gmail.') || from.includes('@yahoo.') || from.includes('@hotmail.') || from.includes('@outlook.')) {
         from = 'onboarding@resend.dev';
       }
-      const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
+      const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Beauty Parlour & Cosmetic Clinic';
 
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -232,7 +232,7 @@ export const emailService = {
 
     return await sendMailSafe({
       to: user.email,
-      subject: 'Verify Your Parlour Account - Enrich Salon',
+      subject: 'Verify Your Account - Enrich Beauty Parlour & Cosmetic Clinic',
       html,
       emailType: 'Email Verification OTP'
     });
@@ -261,7 +261,7 @@ export const emailService = {
 
     return await sendMailSafe({
       to: user.email,
-      subject: 'Reset Your Parlour Password - Enrich Salon',
+      subject: 'Reset Your Password - Enrich Beauty Parlour & Cosmetic Clinic',
       html,
       emailType: 'Password Reset OTP'
     });
@@ -287,7 +287,7 @@ export const emailService = {
 
     return await sendMailSafe({
       to: user.email,
-      subject: 'Welcome to LuxeParlour Salon & Spa',
+      subject: 'Welcome to Enrich Beauty Parlour & Cosmetic Clinic',
       html,
       emailType: 'Account Welcome Email'
     });

@@ -151,7 +151,7 @@ export default function CustomerDashboard() {
         key: orderRes.data.keyId,
         amount: orderRes.data.amount,
         currency: orderRes.data.currency,
-        name: 'LuxeParlour Salon & Spa',
+        name: 'Enrich Beauty Parlour & Cosmetic Clinic',
         description: `Settling Payment for ${app.service?.name} (#${app.bookingId})`,
         image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=200&q=80',
         order_id: orderRes.data.orderId,

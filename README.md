@@ -1,6 +1,6 @@
-# LuxeParlour — Premium Salon & Spa Booking Platform
+# Enrich Beauty Parlour & Cosmetic Clinic — Web & Booking Platform
 
-A full-stack, production-grade salon management and appointment reservation platform for **LuxeParlour Salon & Spa**, located at **450 Fashion Avenue, Suite 1800, New York, NY 10018**.
+A full-stack, production-grade salon management and appointment reservation platform for **Enrich Beauty Parlour & Cosmetic Clinic**, located at **Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001 (near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road)**.
 
 Built with the **MERN Stack** (MongoDB, Express, React, Node.js), Tailwind CSS v4, Lucide Icons, Razorpay Payment Gateway, Cloudinary Media Storage, and Nodemailer Transactional Notifications.
 
@@ -24,7 +24,7 @@ Built with the **MERN Stack** (MongoDB, Express, React, Node.js), Tailwind CSS v
 
 ## Project Overview
 
-LuxeParlour is designed to operate as a genuine, high-end beauty boutique and medical spa website. Unlike generic CRUD applications, the platform features:
+Enrich Beauty Parlour & Cosmetic Clinic is designed to operate as a genuine, high-end beauty boutique and medical spa website. Unlike generic CRUD applications, the platform features:
 - **Real-Time Booking Engine**: Calculates available time slots dynamically based on stylist working days, salon operating hours, treatment duration, and existing appointments.
 - **Concurrency & Race Condition Protection**: Database-level partial unique compound indexes guarantee that no two clients can book the same stylist at the same time.
 - **Dual Payment Flows**: Complete Razorpay online checkout with server-side HMAC-SHA256 signature verification, plus in-person payment tracking at reception.
@@ -139,7 +139,7 @@ The user interface follows strict, professional aesthetic constraints to look li
 1. **No Purple or Rainbow Gradients**: Uses warm stone (`#f5f5f4`), charcoal (`#1c1917`), and subtle rose accents (`#be123c`).
 2. **No Fake Reviews or Metrics**: No artificial counters (e.g. *"10,000+ Happy Customers"* or fake 5-star ratings). Ratings only render when verified customer reviews exist in the database.
 3. **No Pill-Shaped Buttons Everywhere**: All primary and secondary buttons (`[Book Appointment]`, `[View Services]`, `[Contact Us]`) use rectangular geometry with moderate corner radiuses (`rounded-lg` / `rounded-md`).
-4. **No Vague AI Hero Copy**: Hero clearly states: *"LuxeParlour Salon & Spa - Hair, Makeup, Skin & Nail Services in Manhattan, NY"*.
+4. **No Vague AI Hero Copy**: Hero clearly states: *"Enrich Beauty Parlour & Cosmetic Clinic - Hair, Makeup, Skin & Nail Services in Sikar, Rajasthan"*.
 5. **No Emojis**: Informational SVG icons via *Lucide-React* replace all informal emojis across the UI, email subjects, and table headers.
 6. **No Em-Dashes**: All copy uses standard hyphens (`-`), colons, or commas for time ranges (`9:00 AM - 8:00 PM`) and descriptions.
 7. **Clean Spacing & Strong Typography**: Editorial serif headings (`Playfair Display`) paired with crisp body typography (`Plus Jakarta Sans`).
@@ -571,9 +571,9 @@ cd luxeparlour-booking
    SMTP_HOST=smtp.gmail.com
    SMTP_PORT=587
    SMTP_SECURE=false
-   SMTP_USER=concierge@luxeparlour.com
+   SMTP_USER=enrichparlour1212@gmail.com
    SMTP_PASS=app_password_here
-   EMAIL_FROM="LuxeParlour Salon & Spa" <concierge@luxeparlour.com>
+   EMAIL_FROM="Enrich Beauty Parlour & Cosmetic Clinic" <enrichparlour1212@gmail.com>
    ```
 
 5. Launch the backend development server:
@@ -643,9 +643,9 @@ To populate the database with default salon services, master stylists, and galle
 | `SMTP_HOST` | Nodemailer SMTP server host | `smtp.gmail.com` |
 | `SMTP_PORT` | SMTP port (587 for TLS, 465 for SSL) | `587` |
 | `SMTP_SECURE` | Set `true` if port is 465 | `false` |
-| `SMTP_USER` | SMTP username / email address | `concierge@luxeparlour.com` |
+| `SMTP_USER` | SMTP username / email address | `enrichparlour1212@gmail.com` |
 | `SMTP_PASS` | SMTP application password | `your_app_password` |
-| `EMAIL_FROM` | Sender display name and address | `"LuxeParlour Salon & Spa" <concierge@luxeparlour.com>` |
+| `EMAIL_FROM` | Sender display name and address | `"Enrich Beauty Parlour & Cosmetic Clinic" <enrichparlour1212@gmail.com>` |
 
 ### Frontend (`frontend/.env`)
 | Variable | Description | Default |
@@ -713,7 +713,7 @@ curl http://localhost:5000/api/v1/health
 
 ## License & Author
 
-- **Project**: LuxeParlour Salon & Spa
-- **Location**: 450 Fashion Avenue, Suite 1800, New York, NY 10018
-- **Concierge**: `(212) 555-0198` | `concierge@luxeparlour.com`
+- **Project**: Enrich Beauty Parlour & Cosmetic Clinic
+- **Location**: Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001 (near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road)
+- **Concierge**: `096679 00313` | `enrichparlour1212@gmail.com`
 - **License**: Private / Proprietary

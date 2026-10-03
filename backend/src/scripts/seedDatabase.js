@@ -46,7 +46,7 @@ export const seedCompleteDatabase = async () => {
     console.log('1. Seeding Users (Admin, Staff, Customers)...');
     const adminUser = await User.create({
       name: 'Victoria Stone',
-      email: 'admin@luxeparlour.com',
+      email: 'admin@enrichparlour.com',
       phone: '(212) 555-0100',
       password: 'Admin@123456',
       role: 'admin',
@@ -73,7 +73,7 @@ export const seedCompleteDatabase = async () => {
 
     const staffUser1 = await User.create({
       name: 'Elena Rostova',
-      email: 'elena.rostova@luxeparlour.com',
+      email: 'elena.rostova@enrichparlour.com',
       phone: '(212) 555-0155',
       password: 'Staff@123456',
       role: 'staff',
@@ -82,7 +82,7 @@ export const seedCompleteDatabase = async () => {
 
     const staffUser2 = await User.create({
       name: 'Marcus Vance',
-      email: 'marcus.vance@luxeparlour.com',
+      email: 'marcus.vance@enrichparlour.com',
       phone: '(212) 555-0177',
       password: 'Staff@123456',
       role: 'staff',
@@ -284,7 +284,7 @@ export const seedCompleteDatabase = async () => {
     const staffData = [
       {
         name: 'Elena Rostova',
-        email: 'elena.rostova@luxeparlour.com',
+        email: 'elena.rostova@enrichparlour.com',
         phone: '(212) 555-0155',
         bio: 'Master Colorist with 12 years of editorial and salon experience. Specializing in dimensional blondes, bespoke balayage, and corrective color techniques.',
         experience: 12,
@@ -297,7 +297,7 @@ export const seedCompleteDatabase = async () => {
       },
       {
         name: 'Marcus Vance',
-        email: 'marcus.vance@luxeparlour.com',
+        email: 'marcus.vance@enrichparlour.com',
         phone: '(212) 555-0177',
         bio: 'Creative Director specializing in precision dry cutting, tailored French bobs, textured layers, and advanced keratin smoothing treatments.',
         experience: 9,
@@ -310,7 +310,7 @@ export const seedCompleteDatabase = async () => {
       },
       {
         name: 'Aria Chen',
-        email: 'aria.chen@luxeparlour.com',
+        email: 'aria.chen@enrichparlour.com',
         phone: '(212) 555-0188',
         bio: 'Licensed Clinical Esthetician with 8 years of dermatological skincare expertise. Specializes in barrier repair, extractions, and oxygen therapy.',
         experience: 8,
@@ -322,7 +322,7 @@ export const seedCompleteDatabase = async () => {
       },
       {
         name: 'Sophia Laurent',
-        email: 'sophia.laurent@luxeparlour.com',
+        email: 'sophia.laurent@enrichparlour.com',
         phone: '(212) 555-0199',
         bio: 'Senior Bridal Artist with 10 years crafting couture bridal makeup, red-carpet looks, and modern occasion hair designs.',
         experience: 10,
@@ -334,7 +334,7 @@ export const seedCompleteDatabase = async () => {
       },
       {
         name: 'Chloe Bennett',
-        email: 'chloe.bennett@luxeparlour.com',
+        email: 'chloe.bennett@enrichparlour.com',
         phone: '(212) 555-0122',
         bio: 'Nail technician specializing in Russian dry manicures, structured builder gel overlays, and fine-line hand-painted nail artistry.',
         experience: 6,
@@ -366,7 +366,7 @@ export const seedCompleteDatabase = async () => {
         startDate: now,
         endDate: futureDate,
         validTill: futureDate,
-        description: 'Enjoy 15% off your first hair styling, cut, or facial appointment at LuxeParlour.',
+        description: 'Enjoy 15% off your first hair styling, cut, or facial appointment at Enrich Beauty Parlour & Cosmetic Clinic.',
         bannerImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80',
         badgeText: 'New Client Special',
         isAllServices: true
@@ -416,7 +416,7 @@ export const seedCompleteDatabase = async () => {
         type: 'photo',
         category: 'Salon Interior',
         url: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80',
-        description: 'Spacious styling stations and private consultation desk in Midtown Manhattan.',
+        description: 'Spacious styling stations and private consultation desk in Chandpol, Sikar.',
         displayOrder: 1,
         isFeatured: true
       },

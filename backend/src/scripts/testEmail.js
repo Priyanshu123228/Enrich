@@ -25,10 +25,10 @@ async function testEmail() {
 
     console.log('\n2. Attempting to send test OTP email to:', process.env.EMAIL_USER);
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"Enrich Salon" <enrichparlour1212@gmail.com>',
+      from: process.env.EMAIL_FROM || '"Enrich Beauty Parlour & Cosmetic Clinic" <enrichparlour1212@gmail.com>',
       to: process.env.EMAIL_USER || 'enrichparlour1212@gmail.com',
       subject: 'Verify Your Parlour Account (Test)',
-      html: '<h2>Your test OTP is: <strong>482731</strong></h2><p>This is a direct test email from Enrich Salon backend.</p>'
+      html: '<h2>Your test OTP is: <strong>482731</strong></h2><p>This is a direct test email from Enrich Beauty Parlour & Cosmetic Clinic backend.</p>'
     });
     console.log('✅ Email sent successfully!');
     console.log('Message ID:', info.messageId);

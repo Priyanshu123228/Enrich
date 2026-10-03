@@ -27,13 +27,13 @@ export default function About() {
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-          About LuxeParlour
+          About Enrich Beauty Parlour & Cosmetic Clinic
         </span>
         <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900">
-          Professional Salon Services in Midtown Manhattan
+          Premier Salon & Cosmetic Clinic in Sikar, Rajasthan
         </h1>
         <p className="text-stone-600 text-sm sm:text-base">
-          Located at 450 Fashion Avenue, LuxeParlour provides attentive, tailored beauty treatments designed around each client's individual needs.
+          Located at Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001 (near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road), Enrich Beauty Parlour & Cosmetic Clinic provides attentive, tailored beauty treatments and cosmetic skincare designed around each client's individual needs.
         </p>
       </div>
 

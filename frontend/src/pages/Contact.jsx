@@ -48,7 +48,7 @@ export default function Contact() {
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Location</h4>
                 <p className="text-sm text-stone-600">
-                  450 Fashion Avenue, Suite 1800<br />New York, NY 10018
+                  Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001<br /><span className="text-xs text-stone-500">(near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road)</span>
                 </p>
               </div>
             </div>
@@ -59,7 +59,7 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Direct Phone</h4>
-                <p className="text-sm text-stone-600">(212) 555-0198</p>
+                <p className="text-sm text-stone-600">096679 00313</p>
                 <p className="text-xs text-stone-400">Front desk assistance</p>
               </div>
             </div>
@@ -70,7 +70,7 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Email Inquiries</h4>
-                <p className="text-sm text-stone-600">concierge@luxeparlour.com</p>
+                <p className="text-sm text-stone-600">enrichparlour1212@gmail.com</p>
               </div>
             </div>
 
@@ -80,7 +80,7 @@ export default function Contact() {
               </div>
               <div>
                 <h4 className="font-semibold text-stone-900 text-sm">Salon Timings</h4>
-                <p className="text-sm text-stone-600">Mon - Sat: 9:00 AM - 8:00 PM</p>
+                <p className="text-sm text-stone-600">Mon - Sat: 10:00 AM - 8:00 PM</p>
                 <p className="text-sm text-stone-600">Sun: 10:00 AM - 5:00 PM</p>
               </div>
             </div>

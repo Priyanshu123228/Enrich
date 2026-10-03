@@ -59,10 +59,10 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-tight text-stone-900 font-serif">
-                Luxe<span className="text-rose-700">Parlour</span>
+                Enrich<span className="text-rose-700"> Beauty</span>
               </span>
               <span className="text-[11px] uppercase tracking-widest text-stone-500 font-medium -mt-1">
-                Manhattan, NY
+                Parlour & Clinic • Sikar
               </span>
             </div>
           </Link>

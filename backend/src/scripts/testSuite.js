@@ -158,9 +158,9 @@ async function runTestSuite() {
   }
 
   const timestamp = Date.now();
-  const testEmail1 = `test.user1.${timestamp}@luxeparlour.com`;
-  const testEmail2 = `test.user2.${timestamp}@luxeparlour.com`;
-  const testAdminEmail = `test.admin.${timestamp}@luxeparlour.com`;
+  const testEmail1 = `test.user1.${timestamp}@enrichparlour.com`;
+  const testEmail2 = `test.user2.${timestamp}@enrichparlour.com`;
+  const testAdminEmail = `test.admin.${timestamp}@enrichparlour.com`;
   const testPhone1 = `9${Math.floor(100000000 + Math.random() * 900000000)}`;
   const testPhone2 = `9${Math.floor(100000000 + Math.random() * 900000000)}`;
   const adminEmail = testAdminEmail;

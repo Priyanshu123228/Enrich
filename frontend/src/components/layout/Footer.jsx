@@ -14,11 +14,11 @@ export default function Footer() {
                 <Scissors className="w-4 h-4" />
               </div>
               <span className="text-xl font-bold tracking-tight text-white font-serif">
-                Luxe<span className="text-rose-400">Parlour</span>
+                Enrich<span className="text-rose-400"> Beauty Parlour & Cosmetic Clinic</span>
               </span>
             </div>
             <p className="text-sm text-stone-400 leading-relaxed">
-              Professional hair, skincare, bridal styling, and nail services located in Manhattan, New York.
+              Professional beauty care, bridal styling, hair, skin, and cosmetic clinic treatments in Sikar, Rajasthan.
             </p>
             <div className="flex items-center space-x-4 pt-1">
               <span className="text-xs bg-stone-800 text-stone-300 px-3 py-1 rounded-md border border-stone-700">
@@ -96,15 +96,15 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-stone-400">
               <li className="flex items-start">
                 <MapPin className="w-4 h-4 mr-2.5 text-rose-400 shrink-0 mt-0.5" />
-                <span>450 Fashion Avenue, Suite 1800<br />New York, NY 10018</span>
+                <span>Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001 (near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road)</span>
               </li>
               <li className="flex items-center">
                 <Phone className="w-4 h-4 mr-2.5 text-rose-400 shrink-0" />
-                <span>(212) 555-0198</span>
+                <span>096679 00313</span>
               </li>
               <li className="flex items-center">
                 <Mail className="w-4 h-4 mr-2.5 text-rose-400 shrink-0" />
-                <span>concierge@luxeparlour.com</span>
+                <span>enrichparlour1212@gmail.com</span>
               </li>
             </ul>
           </div>
@@ -112,7 +112,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-stone-800 text-center text-xs text-stone-400 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} LuxeParlour LLC. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Enrich Beauty Parlour & Cosmetic Clinic. All rights reserved.</p>
           <p className="text-stone-400">
             Appointments & Walk-ins Welcome
           </p>

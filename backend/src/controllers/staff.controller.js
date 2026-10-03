@@ -220,7 +220,7 @@ export const seedDefaultStaff = asyncHandler(async (req, res) => {
   const sampleStaff = [
     {
       name: 'Elena Vance',
-      email: 'elena@luxeparlour.com',
+      email: 'elena@enrichparlour.com',
       phone: '+1 (555) 234-5678',
       avatar: {
         url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
@@ -236,7 +236,7 @@ export const seedDefaultStaff = asyncHandler(async (req, res) => {
     },
     {
       name: 'Aria Montgomery',
-      email: 'aria@luxeparlour.com',
+      email: 'aria@enrichparlour.com',
       phone: '+1 (555) 345-6789',
       avatar: {
         url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
@@ -252,7 +252,7 @@ export const seedDefaultStaff = asyncHandler(async (req, res) => {
     },
     {
       name: 'Zara Chen',
-      email: 'zara@luxeparlour.com',
+      email: 'zara@enrichparlour.com',
       phone: '+1 (555) 456-7890',
       avatar: {
         url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=600&q=80',
@@ -268,7 +268,7 @@ export const seedDefaultStaff = asyncHandler(async (req, res) => {
     },
     {
       name: 'Mia Laurent',
-      email: 'mia@luxeparlour.com',
+      email: 'mia@enrichparlour.com',
       phone: '+1 (555) 567-8901',
       avatar: {
         url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',

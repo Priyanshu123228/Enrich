@@ -111,7 +111,7 @@ export default function Gallery() {
           Photos & Videos
         </h1>
         <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-          Photographs and video tours of our Manhattan studio, treatment rooms, and styling services.
+          Photographs and video tours of our Sikar studio, treatment rooms, and styling services.
         </p>
       </div>
 

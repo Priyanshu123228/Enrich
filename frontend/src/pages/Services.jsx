@@ -100,7 +100,7 @@ export default function Services() {
           Salon Services
         </h1>
         <p className="text-stone-600 text-sm sm:text-base">
-          Browse our hair, skin, makeup, nail, and bridal services. Each service is performed by our licensed team in Manhattan.
+          Browse our hair, skin, makeup, nail, and bridal services. Each service is performed by our licensed team in Sikar, Rajasthan.
         </p>
       </div>
 

@@ -69,7 +69,7 @@ export default function Offers() {
           Current Salon Offers
         </h1>
         <p className="text-stone-600 text-xs sm:text-sm leading-relaxed">
-          Explore current discounts, multi-treatment service packages, and seasonal specials for appointments at our Manhattan studio.
+          Explore current discounts, multi-treatment service packages, and seasonal specials for appointments at our Sikar, Rajasthan studio.
         </p>
       </div>
 

@@ -462,7 +462,7 @@ export const seedDefaultMedia = asyncHandler(async (req, res) => {
     },
     {
       title: 'Sunlit Glass Facade & Salon Entrance',
-      description: 'LuxeParlour exterior view situated in the heart of the luxury shopping district.',
+      description: 'Enrich Beauty Parlour & Cosmetic Clinic situated at Shubham Apartment, SH 8A, Chandpol, Sikar.',
       type: 'photo',
       category: 'Salon Exterior',
       url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1600&q=80',
@@ -533,7 +533,7 @@ export const seedDefaultMedia = asyncHandler(async (req, res) => {
     },
     // 3. Videos
     {
-      title: 'LuxeParlour 360 Virtual Tour',
+      title: 'Enrich Beauty Parlour & Cosmetic Clinic Virtual Tour',
       description: 'Take a step inside our tranquil beauty oasis and experience the serene ambiance.',
       type: 'video',
       category: 'Salon Tour',

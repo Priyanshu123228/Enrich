@@ -17,7 +17,7 @@ const manageAdmin = async () => {
   const printHelp = () => {
     console.log(`
 ======================================================
-  LuxeParlour Admin Account Management Utility
+  Enrich Beauty Parlour & Cosmetic Clinic Admin Account Management Utility
 ======================================================
 
 1. List all current Admins:
@@ -25,11 +25,11 @@ const manageAdmin = async () => {
 
 2. Remove / Delete an Admin account:
    node src/scripts/createAdmin.js --remove <email>
-   Example: node src/scripts/createAdmin.js --remove admin@luxeparlour.com
+   Example: node src/scripts/createAdmin.js --remove admin@enrichparlour.com
 
 3. Demote an Admin back to regular Customer:
    node src/scripts/createAdmin.js --demote <email>
-   Example: node src/scripts/createAdmin.js --demote admin@luxeparlour.com
+   Example: node src/scripts/createAdmin.js --demote admin@enrichparlour.com
 
 4. Promote an existing user to Admin:
    node src/scripts/createAdmin.js <user_email>
@@ -67,7 +67,7 @@ const manageAdmin = async () => {
       const targetEmail = args[1]?.toLowerCase()?.trim();
       if (!targetEmail) {
         console.error('❌ Please specify the email of the admin to remove.');
-        console.log('Example: node src/scripts/createAdmin.js --remove admin@luxeparlour.com');
+        console.log('Example: node src/scripts/createAdmin.js --remove admin@enrichparlour.com');
         process.exit(1);
       }
 
@@ -85,7 +85,7 @@ const manageAdmin = async () => {
       const targetEmail = args[1]?.toLowerCase()?.trim();
       if (!targetEmail) {
         console.error('❌ Please specify the email of the admin to demote.');
-        console.log('Example: node src/scripts/createAdmin.js --demote admin@luxeparlour.com');
+        console.log('Example: node src/scripts/createAdmin.js --demote admin@enrichparlour.com');
         process.exit(1);
       }
 

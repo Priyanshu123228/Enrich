@@ -56,7 +56,7 @@ export default function AdminLayout() {
           <div className="w-8 h-8 rounded-lg bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
             A
           </div>
-          <span className="font-serif font-bold text-stone-900 text-sm">LuxeParlour Admin</span>
+          <span className="font-serif font-bold text-stone-900 text-sm">Enrich Admin Portal</span>
         </div>
 
         <button
@@ -82,7 +82,7 @@ export default function AdminLayout() {
                 <Scissors className="w-4 h-4" />
               </div>
               <span className="text-lg font-bold font-serif text-stone-900 tracking-tight">
-                LuxeParlour
+                Enrich Beauty Parlour
               </span>
             </Link>
             <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded bg-stone-100 text-stone-700 text-[10px] font-bold uppercase tracking-wider mt-1 border border-stone-200">

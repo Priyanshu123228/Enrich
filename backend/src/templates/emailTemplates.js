@@ -154,16 +154,16 @@ const renderBaseLayout = ({ title, preheader, content }) => `
       <td align="center">
         <div class="container">
           <div class="header">
-            <h1 class="brand-title">Luxe<span style="color: #e11d48;">Parlour</span></h1>
-            <div class="brand-subtitle">Haute Coiffure & Luxury Spa</div>
+            <h1 class="brand-title">Enrich<span style="color: #e11d48;"> Beauty Parlour & Cosmetic Clinic</span></h1>
+            <div class="brand-subtitle">Beauty Parlour & Cosmetic Clinic • Sikar, Rajasthan</div>
           </div>
           <div class="body-content">
             ${content}
           </div>
           <div class="footer">
-            <p style="margin: 0 0 6px 0;"><strong>Enrich Salon</strong></p>
-            <p style="margin: 0 0 6px 0;">450 Fashion Avenue, Suite 1800, New York, NY 10018</p>
-            <p style="margin: 0;">Need assistance? Contact our concierge at <a href="mailto:concierge@luxeparlour.com">concierge@luxeparlour.com</a></p>
+            <p style="margin: 0 0 6px 0;"><strong>Enrich Beauty Parlour & Cosmetic Clinic</strong></p>
+            <p style="margin: 0 0 6px 0;">Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001 (near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road)</p>
+            <p style="margin: 0;">Need assistance? Contact us at <a href="mailto:enrichparlour1212@gmail.com">enrichparlour1212@gmail.com</a></p>
           </div>
         </div>
       </td>
@@ -498,7 +498,7 @@ export const getAppointmentReminderHtml = ({
         </tr>
         <tr>
           <td style="padding: 6px 0; color: #78716c; font-size: 13px;">Location:</td>
-          <td style="padding: 6px 0; font-weight: 600; text-align: right;">450 Fashion Avenue, Ste 1800, NY</td>
+          <td style="padding: 6px 0; font-weight: 600; text-align: right;">Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001</td>
         </tr>
       </table>
     </div>
@@ -541,7 +541,7 @@ export const getVerificationOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =>
 
     <div class="info-card" style="border-left: 4px solid #3b82f6; background-color: #f8fafc;">
       <p style="margin: 0; font-size: 12px; color: #475569; line-height: 1.5;">
-        <strong>Security Notice:</strong> Never share this code with anyone. Our concierge staff will never ask for your verification code. If you did not create an account with Enrich Salon, you can safely disregard this email.
+        <strong>Security Notice:</strong> Never share this code with anyone. Our staff will never ask for your verification code. If you did not create an account with Enrich Beauty Parlour & Cosmetic Clinic, you can safely disregard this email.
       </p>
     </div>
   `;
