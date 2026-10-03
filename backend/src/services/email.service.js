@@ -11,19 +11,97 @@ import {
 } from '../templates/emailTemplates.js';
 
 const getEmailFrom = () =>
-  process.env.EMAIL_FROM || '"Enrich Salon" <enrichparlour1212@gmail.com>';
+  process.env.EMAIL_FROM || ' Enrich Salon <enrichparlour1212@gmail.com>';
 
 /**
- * Helper to dispatch email with safe non-blocking error handling
+ * Dispatch email via HTTPS REST API (Resend / Brevo) to bypass Render Free tier SMTP port blocks (25/465/587)
  */
-const sendMailSafe = async ({ to, subject, html, emailType }) => {
+const sendViaRestApi = async ({ to, subject, html, text }) => {
+  const resendApiKey = (process.env.RESEND_API_KEY || '').trim();
+  const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+
+  // 1. Resend REST API (HTTPS Port 443)
+  if (resendApiKey) {
+    const from = process.env.EMAIL_FROM_ADDRESS || process.env.RESEND_FROM || 'onboarding@resend.dev';
+    const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': Bearer ,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: ${fromName} <>,
+        to: [to],
+        subject,
+        html,
+        text
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Resend API error');
+    }
+    return { success: true, messageId: data.id, provider: 'Resend HTTPS API' };
+  }
+
+  // 2. Brevo / Sendinblue REST API (HTTPS Port 443)
+  if (brevoApiKey) {
+    const fromEmail = process.env.EMAIL_USER || process.env.BREVO_SENDER_EMAIL || 'enrichparlour1212@gmail.com';
+    const fromName = process.env.EMAIL_FROM_NAME || 'Enrich Salon';
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': brevoApiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: { name: fromName, email: fromEmail },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+        textContent: text
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Brevo API error');
+    }
+    return { success: true, messageId: data.messageId, provider: 'Brevo HTTPS API' };
+  }
+
+  return null;
+};
+
+/**
+ * Universal safe email dispatcher
+ * Tries HTTPS REST API first (if API key is present), then falls back to Nodemailer SMTP
+ */
+const sendMailSafe = async ({ to, subject, html, text, emailType }) => {
   if (!to) {
-    console.warn(`⚠️ [EmailService] Skipping ${emailType}: No recipient email provided.`);
+    console.warn(⚠️ [EmailService] Skipping : No recipient email provided.);
     return { success: false, reason: 'No recipient email' };
   }
 
   const emailFrom = getEmailFrom();
+  const plainText = text || (html || '')
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
+  // 1. Try HTTPS REST API first if configured (Bypasses Render cloud firewall port blocks)
+  try {
+    const restResult = await sendViaRestApi({ to, subject, html, text: plainText });
+    if (restResult) {
+      console.log(✅ [EmailService]  sent to  via  (ID: ));
+      return restResult;
+    }
+  } catch (restError) {
+    console.warn(⚠️ [EmailService REST Notice] REST API failed, falling back to SMTP: );
+  }
+
+  // 2. Fallback to Nodemailer SMTP
   try {
     const user = (process.env.EMAIL_USER || process.env.SMTP_USER || '').trim();
     const pass = (process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || '').trim();
@@ -31,10 +109,10 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
 
     if (!isConfigured) {
       console.log(
-        `\n📧 [EMAIL DISPATCH NOTICE - ${emailType}]\n` +
-        `To: ${to}\n` +
-        `Subject: ${subject}\n` +
-        `Status: Logged to console (Email credentials not configured)\n`
+        \n📧 [EMAIL DISPATCH NOTICE - ]\n +
+        To: \n +
+        Subject: \n +
+        Status: Logged to console (Email credentials not configured)\n
       );
       return { success: true, simulated: true };
     }
@@ -43,13 +121,14 @@ const sendMailSafe = async ({ to, subject, html, emailType }) => {
       from: emailFrom,
       to,
       subject,
-      html
+      html,
+      text: plainText
     });
 
-    console.log(`✅ [EmailService] ${emailType} sent to ${to} (MessageId: ${info.messageId})`);
+    console.log(✅ [EmailService]  sent to  (MessageId: ));
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.warn(`⚠️ [EmailService Notice] Could not send ${emailType} via SMTP to ${to}: ${error.message}`);
+    console.warn(⚠️ [EmailService Notice] Could not send  via SMTP to : );
     return { success: false, error: error.message };
   }
 };
@@ -62,12 +141,12 @@ export const emailService = {
     if (!user?.email) return { success: false, reason: 'No email' };
 
     console.log(
-      `\n======================================================\n` +
-      `📧 [EMAIL OTP DISPATCH]\n` +
-      `Recipient: ${user.email}\n` +
-      `6-Digit Verification Code: ${otp}\n` +
-      `Expires in: ${expiryMinutes} minutes\n` +
-      `======================================================\n`
+      \n======================================================\n +
+      📧 [EMAIL OTP DISPATCH]\n +
+      Recipient: \n +
+      6-Digit Verification Code: \n +
+      Expires in:  minutes\n +
+      ======================================================\n
     );
 
     const html = getVerificationOTPEmailHtml({
@@ -91,12 +170,12 @@ export const emailService = {
     if (!user?.email) return { success: false, reason: 'No email' };
 
     console.log(
-      `\n======================================================\n` +
-      `🔑 [PASSWORD RESET OTP DISPATCH]\n` +
-      `Recipient: ${user.email}\n` +
-      `6-Digit Code: ${otp}\n` +
-      `Expires in: ${expiryMinutes} minutes\n` +
-      `======================================================\n`
+      \n======================================================\n +
+      🔑 [PASSWORD RESET OTP DISPATCH]\n +
+      Recipient: \n +
+      6-Digit Code: \n +
+      Expires in:  minutes\n +
+      ======================================================\n
     );
 
     const html = getPasswordResetOTPEmailHtml({
@@ -120,10 +199,10 @@ export const emailService = {
     if (!user?.email) return { success: false, reason: 'No email' };
 
     console.log(
-      `\n======================================================\n` +
-      `🎉 [WELCOME EMAIL DISPATCH]\n` +
-      `Recipient: ${user.email} (${user.name})\n` +
-      `======================================================\n`
+      \n======================================================\n +
+      🎉 [WELCOME EMAIL DISPATCH]\n +
+      Recipient:  ()\n +
+      ======================================================\n
     );
 
     const html = getWelcomeEmailHtml({
@@ -154,12 +233,12 @@ export const emailService = {
     }
 
     console.log(
-      `\n======================================================\n` +
-      `📅 [APPOINTMENT CONFIRMATION EMAIL DISPATCH]\n` +
-      `Recipient: ${to} (${customer?.name})\n` +
-      `Booking ID: #${appointment.bookingId}\n` +
-      `Date & Time: ${appointment.date} at ${appointment.startTime}\n` +
-      `======================================================\n`
+      \n======================================================\n +
+      📅 [APPOINTMENT CONFIRMATION EMAIL DISPATCH]\n +
+      Recipient:  ()\n +
+      Booking ID: #\n +
+      Date & Time:  at \n +
+      ======================================================\n
     );
 
     const html = getAppointmentConfirmationHtml({
@@ -167,7 +246,7 @@ export const emailService = {
       serviceName: service?.name || 'Salon Treatment',
       staffName: staff?.name || 'Assigned Stylist',
       date: appointment.date,
-      timeWindow: `${appointment.startTime} - ${appointment.endTime}`,
+      timeWindow: ${appointment.startTime} - ,
       duration: appointment.duration || service?.duration || 45,
       bookingId: appointment.bookingId,
       price: appointment.finalAmount || appointment.price,
@@ -176,7 +255,7 @@ export const emailService = {
 
     return await sendMailSafe({
       to,
-      subject: `Booking Confirmed: ${service?.name || 'Salon Session'} (#${appointment.bookingId})`,
+      subject: Booking Confirmed:  (#),
       html,
       emailType: 'Appointment Confirmation Email'
     });
@@ -193,6 +272,15 @@ export const emailService = {
     const to = customer?.email;
     if (!to) return { success: false, reason: 'No customer email' };
 
+    console.log(
+      \n======================================================\n +
+      ❌ [APPOINTMENT CANCELLATION EMAIL DISPATCH]\n +
+      Recipient:  ()\n +
+      Booking ID: #\n +
+      Reason: \n +
+      ======================================================\n
+    );
+
     const html = getAppointmentCancellationHtml({
       customerName: customer?.name || 'Valued Client',
       serviceName: service?.name || 'Salon Treatment',
@@ -204,7 +292,7 @@ export const emailService = {
 
     return await sendMailSafe({
       to,
-      subject: `Appointment Cancelled: #${appointment.bookingId}`,
+      subject: Appointment Cancelled: #,
       html,
       emailType: 'Appointment Cancellation Email'
     });
@@ -221,19 +309,28 @@ export const emailService = {
     const to = customer?.email;
     if (!to) return { success: false, reason: 'No customer email' };
 
+    console.log(
+      \n======================================================\n +
+      🔄 [APPOINTMENT RESCHEDULE EMAIL DISPATCH]\n +
+      Recipient:  ()\n +
+      Booking ID: #\n +
+      New Date & Time:  at \n +
+      ======================================================\n
+    );
+
     const html = getAppointmentRescheduledHtml({
       customerName: customer?.name || 'Valued Client',
       serviceName: service?.name || 'Salon Treatment',
       staffName: staff?.name || 'Stylist',
       oldDate: oldDetails.date || appointment.date,
       newDate: appointment.date,
-      newTime: `${appointment.startTime} - ${appointment.endTime}`,
+      newTime: ${appointment.startTime} - ,
       bookingId: appointment.bookingId
     });
 
     return await sendMailSafe({
       to,
-      subject: `Appointment Rescheduled: #${appointment.bookingId} for ${appointment.date}`,
+      subject: Appointment Rescheduled: # for ,
       html,
       emailType: 'Appointment Rescheduled Email'
     });
@@ -266,7 +363,7 @@ export const emailService = {
 
     return await sendMailSafe({
       to,
-      subject: `Payment Receipt: ₹${appointment.finalAmount || appointment.price} for #${appointment.bookingId}`,
+      subject: Payment Receipt: ₹ for #,
       html,
       emailType: 'Payment Receipt Email'
     });
@@ -288,13 +385,13 @@ export const emailService = {
       serviceName: service?.name || 'Salon Treatment',
       staffName: staff?.name || 'Stylist',
       date: appointment.date,
-      timeWindow: `${appointment.startTime} - ${appointment.endTime}`,
+      timeWindow: ${appointment.startTime} - ,
       bookingId: appointment.bookingId
     });
 
     return await sendMailSafe({
       to,
-      subject: `Reminder: Your Appointment Tomorrow (${appointment.date})`,
+      subject: Reminder: Your Appointment Tomorrow (),
       html,
       emailType: 'Appointment Reminder Email'
     });
