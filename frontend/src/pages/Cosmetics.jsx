@@ -23,6 +23,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { productService } from '../services/product.service';
+import { resolveImageUrl, handleImageError } from '../utils/imageUrl';
 
 const CATEGORIES = [
   { id: 'all', label: 'All Products', icon: Sparkles },
@@ -307,7 +308,8 @@ export default function Cosmetics() {
                       {/* Image Container */}
                       <div className="relative aspect-square overflow-hidden bg-stone-100">
                         <img
-                          src={product.thumbnail || (product.images && product.images[0]?.url)}
+                          src={resolveImageUrl(product.thumbnail || (product.images && product.images[0]?.url))}
+                          onError={handleImageError}
                           alt={product.name}
                           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                           loading="lazy"
@@ -456,7 +458,8 @@ export default function Cosmetics() {
                           activeImageIndex === idx ? 'border-rose-600' : 'border-stone-200 opacity-70'
                         }`}
                       >
-                        <img src={img.url} alt="" className="w-full h-full object-cover" />
+                        <img src={resolveImageUrl(img.url)}
+                        onError={handleImageError} alt="" className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>

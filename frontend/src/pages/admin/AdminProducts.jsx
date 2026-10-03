@@ -25,6 +25,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { productService } from '../../services/product.service';
+import { resolveImageUrl, handleImageError, DEFAULT_COSMETIC_PLACEHOLDER } from '../../utils/imageUrl';
 
 const CATEGORIES = [
   'Skincare',
@@ -48,6 +49,7 @@ export default function AdminProducts() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageUploadMode, setImageUploadMode] = useState('file'); // 'file' | 'url'
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState('');
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -102,6 +104,7 @@ export default function AdminProducts() {
   const handleOpenAdd = () => {
     setEditingProduct(null);
     setImageUploadMode('file');
+    setLocalPreviewUrl('');
     setFormData({
       name: '',
       brand: 'Enrich Clinical Luxury',
@@ -111,7 +114,7 @@ export default function AdminProducts() {
       originalPrice: '',
       stock: 25,
       volume: '50 ml',
-      thumbnail: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80',
+      thumbnail: '',
       description: '',
       keyBenefits: '',
       ingredients: '',
@@ -124,6 +127,7 @@ export default function AdminProducts() {
   };
 
   const handleOpenEdit = (product) => {
+    setLocalPreviewUrl('');
     setEditingProduct(product);
     setImageUploadMode('file');
     setFormData({
@@ -151,27 +155,30 @@ export default function AdminProducts() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check size (< 20MB)
-    if (file.size > 20 * 1024 * 1024) {
-      showFeedback('File size exceeds 20MB limit. Please choose a smaller image.', 'error');
+    if (file.size > 25 * 1024 * 1024) {
+      showFeedback('File size exceeds 25MB limit. Please choose a smaller image.', 'error');
       return;
     }
 
+    const instantPreview = URL.createObjectURL(file);
+    setLocalPreviewUrl(instantPreview);
+    setUploadingImage(true);
+
     try {
-      setUploadingImage(true);
       const res = await productService.uploadImage(file);
       const uploadedUrl = res?.url || res?.data?.url || res?.secure_url || res?.data?.secure_url;
       if (uploadedUrl) {
         setFormData(prev => ({ ...prev, thumbnail: uploadedUrl }));
-        showFeedback('Image uploaded successfully!', 'success');
+        showFeedback('Product image uploaded and attached successfully!', 'success');
       } else {
-        throw new Error('Image URL was not returned by server');
+        throw new Error('Image upload succeeded but no URL was returned');
       }
     } catch (err) {
       console.error('Direct upload failed:', err);
       showFeedback(err.message || 'Image upload failed. Please try again or paste image link.', 'error');
     } finally {
       setUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
   const handleSaveSubmit = async (e) => {
@@ -395,7 +402,8 @@ export default function AdminProducts() {
                       <td className="py-4 px-5">
                         <div className="flex items-center gap-3">
                           <img
-                            src={product.thumbnail || (product.images && product.images[0]?.url)}
+                            src={resolveImageUrl(product.thumbnail || (product.images && product.images[0]?.url))}
+                            onError={handleImageError}
                             alt=""
                             className="w-12 h-12 rounded-xl object-cover border border-stone-200 shrink-0 bg-stone-100"
                           />
@@ -583,29 +591,57 @@ export default function AdminProducts() {
                   </div>
                 )}
 
-                {/* Live Image Preview */}
-                {formData.thumbnail && (
-                  <div className="flex items-center gap-3 pt-2 border-t border-stone-200/60">
-                    <img
-                      src={formData.thumbnail}
-                      alt="Preview"
-                      className="w-14 h-14 rounded-xl object-cover border border-stone-200 shrink-0 bg-stone-100"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" />
-                        Image Attached & Ready
+                {/* LIVE PROMINENT PREVIEW CARD */}
+                {(localPreviewUrl || formData.thumbnail) && (
+                  <div className="rounded-2xl overflow-hidden border border-stone-200 bg-white p-3 shadow-xs space-y-2">
+                    <div className="relative h-44 w-full rounded-xl overflow-hidden bg-stone-100 flex items-center justify-center">
+                      <img
+                        src={resolveImageUrl(localPreviewUrl || formData.thumbnail)}
+                        alt="Product Preview"
+                        className="w-full h-full object-cover"
+                        onError={handleImageError}
+                      />
+                      {uploadingImage && (
+                        <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-xs flex flex-col items-center justify-center text-white gap-2">
+                          <Loader2 className="w-8 h-8 animate-spin text-rose-400" />
+                          <span className="font-bold text-xs">Uploading photo to server...</span>
+                        </div>
+                      )}
+                      <div className="absolute top-2.5 left-2.5">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-600 text-white shadow-xs flex items-center gap-1">
+                          <Check className="w-3 h-3" />
+                          Photo Attached & Ready
+                        </span>
                       </div>
-                      <div className="text-[10px] text-stone-400 truncate">{formData.thumbnail}</div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, thumbnail: '' })}
-                      className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-stone-200 transition-colors"
-                      title="Clear image"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="text-[10px] text-stone-500 truncate max-w-[240px] sm:max-w-xs font-mono">
+                        {formData.thumbnail || 'Local photo preview ready'}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          <Upload className="w-3 h-3 text-stone-600" />
+                          Change
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLocalPreviewUrl('');
+                            setFormData(prev => ({ ...prev, thumbnail: '' }));
+                          }}
+                          className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                          title="Remove photo"
+                        >
+                          <X className="w-3 h-3" />
+                          Remove
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

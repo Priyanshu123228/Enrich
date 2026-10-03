@@ -20,6 +20,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { productService } from '../services/product.service';
+import { resolveImageUrl, handleImageError } from '../utils/imageUrl';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -119,7 +120,8 @@ export default function ProductDetail() {
           <div className="lg:col-span-6 space-y-4">
             <div className="aspect-square rounded-3xl overflow-hidden bg-stone-100 border border-stone-200 relative group">
               <img
-                src={images[activeImageIndex]?.url || product.thumbnail}
+                src={resolveImageUrl(images[activeImageIndex]?.url || product.thumbnail)}
+                onError={handleImageError}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -140,7 +142,8 @@ export default function ProductDetail() {
                       activeImageIndex === idx ? 'border-rose-600 ring-2 ring-rose-600/20 scale-105' : 'border-stone-200 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <img src={resolveImageUrl(img.url)}
+                    onError={handleImageError} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -285,7 +288,8 @@ export default function ProductDetail() {
                   className="group bg-white rounded-3xl border border-stone-200/80 p-4 shadow-xs hover:shadow-lg transition-all"
                 >
                   <div className="aspect-square rounded-2xl overflow-hidden bg-stone-100 mb-3">
-                    <img src={rel.thumbnail} alt={rel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <img src={resolveImageUrl(rel.thumbnail)}
+                    onError={handleImageError} alt={rel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700">{rel.brand}</span>
                   <h4 className="font-serif font-bold text-sm text-stone-900 line-clamp-1 group-hover:text-rose-700">{rel.name}</h4>
