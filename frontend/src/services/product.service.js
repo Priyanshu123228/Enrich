@@ -28,6 +28,19 @@ export const productService = {
   },
 
   /**
+   * Admin: Upload product image file directly
+   * @param {File} file
+   */
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await api.post('/products/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res?.data || res;
+  },
+
+  /**
    * Create a new cosmetic product (Admin)
    * @param {Object} data
    */

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { 
   Sparkles, 
   Search, 
@@ -17,9 +17,12 @@ import {
   Tag, 
   Layers, 
   Upload, 
+  ImageIcon, 
+  Link as LinkIcon,
   ArrowUpRight,
   ShieldCheck,
-  TrendingUp
+  TrendingUp,
+  Loader2
 } from 'lucide-react';
 import { productService } from '../../services/product.service';
 
@@ -43,6 +46,10 @@ export default function AdminProducts() {
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [imageUploadMode, setImageUploadMode] = useState('file'); // 'file' | 'url'
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
+
   const [formData, setFormData] = useState({
     name: '',
     brand: 'Enrich Clinical Luxury',
@@ -94,6 +101,7 @@ export default function AdminProducts() {
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
+    setImageUploadMode('file');
     setFormData({
       name: '',
       brand: 'Enrich Clinical Luxury',
@@ -117,6 +125,7 @@ export default function AdminProducts() {
 
   const handleOpenEdit = (product) => {
     setEditingProduct(product);
+    setImageUploadMode('file');
     setFormData({
       name: product.name || '',
       brand: product.brand || 'Enrich Clinical Luxury',
@@ -138,6 +147,33 @@ export default function AdminProducts() {
     setModalOpen(true);
   };
 
+  const handleDirectFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check size (< 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      showFeedback('File size exceeds 20MB limit. Please choose a smaller image.', 'error');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const res = await productService.uploadImage(file);
+      const uploadedUrl = res?.url || res?.data?.url || res?.secure_url || res?.data?.secure_url;
+      if (uploadedUrl) {
+        setFormData(prev => ({ ...prev, thumbnail: uploadedUrl }));
+        showFeedback('Image uploaded successfully!', 'success');
+      } else {
+        throw new Error('Image URL was not returned by server');
+      }
+    } catch (err) {
+      console.error('Direct upload failed:', err);
+      showFeedback(err.message || 'Image upload failed. Please try again or paste image link.', 'error');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
   const handleSaveSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -212,6 +248,7 @@ export default function AdminProducts() {
     lowStock: products.filter(p => p.stock <= 5 && p.stock > 0).length,
     outOfStock: products.filter(p => p.stock <= 0).length
   };
+
   return (
     <div className="space-y-6">
       {/* 1. Header */}
@@ -226,7 +263,7 @@ export default function AdminProducts() {
             </h1>
           </div>
           <p className="text-sm text-stone-500 mt-1.5">
-            Manage cosmetic pharmacy inventory, pricing, stock levels, clinical formulations, and customer retail listings.
+            Manage cosmetic pharmacy inventory, pricing, direct image uploads, clinical formulations, and customer retail listings.
           </p>
         </div>
 
@@ -320,7 +357,6 @@ export default function AdminProducts() {
           ))}
         </div>
       </div>
-
       {/* 5. Products Table */}
       <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
         {loading ? (
@@ -339,7 +375,7 @@ export default function AdminProducts() {
             <table className="w-full text-left text-xs text-stone-600">
               <thead className="bg-stone-50/90 text-[11px] uppercase font-bold text-stone-500 border-b border-stone-200/80 tracking-wider">
                 <tr>
-                  <th className="py-3.5 px-5">Product & Brand</th>
+                  <th className="py-3.5 px-5">Product & Image</th>
                   <th className="py-3.5 px-4">Category</th>
                   <th className="py-3.5 px-4">Price</th>
                   <th className="py-3.5 px-4">Stock</th>
@@ -361,7 +397,7 @@ export default function AdminProducts() {
                           <img
                             src={product.thumbnail || (product.images && product.images[0]?.url)}
                             alt=""
-                            className="w-12 h-12 rounded-xl object-cover border border-stone-200 shrink-0"
+                            className="w-12 h-12 rounded-xl object-cover border border-stone-200 shrink-0 bg-stone-100"
                           />
                           <div>
                             <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700">{product.brand}</span>
@@ -447,7 +483,8 @@ export default function AdminProducts() {
           </div>
         )}
       </div>
-      {/* 6. Add / Edit Product Modal */}
+
+      {/* 6. Add / Edit Product Modal with Direct Image Upload */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-md animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto border border-stone-200 shadow-2xl p-6 sm:p-8 space-y-5">
@@ -456,7 +493,7 @@ export default function AdminProducts() {
                 <h3 className="text-xl font-bold font-serif text-stone-900">
                   {editingProduct ? 'Edit Cosmetic Formulation' : 'Add New Cosmetic Product'}
                 </h3>
-                <p className="text-xs text-stone-400 mt-0.5">Fill in the clinical specs, retail pricing, and stock quantity.</p>
+                <p className="text-xs text-stone-400 mt-0.5">Upload product photo directly from your device or paste an image URL.</p>
               </div>
               <button
                 onClick={() => setModalOpen(false)}
@@ -467,6 +504,112 @@ export default function AdminProducts() {
             </div>
 
             <form onSubmit={handleSaveSubmit} className="space-y-4 text-xs">
+              {/* Product Photo Upload Section (Direct File Upload & URL switcher) */}
+              <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-stone-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-rose-600" />
+                    Product Photo / Thumbnail *
+                  </label>
+
+                  {/* Mode Tabs */}
+                  <div className="flex items-center gap-1 bg-stone-200/70 p-0.5 rounded-lg">
+                    <button
+                      type="button"
+                      onClick={() => setImageUploadMode('file')}
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                        imageUploadMode === 'file' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-600 hover:text-stone-900'
+                      }`}
+                    >
+                      Direct File Upload
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageUploadMode('url')}
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                        imageUploadMode === 'url' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-600 hover:text-stone-900'
+                      }`}
+                    >
+                      Image Link (URL)
+                    </button>
+                  </div>
+                </div>
+
+                {imageUploadMode === 'file' ? (
+                  /* Direct File Upload Zone */
+                  <div className="space-y-3">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleDirectFileUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+
+                    <div
+                      onClick={() => !uploadingImage && fileInputRef.current?.click()}
+                      className={`border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all ${
+                        uploadingImage 
+                          ? 'border-rose-300 bg-rose-50/30' 
+                          : 'border-stone-300 hover:border-rose-500 hover:bg-rose-50/20 bg-white'
+                      }`}
+                    >
+                      {uploadingImage ? (
+                        <div className="py-3 flex flex-col items-center justify-center gap-2 text-rose-600">
+                          <Loader2 className="w-7 h-7 animate-spin" />
+                          <span className="font-bold text-xs">Uploading photo to server...</span>
+                        </div>
+                      ) : (
+                        <div className="py-2 flex flex-col items-center justify-center gap-1.5">
+                          <div className="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center">
+                            <Upload className="w-5 h-5" />
+                          </div>
+                          <span className="font-bold text-stone-800 text-xs">Click to browse & upload photo from device</span>
+                          <span className="text-[10px] text-stone-400">Supports JPG, PNG, WEBP up to 20MB</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  /* URL Input */
+                  <div>
+                    <input
+                      type="url"
+                      value={formData.thumbnail}
+                      onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                      placeholder="https://images.unsplash.com/photo-..."
+                      className="w-full p-2.5 bg-white border border-stone-200 rounded-xl focus:ring-2 focus:ring-rose-500/30 font-mono text-xs"
+                    />
+                  </div>
+                )}
+
+                {/* Live Image Preview */}
+                {formData.thumbnail && (
+                  <div className="flex items-center gap-3 pt-2 border-t border-stone-200/60">
+                    <img
+                      src={formData.thumbnail}
+                      alt="Preview"
+                      className="w-14 h-14 rounded-xl object-cover border border-stone-200 shrink-0 bg-stone-100"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" />
+                        Image Attached & Ready
+                      </div>
+                      <div className="text-[10px] text-stone-400 truncate">{formData.thumbnail}</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, thumbnail: '' })}
+                      className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-stone-200 transition-colors"
+                      title="Clear image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Name & Brand */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -499,7 +642,7 @@ export default function AdminProducts() {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-rose-500/30 font-medium"
+                    className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-rose-500/30 font-medium cursor-pointer"
                   >
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -565,18 +708,6 @@ export default function AdminProducts() {
                 </div>
               </div>
 
-              {/* Thumbnail Image URL */}
-              <div>
-                <label className="block font-bold text-stone-700 uppercase tracking-wider text-[10px] mb-1">Image URL (Unsplash or CDN)</label>
-                <input
-                  type="url"
-                  value={formData.thumbnail}
-                  onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-rose-500/30"
-                />
-              </div>
-
               {/* Description */}
               <div>
                 <label className="block font-bold text-stone-700 uppercase tracking-wider text-[10px] mb-1">Product Description *</label>
@@ -590,7 +721,7 @@ export default function AdminProducts() {
                 />
               </div>
 
-              {/* Key Benefits (newline separated) */}
+              {/* Key Benefits */}
               <div>
                 <label className="block font-bold text-stone-700 uppercase tracking-wider text-[10px] mb-1">Key Benefits (One per line)</label>
                 <textarea
@@ -602,7 +733,7 @@ export default function AdminProducts() {
                 />
               </div>
 
-              {/* Ingredients & How to Use */}
+              {/* Ingredients & Badge */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-stone-700 uppercase tracking-wider text-[10px] mb-1">Key Ingredients (Comma separated)</label>
@@ -659,7 +790,7 @@ export default function AdminProducts() {
                 </button>
                 <button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || uploadingImage}
                   className="px-5 py-2 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white rounded-xl font-bold shadow-xs cursor-pointer active:scale-95"
                 >
                   {saving ? 'Saving...' : editingProduct ? 'Update Product' : 'Add to Catalog'}

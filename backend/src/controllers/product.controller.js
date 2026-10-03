@@ -2,16 +2,19 @@
 import { ApiError } from '../utils/apiError.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { uploadToCloudinary } from '../config/cloudinary.js';
 
 // Sample Seed Products for Enrich Cosmetic Clinic
 const SAMPLE_PRODUCTS = [
   {
     name: '24K Gold Radiance Youth Serum',
+    slug: '24k-gold-radiance-youth-serum',
     brand: 'Enrich Clinical Luxury',
     category: 'Serums & Treatments',
     subcategory: 'Face Serums',
     price: 1899,
     originalPrice: 2499,
+    discountPercent: 24,
     rating: 4.9,
     numReviews: 48,
     stock: 25,
@@ -37,11 +40,13 @@ const SAMPLE_PRODUCTS = [
   },
   {
     name: 'Pure Damask Rose Hydrating Face Mist',
+    slug: 'pure-damask-rose-hydrating-face-mist',
     brand: 'Enrich Botanicals',
     category: 'Skincare',
     subcategory: 'Toners & Mists',
     price: 699,
     originalPrice: 899,
+    discountPercent: 22,
     rating: 4.8,
     numReviews: 34,
     stock: 40,
@@ -66,11 +71,13 @@ const SAMPLE_PRODUCTS = [
   },
   {
     name: 'Moroccan Argan & Keratin Hair Elixir',
+    slug: 'moroccan-argan-keratin-hair-elixir',
     brand: 'Enrich Salon Professional',
     category: 'Haircare',
     subcategory: 'Hair Oils & Serums',
     price: 1299,
     originalPrice: 1699,
+    discountPercent: 23,
     rating: 4.9,
     numReviews: 52,
     stock: 18,
@@ -95,11 +102,13 @@ const SAMPLE_PRODUCTS = [
   },
   {
     name: 'Bridal Velvet Matte Lip Pigment - Royal Crimson',
+    slug: 'bridal-velvet-matte-lip-pigment-royal-crimson',
     brand: 'Enrich Cosmetic Studio',
     category: 'Makeup & Cosmetics',
     subcategory: 'Lipsticks',
     price: 899,
     originalPrice: 1199,
+    discountPercent: 25,
     rating: 4.9,
     numReviews: 61,
     stock: 30,
@@ -124,11 +133,13 @@ const SAMPLE_PRODUCTS = [
   },
   {
     name: 'Advanced Vitamin C Glow & Spot Corrector Cream',
+    slug: 'advanced-vitamin-c-glow-spot-corrector-cream',
     brand: 'Enrich Clinical Luxury',
     category: 'Skincare',
     subcategory: 'Moisturizers',
     price: 1199,
     originalPrice: 1499,
+    discountPercent: 20,
     rating: 4.7,
     numReviews: 29,
     stock: 22,
@@ -153,11 +164,13 @@ const SAMPLE_PRODUCTS = [
   },
   {
     name: 'Ayurvedic Kumkumadi Miraculous Night Oil',
+    slug: 'ayurvedic-kumkumadi-miraculous-night-oil',
     brand: 'Enrich Botanicals',
     category: 'Organic & Ayurvedic',
     subcategory: 'Facial Oils',
     price: 1599,
     originalPrice: 2099,
+    discountPercent: 24,
     rating: 5.0,
     numReviews: 43,
     stock: 15,
@@ -166,9 +179,9 @@ const SAMPLE_PRODUCTS = [
     isFeatured: true,
     isBestSeller: true,
     badge: 'Pure Saffron',
-    thumbnail: 'https://images.unsplash.com/photo-1608248597359-460d3d5267a1?w=800&auto=format&fit=crop&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=800&auto=format&fit=crop&q=80',
     images: [
-      { url: 'https://images.unsplash.com/photo-1608248597359-460d3d5267a1?w=800&auto=format&fit=crop&q=80', alt: 'Kumkumadi Oil' }
+      { url: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=800&auto=format&fit=crop&q=80', alt: 'Kumkumadi Oil' }
     ],
     description: 'An authentic classical formulation crafted with precious Kashmiri Saffron (Kumkuma), sandalwood, and 26 rare Himalayan herbs in pure goat milk and sesame oil base.',
     keyBenefits: [
@@ -182,17 +195,19 @@ const SAMPLE_PRODUCTS = [
   },
   {
     name: 'Sulfate-Free Caviar Volume & Repair Shampoo',
+    slug: 'sulfate-free-caviar-volume-repair-shampoo',
     brand: 'Enrich Salon Professional',
     category: 'Haircare',
     subcategory: 'Shampoos',
     price: 950,
     originalPrice: 1250,
+    discountPercent: 24,
     rating: 4.8,
     numReviews: 24,
     stock: 35,
     volume: '250 ml / 8.5 fl oz',
     skinType: ['Fine Hair', 'Color Treated', 'Oily Scalp'],
-    isFeatured: false,
+    isFeatured: true,
     isBestSeller: false,
     badge: 'Sulfate Free',
     thumbnail: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80',
@@ -211,17 +226,19 @@ const SAMPLE_PRODUCTS = [
   },
   {
     name: 'Ultra-Hydrating Sea Kelp Body Butter & Spa Polish',
+    slug: 'ultra-hydrating-sea-kelp-body-butter-spa-polish',
     brand: 'Enrich Body & Spa',
     category: 'Body & Spa',
     subcategory: 'Body Creams',
     price: 850,
     originalPrice: 1100,
+    discountPercent: 23,
     rating: 4.8,
     numReviews: 19,
     stock: 20,
     volume: '200 g / 7.0 oz',
     skinType: ['Dry Skin', 'All Body Skin'],
-    isFeatured: false,
+    isFeatured: true,
     isBestSeller: false,
     badge: 'Deep Hydration',
     thumbnail: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&auto=format&fit=crop&q=80',
@@ -246,7 +263,6 @@ const SAMPLE_PRODUCTS = [
  * @access  Public
  */
 export const getProducts = asyncHandler(async (req, res) => {
-  // Auto-seed if database is empty
   const count = await Product.countDocuments();
   if (count === 0) {
     await Product.insertMany(SAMPLE_PRODUCTS);
@@ -268,40 +284,33 @@ export const getProducts = asyncHandler(async (req, res) => {
 
   const query = {};
 
-  // Category Filter
   if (category && category !== 'all' && category !== 'All') {
     query.category = category;
   }
 
-  // Brand Filter
   if (brand && brand !== 'all') {
     query.brand = brand;
   }
 
-  // Skin Type Filter
   if (skinType && skinType !== 'all') {
     query.skinType = { $in: [skinType] };
   }
 
-  // Price Range Filter
   if (minPrice || maxPrice) {
     query.price = {};
     if (minPrice) query.price.$gte = Number(minPrice);
     if (maxPrice) query.price.$lte = Number(maxPrice);
   }
 
-  // In-stock Filter
   if (inStock === 'true') {
     query.stock = { $gt: 0 };
     query.isAvailable = true;
   }
 
-  // Featured Filter
   if (isFeatured === 'true') {
     query.isFeatured = true;
   }
 
-  // Search
   if (search && search.trim()) {
     const s = search.trim();
     query.$or = [
@@ -315,7 +324,6 @@ export const getProducts = asyncHandler(async (req, res) => {
     ];
   }
 
-  // Sorting
   let sortOptions = { createdAt: -1 };
   if (sort === 'popular' || sort === 'best_sellers') {
     sortOptions = { isBestSeller: -1, rating: -1, numReviews: -1 };
@@ -380,7 +388,6 @@ export const getProductByIdOrSlug = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Cosmetic product not found');
   }
 
-  // Fetch related products in the same category
   const relatedProducts = await Product.find({
     _id: { $ne: product._id },
     category: product.category
@@ -414,6 +421,40 @@ export const getFeaturedProducts = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(200, products, 'Featured cosmetics retrieved')
   );
+});
+
+/**
+ * @desc    Upload product image directly (Admin)
+ * @route   POST /api/v1/products/upload
+ * @access  Private/Admin
+ */
+export const uploadProductImage = asyncHandler(async (req, res) => {
+  const file = req.file;
+  if (!file) {
+    throw new ApiError(400, 'Please select an image file to upload');
+  }
+
+  try {
+    const uploadResult = await uploadToCloudinary(file.buffer, {
+      folder: 'luxeparlour/products',
+      originalname: file.originalname,
+      mimetype: file.mimetype
+    });
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          url: uploadResult.secure_url || uploadResult.url,
+          public_id: uploadResult.public_id
+        },
+        'Product image uploaded successfully'
+      )
+    );
+  } catch (err) {
+    console.error('Product image upload error:', err);
+    throw new ApiError(500, `Image upload failed: ${err.message}`);
+  }
 });
 
 /**
@@ -455,9 +496,11 @@ export const createProduct = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Please provide product description');
   }
 
+  const thumbUrl = thumbnail || (Array.isArray(images) && images[0]?.url) || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80';
+
   const product = await Product.create({
     name: name.trim(),
-    brand: brand ? brand.trim() : 'Enrich Luxury Clinic',
+    brand: brand ? brand.trim() : 'Enrich Clinical Luxury',
     category: category || 'Skincare',
     subcategory: subcategory ? subcategory.trim() : 'General',
     price: Number(price),
@@ -465,8 +508,8 @@ export const createProduct = asyncHandler(async (req, res) => {
     stock: stock !== undefined ? Number(stock) : 25,
     volume: volume ? volume.trim() : '50 ml',
     skinType: Array.isArray(skinType) ? skinType : (skinType ? [skinType] : ['All Skin Types']),
-    thumbnail: thumbnail || (Array.isArray(images) && images[0]?.url) || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80',
-    images: Array.isArray(images) && images.length > 0 ? images : [{ url: thumbnail || 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80' }],
+    thumbnail: thumbUrl,
+    images: Array.isArray(images) && images.length > 0 ? images : [{ url: thumbUrl }],
     description: description.trim(),
     keyBenefits: Array.isArray(keyBenefits) ? keyBenefits : (keyBenefits ? [keyBenefits] : []),
     ingredients: Array.isArray(ingredients) ? ingredients : (ingredients ? [ingredients] : []),

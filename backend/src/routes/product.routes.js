@@ -6,10 +6,12 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-  seedProducts
+  seedProducts,
+  uploadProductImage
 } from '../controllers/product.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { authorizeRoles } from '../middlewares/role.middleware.js';
+import { uploadMedia } from '../middlewares/upload.middleware.js';
 
 const router = Router();
 
@@ -19,6 +21,7 @@ router.get('/featured', getFeaturedProducts);
 router.get('/:idOrSlug', getProductByIdOrSlug);
 
 // Admin-Protected Routes
+router.post('/upload', verifyJWT, authorizeRoles('admin'), uploadMedia.single('image'), uploadProductImage);
 router.post('/', verifyJWT, authorizeRoles('admin'), createProduct);
 router.patch('/:id', verifyJWT, authorizeRoles('admin'), updateProduct);
 router.delete('/:id', verifyJWT, authorizeRoles('admin'), deleteProduct);
