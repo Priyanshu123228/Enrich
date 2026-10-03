@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+﻿import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -179,6 +179,10 @@ async function runTestSuite() {
       phone: `9${Math.floor(100000000 + Math.random() * 900000000)}`,
       password: adminPassword,
       role: 'admin',
+      status: 'active',
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      isActive: true,
       isVerified: true
     });
 
@@ -220,9 +224,17 @@ async function runTestSuite() {
         password: 'Password@123'
       })
     });
-    assert(signup1.status === 201 && signup1.data.data?.token, '1.1 Customer 1 registration creates account & returns JWT');
-    tokenUser1 = signup1.data.data?.token;
-    user1Id = signup1.data.data?.user?._id;
+    assert(signup1.status === 201, '1.1 Customer 1 registration creates account');
+    user1Id = signup1.data.data?.userId;
+
+    // Activate User 1 for booking and RBAC test operations
+    await User.findByIdAndUpdate(user1Id, {
+      status: 'active',
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      isActive: true,
+      isVerified: true
+    });
 
     // 1.2 Duplicate Email Prevention
     const dupEmail = await fetchJson('/auth/signup', {
@@ -258,9 +270,17 @@ async function runTestSuite() {
         password: 'Password@123'
       })
     });
-    assert(signup2.status === 201 && signup2.data.data?.token, '1.4 Customer 2 registration creates account');
-    tokenUser2 = signup2.data.data?.token;
-    user2Id = signup2.data.data?.user?._id;
+    assert(signup2.status === 201, '1.4 Customer 2 registration creates account');
+    user2Id = signup2.data.data?.userId;
+
+    // Activate User 2
+    await User.findByIdAndUpdate(user2Id, {
+      status: 'active',
+      isEmailVerified: true,
+      isPhoneVerified: true,
+      isActive: true,
+      isVerified: true
+    });
 
     // 1.5 Valid Login
     const loginRes = await fetchJson('/auth/login', {
@@ -271,6 +291,17 @@ async function runTestSuite() {
       })
     });
     assert(loginRes.status === 200 && loginRes.data.data?.token, '1.5 Login with valid credentials succeeds');
+    tokenUser1 = loginRes.data.data?.token;
+
+    // Login user 2
+    const loginUser2 = await fetchJson('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: testEmail2,
+        password: 'Password@123'
+      })
+    });
+    tokenUser2 = loginUser2.data.data?.token;
 
     // 1.6 Invalid Password Login
     const badLogin = await fetchJson('/auth/login', {
@@ -655,14 +686,14 @@ async function runTestSuite() {
       '6.4 Duplicate review for the same appointment is rejected with HTTP 409'
     );
 
-    // 6.5 Customer IDOR review check (User 2 trying to review User 1's appointment)
+    // 6.5 Reviewing another customer's appointment
     const idorReview = await fetchJson('/reviews', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${tokenUser2}` },
+      headers: { Authorization: `Bearer ${tokenUser2}` }, // User 2 trying to review User 1's appointment
       body: JSON.stringify({
         appointmentId: appointment3Id,
-        rating: 1,
-        comment: 'Malicious review on someone elses booking'
+        rating: 5,
+        comment: 'Fraudulent review by another user'
       })
     });
     assert(
@@ -670,20 +701,21 @@ async function runTestSuite() {
       '6.5 Customer cannot review an appointment belonging to another customer (HTTP 403)'
     );
 
-  } catch (err) {
-    console.error('\nFATAL ERROR DURING TEST EXECUTION:', err);
-  } finally {
-    try {
-      await User.deleteMany({ email: { $in: [testEmail1, testEmail2, testAdminEmail] } });
-      if (appointment1Id) await Appointment.findByIdAndDelete(appointment1Id);
-      if (appointment2Id) await Appointment.findByIdAndDelete(appointment2Id);
-      if (appointment3Id) await Appointment.findByIdAndDelete(appointment3Id);
-      await mongoose.disconnect();
-    } catch (cleanupErr) {}
-  }
+    // ----------------------------------------------------------------
+    // TEARDOWN: Clean up test records
+    // ----------------------------------------------------------------
+    await User.deleteMany({ email: { $in: [testEmail1, testEmail2, testAdminEmail] } });
+    await Appointment.deleteMany({ _id: { $in: [appointment1Id, appointment2Id, appointment3Id].filter(Boolean) } });
+    await Payment.deleteMany({ orderId: razorpayOrderId });
+    await Review.deleteMany({ comment: 'Exceptional stylist service and ambiance!' });
 
-  // Print final results
-  printSummary();
+  } catch (err) {
+    console.error(`\nTest Runner Unhandled Error: ${err.message}`);
+    console.error(err.stack);
+  } finally {
+    await mongoose.disconnect();
+    printSummary();
+  }
 }
 
 runTestSuite();
