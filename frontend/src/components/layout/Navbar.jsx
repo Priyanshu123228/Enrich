@@ -55,7 +55,7 @@ export default function Navbar() {
           
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-lg bg-stone-900 text-white flex items-center justify-center shadow-sm group-hover:bg-rose-700 transition-colors">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-rose-700 to-rose-900 text-white flex items-center justify-center shadow-md shadow-rose-950/10 group-hover:from-rose-800 group-hover:to-rose-950 transition-all">
               <Scissors className="w-5 h-5 text-rose-300" />
             </div>
             <div className="flex flex-col">
@@ -85,7 +85,7 @@ export default function Navbar() {
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center space-x-2.5 px-3 py-1.5 rounded-lg hover:bg-stone-100 transition-colors border border-stone-200 cursor-pointer"
                 >
-                  <div className="w-7 h-7 rounded-md bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-rose-600 to-rose-800 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
                     {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
                   </div>
                   <div className="text-left text-xs">
@@ -207,7 +207,7 @@ export default function Navbar() {
 
             <Link
               to="/book"
-              className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-stone-900 hover:bg-stone-800 shadow-sm transition-colors"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-rose-600 via-rose-700 to-rose-800 hover:from-rose-700 hover:to-rose-900 shadow-md shadow-rose-900/15 hover:shadow-lg transition-all active:scale-95 cursor-pointer"
             >
               <Calendar className="w-4 h-4 mr-2 text-rose-300" />
               Book Appointment
@@ -317,7 +317,7 @@ export default function Navbar() {
             <Link
               to="/book"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 px-4 rounded-lg bg-stone-900 text-white font-medium hover:bg-stone-800 shadow-xs text-xs"
+              className="w-full text-center py-3 px-5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 text-white font-bold shadow-md shadow-rose-900/20 text-xs tracking-wide"
             >
               Book Appointment
             </Link>

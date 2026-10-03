@@ -259,10 +259,13 @@ export default function Home() {
     <div className="space-y-16 sm:space-y-24 pb-20 bg-stone-50/50 text-stone-900 font-sans">
       
       {/* =========================================================================
-          SECTION 1: HERO SECTION
+          SECTION 1: HERO SECTION (LUMINOUS LUXURY ATELIER)
           ========================================================================= */}
-      <section className="relative overflow-hidden bg-stone-900 text-white py-16 sm:py-24 border-b border-stone-800">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#d6d3d1_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 py-16 sm:py-24 border-b border-stone-200/90">
+        {/* Soft Ambient Radial Lights */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-200/35 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 -right-32 w-[30rem] h-[30rem] bg-amber-200/25 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#1c1917_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -271,19 +274,21 @@ export default function Home() {
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
               {/* Location Badge */}
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-stone-800/80 border border-stone-700 text-stone-300 text-xs tracking-wide shadow-inner">
-                <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-stone-200/90 text-stone-700 text-xs font-semibold tracking-wide shadow-xs">
+                <MapPin className="w-3.5 h-3.5 text-rose-600 shrink-0" />
                 <span className="truncate max-w-xs sm:max-w-md">{SALON_CONFIG.business.badge}</span>
               </div>
 
               {/* Main Heading */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-stone-50 leading-[1.15]">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-stone-900 leading-[1.08]">
                 Precision Hair, Skin &{' '}
-                <span className="italic font-light text-rose-300">Clinical Beauty</span>
+                <span className="italic font-normal font-serif bg-gradient-to-r from-rose-600 via-rose-700 to-amber-700 bg-clip-text text-transparent">
+                  Clinical Beauty
+                </span>
               </h1>
 
               {/* Short Business Description */}
-              <p className="text-sm sm:text-base text-stone-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+              <p className="text-base sm:text-lg text-stone-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
                 {SALON_CONFIG.business.description}
               </p>
 
@@ -292,36 +297,40 @@ export default function Home() {
                 <Link
                   to="/book"
                   id="hero-book-cta"
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-lg text-sm font-semibold text-stone-900 bg-white hover:bg-stone-100 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer active:scale-98"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-rose-600 via-rose-700 to-rose-800 hover:from-rose-700 hover:to-rose-900 transition-all duration-300 shadow-lg shadow-rose-900/15 hover:shadow-xl hover:shadow-rose-900/25 cursor-pointer active:scale-95"
                 >
-                  <Calendar className="w-4 h-4 mr-2 text-rose-700" />
+                  <Calendar className="w-4 h-4 mr-2 text-rose-200" />
                   Book Appointment
                 </Link>
 
                 <a
                   href="#services"
                   id="hero-services-cta"
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-lg text-sm font-semibold text-white bg-stone-800/90 hover:bg-stone-700 border border-stone-700 transition-all duration-200 shadow-sm cursor-pointer active:scale-98"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 rounded-2xl text-sm font-bold text-stone-800 bg-white/95 hover:bg-white border border-stone-300/80 transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer active:scale-95"
                 >
                   View Services
-                  <ArrowRight className="w-4 h-4 ml-2 text-stone-300" />
+                  <ArrowRight className="w-4 h-4 ml-2 text-stone-600" />
                 </a>
               </div>
 
               {/* Salon Hours & Concierge Info Badge */}
-              <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left border-t border-stone-800/80 max-w-xl mx-auto lg:mx-0">
-                <div className="flex items-start space-x-2.5 text-xs text-stone-300 bg-stone-800/40 p-2.5 rounded-lg border border-stone-800">
-                  <Clock className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left border-t border-stone-200/80 max-w-xl mx-auto lg:mx-0">
+                <div className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-stone-200/80 shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4" />
+                  </div>
                   <div>
-                    <span className="font-semibold text-white block">Salon Opening Hours</span>
-                    <span className="text-stone-400">{SALON_CONFIG.hours.weekday}</span>
+                    <span className="font-bold text-stone-900 block">Salon Opening Hours</span>
+                    <span className="text-stone-500 text-[11px]">{SALON_CONFIG.hours.weekday}</span>
                   </div>
                 </div>
-                <div className="flex items-start space-x-2.5 text-xs text-stone-300 bg-stone-800/40 p-2.5 rounded-lg border border-stone-800">
-                  <Phone className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <div className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-stone-200/80 shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4" />
+                  </div>
                   <div>
-                    <span className="font-semibold text-white block">Direct Concierge</span>
-                    <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-300 hover:text-white transition-colors">
+                    <span className="font-bold text-stone-900 block">Direct Concierge</span>
+                    <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-600 hover:text-rose-700 font-medium text-[11px] transition-colors">
                       {SALON_CONFIG.contact.phone}
                     </a>
                   </div>
@@ -332,51 +341,55 @@ export default function Home() {
 
             {/* Right Card: Featured Salon Menu */}
             <div className="lg:col-span-5 w-full">
-              <div className="rounded-2xl border border-stone-800 bg-stone-900/90 backdrop-blur-sm p-6 sm:p-7 shadow-2xl space-y-5">
-                <div className="flex items-center justify-between border-b border-stone-800 pb-4">
+              <div className="rounded-3xl border border-stone-200/90 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-2xl shadow-stone-300/30 space-y-5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-rose-100/50 via-rose-50/20 to-transparent rounded-bl-full pointer-events-none" />
+                
+                <div className="flex items-center justify-between border-b border-stone-100 pb-4 relative z-10">
                   <div>
-                    <span className="text-[11px] font-bold tracking-widest text-rose-400 uppercase">
+                    <span className="text-[11px] font-bold tracking-widest text-rose-700 uppercase">
                       Featured Salon Menu
                     </span>
-                    <h3 className="text-base font-serif font-bold text-white mt-0.5">
+                    <h3 className="text-lg font-serif font-bold text-stone-900 mt-0.5">
                       Curated Signature Treatments
                     </h3>
                   </div>
-                  <Sparkles className="w-5 h-5 text-rose-400 shrink-0" />
+                  <div className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shadow-2xs">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
                 </div>
 
                 {/* Dynamic Featured Services List */}
-                <div className="space-y-3.5">
+                <div className="space-y-3 relative z-10">
                   {heroFeaturedServices.map((service, idx) => (
                     <div
                       key={service._id || idx}
-                      className="p-3.5 rounded-xl bg-stone-800/60 border border-stone-700/60 hover:border-stone-600 transition-all flex items-center justify-between gap-3 group"
+                      className="p-3.5 rounded-2xl bg-stone-50/90 hover:bg-rose-50/40 border border-stone-200/70 hover:border-rose-200 transition-all duration-300 flex items-center justify-between gap-3 group shadow-2xs hover:shadow-xs"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center space-x-2">
-                          <span className="text-[10px] font-semibold text-rose-300 px-2 py-0.5 rounded bg-rose-950/60 border border-rose-800/50 uppercase tracking-wide">
+                          <span className="text-[10px] font-bold text-rose-800 px-2.5 py-0.5 rounded-full bg-rose-100 border border-rose-200 uppercase tracking-wide">
                             {service.category || 'Special'}
                           </span>
-                          <span className="text-xs text-stone-400 flex items-center">
+                          <span className="text-xs text-stone-500 flex items-center">
                             <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
                             {service.duration || 45} mins
                           </span>
                         </div>
-                        <h4 className="text-xs sm:text-sm font-semibold text-stone-100 truncate group-hover:text-white transition-colors mt-1">
+                        <h4 className="text-xs sm:text-sm font-bold text-stone-900 truncate group-hover:text-rose-700 transition-colors mt-1.5">
                           {service.name}
                         </h4>
-                        <p className="text-[11px] text-stone-400 line-clamp-1 mt-0.5 font-light">
+                        <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5 font-light">
                           {service.description || 'Specialized clinical and aesthetic service.'}
                         </p>
                       </div>
 
                       <div className="text-right shrink-0 flex flex-col items-end justify-center pl-2">
-                        <span className="text-sm font-bold text-white font-mono">
+                        <span className="text-sm font-bold text-stone-900 font-serif">
                           {SALON_CONFIG.currency.symbol}{service.price}
                         </span>
                         <Link
                           to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
-                          className="text-[11px] font-medium text-rose-300 hover:text-rose-200 mt-1 inline-flex items-center group-hover:underline"
+                          className="text-[11px] font-bold text-rose-600 hover:text-rose-700 mt-1 inline-flex items-center group-hover:translate-x-0.5 transition-all"
                         >
                           Book
                           <ArrowRight className="w-3 h-3 ml-0.5" />
@@ -386,11 +399,11 @@ export default function Home() {
                   ))}
                 </div>
 
-                <div className="pt-2 border-t border-stone-800 flex items-center justify-between text-xs text-stone-400">
-                  <span>Custom consultations available</span>
-                  <Link to="/services" className="text-rose-300 font-semibold hover:underline flex items-center">
+                <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500 relative z-10">
+                  <span className="text-[11px]">Custom consultations available</span>
+                  <Link to="/services" className="text-rose-700 font-bold hover:text-rose-800 flex items-center gap-1 transition-colors">
                     Full Price List
-                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
@@ -834,27 +847,27 @@ export default function Home() {
         </section>
       )}
       {/* =========================================================================
-          SECTION 7: GALLERY / PARLOUR MEDIA (DARK STUDIO PORTFOLIO)
+          SECTION 7: GALLERY / PARLOUR MEDIA (LUMINOUS STUDIO SHOWCASE)
           ========================================================================= */}
-      <section className="bg-stone-950 text-white py-16 sm:py-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-16 sm:py-24 border-y border-stone-200/80 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-8">
           
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-800 pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200/90 pb-5">
             <div className="space-y-1">
-              <span className="text-xs font-bold tracking-widest text-rose-400 uppercase">
+              <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
                 Studio Portfolio
               </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
+              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
                 Lookbook & Parlour Media
               </h2>
-              <p className="text-xs sm:text-sm text-stone-400 max-w-xl">
+              <p className="text-xs sm:text-sm text-stone-600 max-w-xl">
                 Browse our real salon transformations, high-definition photo gallery, video tutorials, and bridal looks.
               </p>
             </div>
 
             <Link
               to="/gallery"
-              className="inline-flex items-center text-xs sm:text-sm font-semibold text-rose-400 hover:text-rose-300 shrink-0 group"
+              className="inline-flex items-center text-xs sm:text-sm font-bold text-rose-700 hover:text-rose-800 shrink-0 group"
             >
               Full Media Archive
               <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
@@ -870,10 +883,10 @@ export default function Home() {
                   key={cat}
                   type="button"
                   onClick={() => setActiveGalleryCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                     isActive
-                      ? 'bg-rose-700 text-white shadow-xs'
-                      : 'bg-stone-900 text-stone-300 hover:text-white hover:bg-stone-800 border border-stone-800'
+                      ? 'bg-rose-600 text-white shadow-xs'
+                      : 'bg-white text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200/90 shadow-2xs'
                   }`}
                 >
                   {cat}
@@ -893,7 +906,7 @@ export default function Home() {
                 // Transformation component handling
                 if (isTransformation) {
                   return (
-                    <div key={item._id || idx} className="rounded-xl overflow-hidden">
+                    <div key={item._id || idx} className="rounded-3xl overflow-hidden shadow-md border border-stone-200 bg-white">
                       <BeforeAfterSlider
                         beforeImage={item.beforeImage}
                         afterImage={item.afterImage}
@@ -907,7 +920,7 @@ export default function Home() {
                 return (
                   <div
                     key={item._id || idx}
-                    className="group relative bg-stone-900 rounded-xl border border-stone-800 overflow-hidden shadow-md flex flex-col justify-between cursor-pointer"
+                    className="group relative bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer"
                     onClick={() => {
                       if (isVideo) {
                         setActiveVideo(item);
@@ -918,27 +931,27 @@ export default function Home() {
                     }}
                   >
                     {/* Media Thumbnail Container */}
-                    <div className="relative h-60 w-full overflow-hidden bg-stone-950">
+                    <div className="relative h-64 w-full overflow-hidden bg-stone-100">
                       <img
                         src={thumbUrl}
                         alt={item.title || 'Parlour gallery photo'}
                         loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                           e.target.src = 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80';
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       {/* Top Badges */}
-                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                        <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-stone-900/80 border border-stone-700 text-stone-200 backdrop-blur-xs">
+                      <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between z-10">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/95 border border-stone-200 text-stone-800 backdrop-blur-xs shadow-xs">
                           {item.category || 'Studio'}
                         </span>
                         
                         {isVideo && (
-                          <span className="px-2 py-1 rounded-md text-[10px] font-semibold bg-rose-950/80 border border-rose-800 text-rose-300 flex items-center shadow-xs">
-                            <Video className="w-3 h-3 mr-1 text-rose-400" />
+                          <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-rose-600 text-white flex items-center shadow-xs">
+                            <Video className="w-3 h-3 mr-1" />
                             {item.duration ? `${item.duration}s` : 'Video'}
                           </span>
                         )}
@@ -947,24 +960,24 @@ export default function Home() {
                       {/* Play or View Overlay Icon */}
                       <div className="absolute inset-0 flex items-center justify-center">
                         {isVideo ? (
-                          <div className="w-12 h-12 rounded-full bg-rose-700/90 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg border border-rose-500/40">
-                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                          <div className="w-14 h-14 rounded-full bg-rose-600/90 text-white flex items-center justify-center group-hover:scale-110 transition-transform shadow-xl backdrop-blur-xs">
+                            <Play className="w-6 h-6 fill-current ml-0.5" />
                           </div>
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-stone-900/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all border border-stone-700 shadow-md">
-                            <Eye className="w-4 h-4" />
+                          <div className="w-12 h-12 rounded-full bg-white/95 text-stone-900 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all border border-stone-200 shadow-xl backdrop-blur-xs">
+                            <Eye className="w-5 h-5 text-rose-600" />
                           </div>
                         )}
                       </div>
                     </div>
 
                     {/* Text Details */}
-                    <div className="p-4 bg-stone-900 border-t border-stone-800">
-                      <h4 className="font-serif font-bold text-sm text-stone-100 group-hover:text-rose-300 transition-colors truncate">
+                    <div className="p-5 bg-white border-t border-stone-100">
+                      <h4 className="font-serif font-bold text-sm text-stone-900 group-hover:text-rose-700 transition-colors truncate">
                         {item.title || 'Studio Showcase'}
                       </h4>
                       {item.description && (
-                        <p className="text-xs text-stone-400 line-clamp-1 mt-1 font-light">
+                        <p className="text-xs text-stone-500 line-clamp-1 mt-1 font-light">
                           {item.description}
                         </p>
                       )}
@@ -974,17 +987,11 @@ export default function Home() {
               })}
             </div>
           ) : (
-            <div className="bg-stone-900 rounded-xl border border-stone-800 p-8 text-center max-w-md mx-auto space-y-3">
-              <Camera className="w-8 h-8 text-stone-600 mx-auto" />
-              <p className="text-xs text-stone-400">
-                No gallery media found for `{activeGalleryCategory}`.
+            <div className="bg-white rounded-3xl border border-stone-200 p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
+              <Camera className="w-8 h-8 text-stone-400 mx-auto" />
+              <p className="text-xs text-stone-500">
+                No gallery media found for "{activeGalleryCategory}".
               </p>
-              <button
-                onClick={() => setActiveGalleryCategory('All')}
-                className="text-xs font-semibold text-rose-400 underline cursor-pointer"
-              >
-                Show all media
-              </button>
             </div>
           )}
 
@@ -1189,33 +1196,38 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          SECTION 11: APPOINTMENT CTA
+          SECTION 11: APPOINTMENT CTA (ROYAL BERRY LUXURY BANNER)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl bg-stone-900 text-white p-8 sm:p-12 text-center space-y-5 border border-stone-800 shadow-xl">
-          <span className="text-xs font-bold tracking-widest text-rose-400 uppercase block">
-            Appointments & Consultations
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold tracking-tight">
-            Reserve Your Salon Visit
-          </h2>
-          <p className="text-stone-300 max-w-lg mx-auto text-xs sm:text-sm leading-relaxed">
-            Select your preferred service, choose your specialist, and confirm your appointment with real-time schedule verification.
-          </p>
+        <div className="rounded-3xl bg-gradient-to-br from-[#2E1822] via-[#481E2C] to-[#1C0E15] text-white p-8 sm:p-14 text-center space-y-6 border border-rose-900/40 shadow-2xl shadow-rose-950/20 relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-80 h-80 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3.5">
+          <div className="relative z-10 space-y-3">
+            <span className="text-xs font-bold tracking-widest text-rose-300 uppercase block">
+              Appointments & Consultations
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-white">
+              Reserve Your Salon Visit
+            </h2>
+            <p className="text-stone-300 max-w-lg mx-auto text-xs sm:text-sm leading-relaxed font-light">
+              Select your preferred service, choose your specialist, and confirm your appointment with real-time schedule verification.
+            </p>
+          </div>
+          
+          <div className="pt-2 flex flex-col sm:flex-row justify-center gap-4 relative z-10">
             <Link
               to="/book"
-              className="inline-flex items-center justify-center px-6 py-3.5 rounded-lg text-xs sm:text-sm font-semibold text-stone-900 bg-white hover:bg-stone-100 transition-colors shadow-sm cursor-pointer active:scale-98"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-2xl text-xs sm:text-sm font-bold text-rose-950 bg-white hover:bg-rose-50 transition-all shadow-xl hover:shadow-2xl cursor-pointer active:scale-95"
             >
               <Calendar className="w-4 h-4 mr-2 text-rose-700" />
               Book Appointment Online
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center px-6 py-3.5 rounded-lg text-xs sm:text-sm font-semibold text-white bg-stone-800 hover:bg-stone-700 border border-stone-700 transition-colors cursor-pointer active:scale-98"
+              className="inline-flex items-center justify-center px-7 py-4 rounded-2xl text-xs sm:text-sm font-bold text-white bg-white/10 hover:bg-white/20 border border-white/25 backdrop-blur-xs transition-all cursor-pointer active:scale-95"
             >
-              <Phone className="w-4 h-4 mr-2 text-stone-300" />
+              <Phone className="w-4 h-4 mr-2 text-rose-300" />
               Contact Concierge
             </Link>
           </div>

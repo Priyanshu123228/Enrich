@@ -19,7 +19,7 @@ export const SALON_CONFIG = {
 
   // Currency
   currency: {
-    symbol: '?',
+    symbol: '₹',
     code: 'INR',
   },
 
@@ -242,7 +242,7 @@ export const SALON_CONFIG = {
       code: 'BRIDAL500',
       discountType: 'fixed',
       discountValue: 500,
-      description: 'Flat ?500 off on pre-bridal grooming and complete wedding day makeup packages.',
+      description: 'Flat ₹500 off on pre-bridal grooming and complete wedding day makeup packages.',
       validUntil: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(),
       isActive: true,
     },

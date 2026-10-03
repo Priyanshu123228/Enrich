@@ -173,7 +173,7 @@ export default function Offers() {
                         Min. Booking:
                       </span>
                       <span className="font-semibold text-stone-900">
-                        {offer.minBookingAmount > 0 ? `$${offer.minBookingAmount}` : 'None'}
+                        {offer.minBookingAmount > 0 ? `₹${offer.minBookingAmount}` : 'None'}
                       </span>
                     </div>
 
@@ -268,7 +268,7 @@ export default function Offers() {
       )}
 
       {/* Salon Loyalty Banner */}
-      <div className="bg-stone-900 text-white p-8 rounded-xl border border-stone-800 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-gradient-to-br from-[#2E1822] via-[#481E2C] to-[#1C0E15] text-white p-8 sm:p-12 rounded-3xl border border-rose-900/40 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-1.5 max-w-xl">
           <span className="text-xs font-bold uppercase tracking-wider text-rose-400">
             Custom Inquiries

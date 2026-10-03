@@ -197,7 +197,7 @@ export default function ProductDetail() {
                 )}
               </div>
               <div className="text-xs font-bold text-emerald-700">
-                ✓ In Stock ({product.stock} units available)
+                ✓✓ In Stock ({product.stock} units available)
               </div>
             </div>
 

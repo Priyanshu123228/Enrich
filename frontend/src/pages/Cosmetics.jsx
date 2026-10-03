@@ -108,54 +108,54 @@ export default function Cosmetics() {
   };
   return (
     <div className="bg-stone-50/60 min-h-screen pb-20">
-      {/* 1. Luxury Hero Banner */}
-      <section className="relative bg-stone-900 text-white overflow-hidden py-16 sm:py-24 border-b border-stone-800">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:20px_20px]"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-rose-900/30 rounded-full blur-3xl pointer-events-none"></div>
+      {/* 1. Ultra-Luxury Champagne & Rose Hero Banner */}
+      <section className="relative bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 overflow-hidden py-16 sm:py-24 border-b border-stone-200/90">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-rose-200/25 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -top-10 -right-10 w-80 h-80 bg-amber-100/40 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-rose-950/80 text-rose-300 border border-rose-800/60 mb-4 backdrop-blur-xs">
-            <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-rose-50 text-rose-800 border border-rose-200 mb-4 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-rose-600" />
             Enrich Cosmetic Pharmacy & Luxury Salon Retail
           </span>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight max-w-4xl mx-auto leading-tight">
-            Clinical Aesthetics & <span className="text-rose-400 italic">Salon Formulations</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 tracking-tight max-w-4xl mx-auto leading-tight">
+            Clinical Aesthetics & <span className="text-rose-700 italic font-serif">Salon Formulations</span>
           </h1>
-          <p className="mt-4 text-stone-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 text-stone-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-light">
             Dermatologically tested facial elixirs, organic Kashmiri saffron oils, and salon-grade hair rituals formulated for high-performance beauty care.
           </p>
 
           {/* Trust Pillars */}
           <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto text-left">
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <ShieldCheck className="w-5 h-5 text-rose-400 shrink-0" />
+            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
+              <ShieldCheck className="w-5 h-5 text-rose-600 shrink-0" />
               <div>
-                <div className="text-xs font-bold text-white">100% Authentic</div>
-                <div className="text-[10px] text-stone-400">Clinical Formulation</div>
+                <div className="text-xs font-bold text-stone-900">100% Authentic</div>
+                <div className="text-[10px] text-stone-500">Clinical Formulation</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <Award className="w-5 h-5 text-rose-400 shrink-0" />
+            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
+              <Award className="w-5 h-5 text-rose-600 shrink-0" />
               <div>
-                <div className="text-xs font-bold text-white">Dermatologist Tested</div>
-                <div className="text-[10px] text-stone-400">Paraben & Toxin Free</div>
+                <div className="text-xs font-bold text-stone-900">Dermatologist Tested</div>
+                <div className="text-[10px] text-stone-500">Paraben & Toxin Free</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <Leaf className="w-5 h-5 text-rose-400 shrink-0" />
+            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
+              <Leaf className="w-5 h-5 text-rose-600 shrink-0" />
               <div>
-                <div className="text-xs font-bold text-white">Cruelty Free</div>
-                <div className="text-[10px] text-stone-400">Ethically Sourced</div>
+                <div className="text-xs font-bold text-stone-900">Cruelty Free</div>
+                <div className="text-[10px] text-stone-500">Ethically Sourced</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <MessageCircle className="w-5 h-5 text-rose-400 shrink-0" />
+            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
+              <MessageCircle className="w-5 h-5 text-rose-600 shrink-0" />
               <div>
-                <div className="text-xs font-bold text-white">Direct WhatsApp Order</div>
-                <div className="text-[10px] text-stone-400">Salon Pickup & Delivery</div>
+                <div className="text-xs font-bold text-stone-900">Direct WhatsApp Order</div>
+                <div className="text-[10px] text-stone-500">Salon Pickup & Delivery</div>
               </div>
             </div>
           </div>
