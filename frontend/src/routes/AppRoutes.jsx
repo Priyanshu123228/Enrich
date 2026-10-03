@@ -36,6 +36,7 @@ import AdminCategories from '../pages/admin/AdminCategories';
 import AdminOffers from '../pages/admin/AdminOffers';
 import AdminReviews from '../pages/admin/AdminReviews';
 import AdminGallery from '../pages/admin/AdminGallery';
+import AdminSocialMedia from '../pages/admin/AdminSocialMedia';
 
 // Auth & Role Guards
 import ProtectedRoute from '../components/auth/ProtectedRoute';
@@ -127,6 +128,8 @@ export default function AppRoutes() {
         <Route path="offers" element={<AdminOffers />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="gallery" element={<AdminGallery />} />
+        <Route path="social-media" element={<AdminSocialMedia />} />
+        <Route path="social-links" element={<AdminSocialMedia />} />
       </Route>
     </Routes>
   );

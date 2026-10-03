@@ -12,6 +12,7 @@ import offerRoutes from './offer.routes.js';
 import reviewRoutes from './review.routes.js';
 import paymentRoutes from './payment.routes.js';
 import mediaRoutes from './media.routes.js';
+import socialRoutes from './social.routes.js';
 
 const router = Router();
 
@@ -29,5 +30,7 @@ router.use('/offers', offerRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/media', mediaRoutes);
+router.use('/social-links', socialRoutes);
+router.use('/social-media', socialRoutes); // Convenient alias
 
 export default router;

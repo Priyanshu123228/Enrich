@@ -10,6 +10,7 @@ import {
   Gift,
   Star,
   Camera,
+  Share2,
   ArrowLeft,
   LogOut,
   ShieldCheck,
@@ -32,7 +33,8 @@ export default function AdminLayout() {
     { name: 'Categories', path: '/admin/categories', icon: Tag },
     { name: 'Media Gallery', path: '/admin/gallery', icon: Camera },
     { name: 'Offers & Promos', path: '/admin/offers', icon: Gift },
-    { name: 'Reviews Moderation', path: '/admin/reviews', icon: Star }
+    { name: 'Reviews Moderation', path: '/admin/reviews', icon: Star },
+    { name: 'Social Channels', path: '/admin/social-media', icon: Share2 }
   ];
 
   const handleLogout = async () => {
@@ -61,7 +63,7 @@ export default function AdminLayout() {
 
         <button
           onClick={() => setMobileNavOpen(!mobileNavOpen)}
-          className="p-2 rounded-lg text-stone-600 hover:bg-stone-100"
+          className="p-2 rounded-lg text-stone-600 hover:bg-stone-100 cursor-pointer"
         >
           {mobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>

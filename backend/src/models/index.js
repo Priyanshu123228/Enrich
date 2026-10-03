@@ -8,6 +8,7 @@ import { Review } from './Review.js';
 import { Payment } from './Payment.js';
 import { Media } from './Media.js';
 import { VerificationOTP } from './VerificationOTP.js';
+import { SocialLink } from './SocialLink.js';
 
 export {
   User,
@@ -19,7 +20,8 @@ export {
   Review,
   Payment,
   Media,
-  VerificationOTP
+  VerificationOTP,
+  SocialLink
 };
 
 export default {
@@ -32,6 +34,6 @@ export default {
   Review,
   Payment,
   Media,
-  VerificationOTP
+  VerificationOTP,
+  SocialLink
 };
-

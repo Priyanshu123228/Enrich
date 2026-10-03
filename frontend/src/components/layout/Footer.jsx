@@ -1,7 +1,31 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Scissors, Phone, Mail, MapPin, Clock } from 'lucide-react';
+import SocialIcon from '../common/SocialIcon';
+import socialService from '../../services/social.service';
 
 export default function Footer() {
+  const [socialLinks, setSocialLinks] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchSocial = async () => {
+      try {
+        const res = await socialService.getActiveSocialLinks();
+        if (isMounted && res && res.data) {
+          const list = Array.isArray(res.data) ? res.data : (res.data.data || []);
+          setSocialLinks(list);
+        }
+      } catch (e) {
+        // Silently fallback
+      }
+    };
+    fetchSocial();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <footer className="bg-stone-900 text-stone-300 pt-16 pb-12 border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,9 +44,33 @@ export default function Footer() {
             <p className="text-sm text-stone-400 leading-relaxed">
               Professional beauty care, bridal styling, hair, skin, and cosmetic clinic treatments in Sikar, Rajasthan.
             </p>
+
+            {/* Dynamic Active Social Icons */}
+            {socialLinks && socialLinks.length > 0 && (
+              <div className="pt-2 space-y-2">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                  Follow Us Online
+                </p>
+                <div className="flex flex-wrap gap-2.5">
+                  {socialLinks.map((link) => (
+                    <a
+                      key={link._id || link.platform}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-8 h-8 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white border border-stone-700 hover:border-rose-500/50 flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-xs"
+                      title={`${link.displayName} - ${link.handle || link.url}`}
+                    >
+                      <SocialIcon platform={link.platform} className="w-4 h-4" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center space-x-4 pt-1">
               <span className="text-xs bg-stone-800 text-stone-300 px-3 py-1 rounded-md border border-stone-700">
-                Licensed NYC Beauty Studio
+                Verified Salon & Aesthetic Clinic
               </span>
             </div>
           </div>
@@ -112,7 +160,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-stone-800 text-center text-xs text-stone-400 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} Enrich Beauty Parlour & Cosmetic Clinic. All rights reserved.</p>
+          <p>? {new Date().getFullYear()} Enrich Beauty Parlour & Cosmetic Clinic. All rights reserved.</p>
           <p className="text-stone-400">
             Appointments & Walk-ins Welcome
           </p>

@@ -7,7 +7,8 @@ import { reviewService } from '../services/review.service';
 import { mediaService } from '../services/media.service';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import VideoModal from '../components/gallery/VideoModal';
-import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
+import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider'; 
+import SocialMediaSection from '../components/SocialMediaSection';
 import { CardSkeleton } from '../components/common/SkeletonLoader';
 import {
   Calendar,
@@ -835,6 +836,11 @@ export default function Home() {
 
         </div>
       </section>
+
+      {/* =======================================================================
+          SECTION 7.5: SOCIAL MEDIA INTEGRATION ("Follow Our Journey")
+          ======================================================================= */}
+      <SocialMediaSection />
 
       {/* =========================================================================
           SECTION 8: CUSTOMER REVIEWS
