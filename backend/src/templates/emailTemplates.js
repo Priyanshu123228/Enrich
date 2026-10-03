@@ -178,8 +178,8 @@ const renderBaseLayout = ({ title, preheader, content }) => `
  */
 export const getWelcomeEmailHtml = ({ name, email }) => {
   const content = `
-    <h2 class="heading">Welcome to the Luxe Sanctuary, ${name.split(' ')[0]}</h2>
-    <p>We are delighted to welcome you to <strong>LuxeParlour</strong>. Your account has been registered successfully.</p>
+    <h2 class="heading">Welcome to the Enrich Beauty Parlour & Cosmetic Clinic, ${name.split(' ')[0]}</h2>
+    <p>We are delighted to welcome you to <strong>Enrich Beauty Parlour & Cosmetic Clinic</strong>. Your account has been registered successfully.</p>
     <p>As a valued client, you now have exclusive access to:</p>
     <ul style="color: #57534e; padding-left: 20px; margin: 16px 0;">
       <li style="margin-bottom: 8px;"><strong>Seamless 24/7 Appointments:</strong> Select master stylists and reserve sessions instantly.</li>
@@ -206,8 +206,8 @@ export const getWelcomeEmailHtml = ({ name, email }) => {
   `;
 
   return renderBaseLayout({
-    title: 'Welcome to LuxeParlour Salon & Spa',
-    preheader: 'Your VIP access to luxury beauty and spa treatments is ready.',
+    title: 'Welcome to Enrich Beauty Parlour & Cosmetic Clinic',
+    preheader: 'Your VIP access to beauty treatments is ready.',
     content
   });
 };
@@ -454,7 +454,7 @@ export const getPaymentReceiptHtml = ({
 
   return renderBaseLayout({
     title: `Payment Receipt: $${amount} for Booking #${bookingId}`,
-    preheader: `Receipt confirmed for your treatment at LuxeParlour.`,
+    preheader: `Receipt confirmed for your treatment at Enrich Beauty Parlour & Cosmetic Clinic .`,
     content
   });
 };
@@ -472,7 +472,7 @@ export const getAppointmentReminderHtml = ({
 }) => {
   const content = `
     <h2 class="heading">Friendly Reminder: Your Upcoming Visit</h2>
-    <p>Dear ${customerName}, your upcoming appointment at <strong>LuxeParlour</strong> is coming up tomorrow!</p>
+    <p>Dear ${customerName}, your upcoming appointment at <strong>Enrich Beauty Parlour & Cosmetic Clinic</strong> is coming up tomorrow!</p>
 
     <div class="info-card" style="border-left: 4px solid #f59e0b;">
       <table width="100%" cellpadding="0" cellspacing="0">
@@ -526,7 +526,7 @@ export const getVerificationOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =>
   const content = `
     <h2 class="heading">Verify Your Parlour Account</h2>
     <p>Hello ${name ? name.split(' ')[0] : 'Valued Client'},</p>
-    <p>Welcome to <strong>Enrich Salon & Spa Sanctuary</strong>! To complete your registration and activate your account, please enter the 6-digit verification code below:</p>
+    <p>Welcome to <strong>Enrich Beauty Parlour & Cosmetic Clinic</strong>! To complete your registration and activate your account, please enter the 6-digit verification code below:</p>
 
     <div style="text-align: center; margin: 32px 0 24px;">
       <div style="display: inline-block; background: #fafaf9; border: 2px dashed #e11d48; border-radius: 12px; padding: 18px 36px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
@@ -560,7 +560,7 @@ export const getPasswordResetOTPEmailHtml = ({ name, otp, expiryMinutes = 5 }) =
   const content = `
     <h2 class="heading" style="color: #be123c;">Reset Your Password</h2>
     <p>Hello ${name ? name.split(' ')[0] : 'Valued Client'},</p>
-    <p>We received a request to reset the password for your <strong>Enrich Salon</strong> account. Use the 6-digit security code below to proceed with setting a new password:</p>
+    <p>We received a request to reset the password for your <strong>Enrich Beauty Parlour & Cosmetic Clinic</strong> account. Use the 6-digit security code below to proceed with setting a new password:</p>
 
     <div style="text-align: center; margin: 32px 0 24px;">
       <div style="display: inline-block; background: #fafaf9; border: 2px dashed #be123c; border-radius: 12px; padding: 18px 36px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
