@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+﻿import { Routes, Route } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import AdminLayout from '../components/admin/AdminLayout';
 
@@ -6,6 +6,8 @@ import AdminLayout from '../components/admin/AdminLayout';
 import Home from '../pages/Home';
 import Services from '../pages/Services';
 import ServiceDetail from '../pages/ServiceDetail';
+import Cosmetics from '../pages/Cosmetics';
+import ProductDetail from '../pages/ProductDetail';
 import StaffList from '../pages/StaffList';
 import StaffDetail from '../pages/StaffDetail';
 import Gallery from '../pages/Gallery';
@@ -29,6 +31,7 @@ import Profile from '../pages/Profile';
 // Admin Console Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminAppointments from '../pages/admin/AdminAppointments';
+import AdminProducts from '../pages/admin/AdminProducts';
 import AdminInquiries from '../pages/admin/AdminInquiries';
 import AdminCustomers from '../pages/admin/AdminCustomers';
 import AdminStaff from '../pages/admin/AdminStaff';
@@ -51,6 +54,10 @@ export default function AppRoutes() {
         <Route index element={<Home />} />
         <Route path="services" element={<Services />} />
         <Route path="services/:id" element={<ServiceDetail />} />
+        <Route path="cosmetics" element={<Cosmetics />} />
+        <Route path="cosmetics/:id" element={<ProductDetail />} />
+        <Route path="products" element={<Cosmetics />} />
+        <Route path="products/:id" element={<ProductDetail />} />
         <Route path="staff" element={<StaffList />} />
         <Route path="staff/:id" element={<StaffDetail />} />
         <Route path="gallery" element={<Gallery />} />
@@ -122,6 +129,8 @@ export default function AppRoutes() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="appointments" element={<AdminAppointments />} />
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="cosmetics" element={<AdminProducts />} />
         <Route path="inquiries" element={<AdminInquiries />} />
         <Route path="customers" element={<AdminCustomers />} />
         <Route path="staff" element={<AdminStaff />} />

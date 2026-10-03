@@ -1,4 +1,4 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import healthRoutes from './health.routes.js';
 import authRoutes from './auth.routes.js';
 import serviceRoutes from './service.routes.js';
@@ -14,6 +14,7 @@ import paymentRoutes from './payment.routes.js';
 import mediaRoutes from './media.routes.js';
 import socialRoutes from './social.routes.js';
 import inquiryRoutes from './inquiry.routes.js';
+import productRoutes from './product.routes.js';
 
 const router = Router();
 
@@ -35,5 +36,7 @@ router.use('/social-links', socialRoutes);
 router.use('/social-media', socialRoutes); // Convenient alias
 router.use('/inquiries', inquiryRoutes);
 router.use('/contact', inquiryRoutes); // Convenient alias
+router.use('/products', productRoutes);
+router.use('/cosmetics', productRoutes); // Convenient alias
 
 export default router;
