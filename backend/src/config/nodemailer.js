@@ -4,11 +4,33 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Force global DNS lookups to IPv4 first
+// Force strict IPv4 resolution across all DNS resolvers and prototypes.
+// Cloud environments like Render lack outbound IPv6 routing. Nodemailer creates internal
+// instances of dns.Resolver and randomly picks IPv6 addresses from resolve6(), causing ENETUNREACH.
 try {
   dns.setDefaultResultOrder('ipv4first');
-} catch {
-  // Safe fallback
+} catch {}
+
+// 1. Disable resolve6 on dns namespace
+dns.resolve6 = function (hostname, options, callback) {
+  const cb = typeof options === 'function' ? options : callback;
+  if (typeof cb === 'function') cb(null, []);
+};
+
+if (dns.promises && dns.promises.resolve6) {
+  dns.promises.resolve6 = async () => [];
+}
+
+// 2. Disable resolve6 on dns.Resolver prototype (used internally by Nodemailer)
+if (dns.Resolver && dns.Resolver.prototype) {
+  dns.Resolver.prototype.resolve6 = function (hostname, options, callback) {
+    const cb = typeof options === 'function' ? options : callback;
+    if (typeof cb === 'function') cb(null, []);
+  };
+}
+
+if (dns.promises && dns.promises.Resolver && dns.promises.Resolver.prototype) {
+  dns.promises.Resolver.prototype.resolve6 = async () => [];
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,7 +42,7 @@ dotenv.config();
 
 /**
  * Configure Nodemailer Transporter
- * Uses connection pooling and strict IPv4 DNS lookup to eliminate connection latency and IPv6 issues
+ * Uses connection pooling and strict IPv4 DNS resolution to eliminate connection latency and ENETUNREACH errors.
  */
 export const createTransporter = () => {
   const host = process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com';
@@ -31,7 +53,7 @@ export const createTransporter = () => {
     .trim();
 
   return nodemailer.createTransport({
-    pool: true, // 🚀 Re-use persistent SMTP connection for fast, reliable delivery
+    pool: true,
     maxConnections: 3,
     maxMessages: 100,
     host,
@@ -40,12 +62,6 @@ export const createTransporter = () => {
     auth: {
       user,
       pass
-    },
-    // Strictly force IPv4 address resolution
-    lookup: (hostname, options, callback) => {
-      dns.lookup(hostname, { family: 4 }, (err, address) => {
-        callback(err, address, 4);
-      });
     },
     tls: {
       rejectUnauthorized: false
@@ -67,14 +83,14 @@ export const verifyEmailTransporter = async () => {
     const pass = (process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || '').trim();
 
     if (!user || !pass || pass === 'app_password_here' || pass === 'your_email_app_password') {
-      console.log('⚠️ Nodemailer SMTP: Running in simulated development mode.');
+      console.log('Nodemailer SMTP: Running in simulated development mode.');
       return false;
     }
     await transporter.verify();
-    console.log(`✅ Nodemailer SMTP Transporter connected successfully [${user}].`);
+    console.log('Nodemailer SMTP Transporter connected successfully [' + user + '].');
     return true;
   } catch (error) {
-    console.warn(`⚠️ Nodemailer SMTP Verification Notice: ${error.message}. Running in safe fallback mode.`);
+    console.warn('Nodemailer SMTP Verification Notice: ' + error.message + '. Running in safe fallback mode.');
     return false;
   }
 };
