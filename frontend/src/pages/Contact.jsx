@@ -203,7 +203,7 @@ export default function Contact() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="096679 00313"
+                    placeholder="96679 00313"
                     className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
                     disabled={isSubmitting}
                   />

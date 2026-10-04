@@ -273,11 +273,18 @@ export default function Home() {
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Location Badge */}
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-stone-200/90 text-stone-700 text-xs font-semibold tracking-wide shadow-xs">
-                <MapPin className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                <span className="truncate max-w-xs sm:max-w-md">{SALON_CONFIG.business.badge}</span>
-              </div>
+              {/* Location Badge (Clickable link to Google Maps) */}
+              <a
+                href={SALON_CONFIG.contact.googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View Enrich Salon location on Google Maps"
+                className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-white/95 hover:bg-rose-50/80 backdrop-blur-md border border-stone-200/90 hover:border-rose-300 text-stone-700 hover:text-rose-800 text-xs font-semibold tracking-wide shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer group max-w-full"
+              >
+                <MapPin className="w-3.5 h-3.5 text-rose-600 shrink-0 group-hover:scale-110 transition-transform" />
+                <span className="truncate max-w-xs sm:max-w-md md:max-w-lg">{SALON_CONFIG.business.badge}</span>
+                <ArrowRight className="w-3 h-3 text-stone-400 group-hover:text-rose-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </a>
 
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-stone-900 leading-[1.08]">

@@ -33,7 +33,7 @@ export default function About() {
           Premier Salon & Cosmetic Clinic in Sikar, Rajasthan
         </h1>
         <p className="text-stone-600 text-sm sm:text-base">
-          Located at Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001 (near Parshuram Park and Ramleela Maidan on Shetala Ka Bass Road), Enrich Beauty Parlour & Cosmetic Clinic provides attentive, tailored beauty treatments and cosmetic skincare designed around each client's individual needs.
+          Located at First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001, Enrich Beauty Parlour & Cosmetic Clinic provides attentive, tailored beauty treatments and cosmetic skincare designed around each client's individual needs.
         </p>
       </div>
 

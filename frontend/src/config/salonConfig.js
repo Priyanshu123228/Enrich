@@ -12,7 +12,7 @@ export const SALON_CONFIG = {
     name: 'Enrich Beauty Parlour & Cosmetic Clinic',
     shortName: 'Enrich Parlour',
     tagline: 'Hair, Makeup, Skin & Cosmetic Clinic Services in Sikar, Rajasthan',
-    badge: 'Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan',
+    badge: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar',
     description: 'A dedicated beauty boutique offering personalized hair color, precision styling, clinical skincare, and luxury nail services. Book your appointment online or visit our studio.',
     establishedYear: 2018,
   },
@@ -25,18 +25,18 @@ export const SALON_CONFIG = {
 
   // Contact & Concierge
   contact: {
-    phone: '096679 00313',
+    phone: '96679 00313',
     phoneFormatted: '+91 96679 00313',
-    phoneTel: 'tel:09667900313',
+    phoneTel: 'tel:9667900313',
     email: 'enrichparlour1212@gmail.com',
     emailMailto: 'mailto:enrichparlour1212@gmail.com',
     whatsapp: 'https://wa.me/919667900313',
     instagram: 'https://www.instagram.com/enrich_beauty25/',
     facebook: 'https://www.facebook.com/enrichparloursikar',
-    address: 'Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001',
-    addressShort: 'Shubham Apartment, Chandpol, Sikar',
-    directionsHint: 'Between main Chandpol circle and SH 8A. Dedicated parking and elevator access available on premises.',
-    googleMapsUrl: 'https://maps.google.com/?q=Enrich+Beauty+Parlour+Chandpol+Sikar+Rajasthan',
+    address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
+    addressShort: 'First Floor, Sharda Heights, Chandpol, Sikar',
+    directionsHint: 'Near Ramlila Maidan and Parshuram Park, Chandpol. Dedicated parking and easy premises access.',
+    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
   },
 
   // Operating Hours
@@ -49,14 +49,14 @@ export const SALON_CONFIG = {
 
   // Transit & Parking / Location Details
   location: {
-    address: 'Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001',
-    transitHint: 'Conveniently accessible via main State Highway SH 8A, Chandpol circle.',
+    address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
+    transitHint: 'Conveniently accessible near Ramlila Maidan / Parshuram Park, Chandpol, Sikar.',
     parkingHint: 'Dedicated customer parking spaces available in front of the premises.',
-    googleMapsUrl: 'https://maps.google.com/?q=Enrich+Beauty+Parlour+Chandpol+Sikar+Rajasthan',
+    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
   },
 
   transit: {
-    access: 'Conveniently accessible via main State Highway SH 8A, Chandpol, Sikar.',
+    access: 'Conveniently accessible near Ramlila Maidan and Parshuram Park, Chandpol, Sikar.',
     parking: 'Dedicated customer parking space available in front of the building complex.',
   },
 
