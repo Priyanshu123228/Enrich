@@ -515,7 +515,7 @@ export default function Cosmetics() {
                   </div>
                 </div>
 
-                {/* Price Display (Gated) */}
+                {/* Price Display (Interactive Blurred Gate) */}
                 {isAuthenticated ? (
                   <div className="flex items-baseline gap-3 p-3.5 bg-stone-50 rounded-2xl border border-stone-200/80">
                     <span className="text-2xl font-bold font-serif text-stone-900">
@@ -531,21 +531,37 @@ export default function Cosmetics() {
                     </span>
                   </div>
                 ) : (
-                  <div className="p-4 bg-rose-50/60 rounded-2xl border border-rose-200/80 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <Lock className="w-5 h-5 text-rose-700 shrink-0" />
-                      <div>
-                        <p className="text-xs font-bold text-stone-900">Member Exclusive Price</p>
-                        <p className="text-[11px] text-stone-500">Sign in to view product price & stock</p>
-                      </div>
+                  <Link
+                    to={`/login?redirect=/cosmetics/${quickViewProduct.slug || quickViewProduct._id}`}
+                    className="group relative p-4 bg-gradient-to-r from-rose-50/70 via-stone-50 to-rose-50/70 rounded-2xl border border-rose-200/80 hover:border-rose-300 flex items-center justify-between gap-3 overflow-hidden cursor-pointer shadow-2xs hover:shadow-xs transition-all"
+                    title="Click to sign in and view price"
+                  >
+                    {/* Blurred Price Background */}
+                    <div className="flex items-baseline gap-3 blur-md opacity-30 group-hover:opacity-20 transition-opacity select-none">
+                      <span className="text-2xl font-bold font-serif text-stone-900">
+                        ₹{quickViewProduct.price || 1299}
+                      </span>
+                      <span className="text-xs text-stone-400 line-through">
+                        ₹{quickViewProduct.originalPrice || 1699}
+                      </span>
                     </div>
-                    <Link
-                      to="/login?redirect=/cosmetics"
-                      className="px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-xs transition-all shrink-0"
-                    >
-                      Sign In
-                    </Link>
-                  </div>
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-between px-4 bg-white/70 backdrop-blur-xs group-hover:bg-white/80 transition-colors">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                          <Lock className="w-4 h-4 text-rose-700" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-stone-900">Clinical Price Locked</p>
+                          <p className="text-[10px] text-rose-700 font-semibold">Click to sign in & view price</p>
+                        </div>
+                      </div>
+                      <span className="px-3.5 py-1.5 rounded-xl bg-rose-700 group-hover:bg-rose-800 text-white text-xs font-bold shadow-xs transition-all shrink-0">
+                        Sign In
+                      </span>
+                    </div>
+                  </Link>
                 )}
 
                 {/* Description */}

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Sparkles, 
@@ -18,7 +18,10 @@ import {
   HelpCircle, 
   Clock, 
   Phone,
-  ChevronRight
+  ChevronRight,
+  ArrowRight,
+  X,
+  UserCheck
 } from 'lucide-react';
 import { productService } from '../services/product.service';
 import { useAuth } from '../context/AuthContext';
@@ -35,6 +38,7 @@ export default function ProductDetail() {
   const [error, setError] = useState('');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     fetchProductDetails();
@@ -108,7 +112,7 @@ export default function ProductDetail() {
 
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-1 text-stone-600 hover:text-stone-900 transition-colors"
+            className="inline-flex items-center gap-1 text-stone-600 hover:text-stone-900 transition-colors cursor-pointer"
           >
             <Share2 className="w-3.5 h-3.5" />
             <span>{copied ? 'Link Copied!' : 'Share'}</span>
@@ -119,6 +123,7 @@ export default function ProductDetail() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         {/* Main Product Showcase Section */}
         <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          
           {/* Left: Images Gallery */}
           <div className="lg:col-span-6 space-y-4">
             <div className="aspect-square rounded-3xl overflow-hidden bg-stone-100 border border-stone-200 relative group">
@@ -152,6 +157,7 @@ export default function ProductDetail() {
               </div>
             )}
           </div>
+
           {/* Right: Specifications & Direct Purchase CTA */}
           <div className="lg:col-span-6 space-y-6">
             <div>
@@ -182,27 +188,82 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Price Box */}
-            <div className="p-5 bg-stone-50 rounded-2xl border border-stone-200/80 flex items-baseline justify-between flex-wrap gap-2">
-              <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-serif font-bold text-stone-900">
-                  ₹{product.price.toLocaleString()}
-                </span>
-                {product.originalPrice > product.price && (
-                  <span className="text-base text-stone-400 line-through">
-                    ₹{product.originalPrice.toLocaleString()}
+            {/* Price Box with Interactive Blur when unauthenticated */}
+            {isAuthenticated ? (
+              <div className="p-5 bg-stone-50 rounded-2xl border border-stone-200/80 flex items-baseline justify-between flex-wrap gap-2">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-serif font-bold text-stone-900">
+                    ₹{product.price.toLocaleString()}
                   </span>
-                )}
-                {savings > 0 && (
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                    {savings}% Discount
-                  </span>
-                )}
+                  {product.originalPrice > product.price && (
+                    <span className="text-base text-stone-400 line-through">
+                      ₹{product.originalPrice.toLocaleString()}
+                    </span>
+                  )}
+                  {savings > 0 && (
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                      {savings}% Discount
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs font-bold text-emerald-700">
+                  ✓ In Stock ({product.stock} units available)
+                </div>
               </div>
-              <div className="text-xs font-bold text-emerald-700">
-                ✓✓ In Stock ({product.stock} units available)
+            ) : (
+              <div
+                onClick={() => setShowAuthModal(true)}
+                className="group relative p-6 bg-gradient-to-r from-rose-50/70 via-stone-50 to-rose-50/70 rounded-3xl border border-rose-200/90 hover:border-rose-300 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden select-none"
+                title="Click to sign in and unlock verified clinical pricing"
+              >
+                {/* Blurred Price in Background */}
+                <div className="flex items-baseline justify-between flex-wrap gap-2 blur-md opacity-30 group-hover:opacity-20 transition-opacity">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-serif font-bold text-stone-900">
+                      ₹{product.price || 1299}
+                    </span>
+                    <span className="text-base text-stone-400 line-through">
+                      ₹{product.originalPrice || 1699}
+                    </span>
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                      20% Discount
+                    </span>
+                  </div>
+                  <div className="text-xs font-bold text-emerald-700">
+                    ✓ In Stock (25 units available)
+                  </div>
+                </div>
+
+                {/* Floating Interactive Unlock Banner Overlay */}
+                <div className="absolute inset-0 flex items-center justify-between px-5 sm:px-6 bg-white/75 backdrop-blur-xs group-hover:bg-white/85 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform shrink-0 border border-rose-200">
+                      <Lock className="w-5 h-5 text-rose-700" />
+                    </div>
+                    <div>
+                      <span className="text-xs sm:text-sm font-bold text-stone-900 block font-serif">
+                        Clinical Price Locked
+                      </span>
+                      <span className="text-[11px] text-rose-700 font-semibold group-hover:underline">
+                        Click here to sign in & view price
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAuthModal(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-700 to-rose-600 group-hover:from-rose-600 group-hover:to-rose-500 text-white text-xs font-bold shadow-md shadow-rose-900/15 transition-all active:scale-95 shrink-0"
+                  >
+                    <span>Sign In</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Description */}
             <div>
@@ -246,15 +307,26 @@ export default function ProductDetail() {
 
             {/* Action Buttons */}
             <div className="pt-2 space-y-3">
-              <a
-                href={getWhatsAppUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all active:scale-98 cursor-pointer"
-              >
-                <MessageCircle className="w-5 h-5" />
-                Order Directly on WhatsApp (Fast Checkout)
-              </a>
+              {isAuthenticated ? (
+                <a
+                  href={getWhatsAppUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all active:scale-98 cursor-pointer"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  Order Directly on WhatsApp (Fast Checkout)
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAuthModal(true)}
+                  className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 shadow-md shadow-rose-900/20 transition-all active:scale-98 cursor-pointer"
+                >
+                  <Lock className="w-4 h-4" />
+                  Sign In to View Price & Order on WhatsApp
+                </button>
+              )}
 
               <Link
                 to="/contact"
@@ -296,10 +368,20 @@ export default function ProductDetail() {
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700">{rel.brand}</span>
                   <h4 className="font-serif font-bold text-sm text-stone-900 line-clamp-1 group-hover:text-rose-700">{rel.name}</h4>
-                  <div className="mt-2 flex items-baseline gap-2">
-                    <span className="font-serif font-bold text-sm text-stone-900">₹{rel.price.toLocaleString()}</span>
-                    {rel.originalPrice > rel.price && (
-                      <span className="text-xs text-stone-400 line-through">₹{rel.originalPrice.toLocaleString()}</span>
+                  
+                  <div className="mt-2">
+                    {isAuthenticated ? (
+                      <div className="flex items-baseline gap-2">
+                        <span className="font-serif font-bold text-sm text-stone-900">₹{rel.price.toLocaleString()}</span>
+                        {rel.originalPrice > rel.price && (
+                          <span className="text-xs text-stone-400 line-through">₹{rel.originalPrice.toLocaleString()}</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700">
+                        <Lock className="w-3 h-3" />
+                        Sign in for price
+                      </span>
                     )}
                   </div>
                 </Link>
@@ -308,6 +390,60 @@ export default function ProductDetail() {
           </div>
         )}
       </main>
+
+      {/* Interactive Sign-In Modal Dialog */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-stone-200 text-center space-y-6 animate-in zoom-in-95 duration-200">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 p-2 text-stone-400 hover:text-stone-700 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
+              aria-label="Close dialog"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Icon & Heading */}
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-rose-100 via-rose-50 to-amber-50 text-rose-700 flex items-center justify-center mx-auto shadow-xs border border-rose-200">
+              <Lock className="w-8 h-8 text-rose-700" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
+                Exclusive Salon Retail Access
+              </span>
+              <h3 className="text-xl font-serif font-bold text-stone-900 mt-2">
+                Sign In to Unlock Clinical Pricing
+              </h3>
+              <p className="text-xs text-stone-600 leading-relaxed max-w-xs mx-auto font-light">
+                Please sign in to view official formulation pricing, batch testing records, and direct WhatsApp checkout for <strong>{product.name}</strong>.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-3 pt-2">
+              <Link
+                to={`/login?redirect=/cosmetics/${id}`}
+                className="w-full inline-flex items-center justify-center px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 text-white font-bold text-xs tracking-wide shadow-md shadow-rose-900/20 transition-all cursor-pointer active:scale-95"
+              >
+                Sign In to My Account
+              </Link>
+
+              <Link
+                to={`/signup?redirect=/cosmetics/${id}`}
+                className="w-full inline-flex items-center justify-center px-6 py-3.5 rounded-2xl bg-white hover:bg-stone-50 text-stone-800 font-bold text-xs border border-stone-200 shadow-2xs transition-all cursor-pointer active:scale-95"
+              >
+                Create New Account
+              </Link>
+            </div>
+
+            <p className="text-[11px] text-stone-400">
+              Instant access • 100% Authentic Clinical Formulations
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
