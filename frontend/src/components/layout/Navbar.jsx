@@ -19,6 +19,15 @@ export default function Navbar() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const { user, isAuthenticated, logout } = useAuth();
+
+  const handleNavClick = () => {
+    setMobileMenuOpen(false);
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    } catch (_) {
+      window.scrollTo(0, 0);
+    }
+  };
   const navigate = useNavigate();
 
   const navLinks = [
@@ -237,7 +246,7 @@ export default function Navbar() {
               <NavLink
                 key={link.name}
                 to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={handleNavClick}
                 className={({ isActive }) =>
                   `block px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors ${
                     isActive
@@ -256,7 +265,7 @@ export default function Navbar() {
               <>
                 <Link
                   to="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={handleNavClick}
                   className="w-full text-center py-3 px-4 rounded-2xl bg-rose-50 text-rose-800 font-bold text-xs"
                 >
                   Customer Dashboard
@@ -264,7 +273,7 @@ export default function Navbar() {
 
                 <Link
                   to="/dashboard?tab=upcoming"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={handleNavClick}
                   className="w-full text-center py-2.5 px-4 rounded-2xl border border-stone-200 text-stone-700 font-semibold hover:bg-stone-50 text-xs"
                 >
                   My Appointments
@@ -272,7 +281,7 @@ export default function Navbar() {
 
                 <Link
                   to="/dashboard?tab=favorites"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={handleNavClick}
                   className="w-full text-center py-2.5 px-4 rounded-2xl border border-stone-200 text-stone-700 font-semibold hover:bg-stone-50 text-xs"
                 >
                   Saved Favorites
@@ -280,7 +289,7 @@ export default function Navbar() {
 
                 <Link
                   to="/dashboard?tab=profile"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={handleNavClick}
                   className="w-full text-center py-2.5 px-4 rounded-2xl border border-stone-300 text-stone-700 font-semibold hover:bg-stone-50 text-xs"
                 >
                   Profile Settings ({user?.name})
@@ -289,7 +298,7 @@ export default function Navbar() {
                 {user?.role === 'admin' && (
                   <Link
                     to="/admin/appointments"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={handleNavClick}
                     className="w-full text-center py-2.5 px-4 rounded-2xl bg-stone-100 text-stone-900 font-bold text-xs"
                   >
                     Admin: Master Appointments
@@ -309,7 +318,7 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/login"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={handleNavClick}
                 className="w-full text-center py-3 px-4 rounded-2xl border border-stone-300 text-stone-700 font-bold hover:bg-stone-50 text-xs"
               >
                 Sign In
@@ -318,7 +327,7 @@ export default function Navbar() {
 
             <Link
               to="/book"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={handleNavClick}
               className="w-full text-center py-3.5 px-5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 text-white font-bold shadow-md shadow-rose-900/20 text-xs tracking-wide"
             >
               Book Appointment
