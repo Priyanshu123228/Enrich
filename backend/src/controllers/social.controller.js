@@ -6,6 +6,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 /**
  * Starter social links seed for Enrich Beauty Parlour & Cosmetic Clinic
  */
+
 const DEFAULT_STARTER_LINKS = [
   {
     platform: 'instagram',
