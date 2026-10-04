@@ -10,8 +10,8 @@ const DEFAULT_STARTER_LINKS = [
   {
     platform: 'instagram',
     displayName: 'Instagram',
-    url: 'https://instagram.com/enrich_beauty_parlour_sikar',
-    handle: '@enrich_beauty_parlour_sikar',
+    url: 'https://www.instagram.com/enrich_beauty25/',
+    handle: '@enrich_beauty25',
     description: 'Daily hair transformations, bridal reels, and skincare tips.',
     isActive: true,
     order: 1
@@ -28,8 +28,8 @@ const DEFAULT_STARTER_LINKS = [
   {
     platform: 'facebook',
     displayName: 'Facebook',
-    url: 'https://facebook.com/enrichbeautyparlour',
-    handle: 'Enrich Beauty Parlour & Cosmetic Clinic',
+    url: 'https://www.facebook.com/enrichparloursikar',
+    handle: '@enrichparloursikar',
     description: 'Community updates, beauty workshops, and customer reviews.',
     isActive: true,
     order: 3
