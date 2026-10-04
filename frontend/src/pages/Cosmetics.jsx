@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { 
   Sparkles, 
+  Lock, 
   Search, 
   Filter, 
   Star, 
@@ -23,6 +24,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { productService } from '../services/product.service';
+import { useAuth } from '../context/AuthContext';
 import { resolveImageUrl, handleImageError } from '../utils/imageUrl';
 
 const CATEGORIES = [
