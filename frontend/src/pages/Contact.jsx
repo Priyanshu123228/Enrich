@@ -1,9 +1,12 @@
-import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle, Loader2, MessageSquare, Compass } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle, Loader2, MessageSquare, Compass, Lock, UserCheck } from 'lucide-react';
 import { inquiryService } from '../services/inquiry.service';
 import { SALON_CONFIG } from '../config/salonConfig';
+import { useAuth } from '../context/AuthContext';
 
 export default function Contact() {
+  const { user, isAuthenticated } = useAuth();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -16,8 +19,23 @@ export default function Contact() {
     message: ''
   });
 
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || ''
+      }));
+    }
+  }, [isAuthenticated, user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      setErrorMessage('Please sign in to your account to submit an inquiry.');
+      return;
+    }
     setErrorMessage('');
     setIsSubmitting(true);
 
@@ -25,13 +43,13 @@ export default function Contact() {
       await inquiryService.submitInquiry(formData);
       setSubmittedData({ ...formData });
       setFormSubmitted(true);
-      setFormData({ name: '', email: '', phone: '', message: '' });
+      setFormData({ name: user?.name || '', email: user?.email || '', phone: user?.phone || '', message: '' });
     } catch (err) {
       console.error('Inquiry submission error:', err);
       const apiErrMsg =
         err?.response?.data?.message ||
         err?.message ||
-        'Failed to submit inquiry. Please try again or call our front desk directly.';
+        'Failed to submit inquiry. Please make sure you are signed in and try again.';
       setErrorMessage(apiErrMsg);
     } finally {
       setIsSubmitting(false);
@@ -54,19 +72,19 @@ export default function Contact() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Contact Information & Hours */}
-        <div className="lg:col-span-5 space-y-8 bg-white p-8 rounded-xl border border-stone-200 shadow-xs">
+        <div className="lg:col-span-5 space-y-8 bg-white p-8 rounded-3xl border border-stone-200/90 shadow-xs">
           <h2 className="text-2xl font-serif font-bold text-stone-900">
             Salon Concierge
           </h2>
 
           <div className="space-y-6">
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-lg bg-stone-100 text-rose-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
                 <MapPin className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-stone-900 text-sm">Location</h4>
-                <p className="text-sm text-stone-600">
+                <h4 className="font-bold text-stone-900 text-sm font-serif">Location</h4>
+                <p className="text-sm text-stone-600 mt-0.5">
                   {SALON_CONFIG.contact.address}<br />
                   <span className="text-xs text-stone-500">({SALON_CONFIG.contact.directionsHint})</span>
                 </p>
@@ -75,9 +93,9 @@ export default function Contact() {
                     href={SALON_CONFIG.location.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-xs font-semibold text-rose-700 hover:text-rose-800 underline"
+                    className="inline-flex items-center text-xs font-bold text-rose-700 hover:text-rose-800"
                   >
-                    <Compass className="w-3.5 h-3.5 mr-1" />
+                    <Compass className="w-3.5 h-3.5 mr-1 text-rose-600" />
                     Open in Google Maps
                   </a>
                 </div>
@@ -85,12 +103,12 @@ export default function Contact() {
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-lg bg-stone-100 text-rose-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
                 <Phone className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-stone-900 text-sm">Direct Phone</h4>
-                <a href={SALON_CONFIG.contact.phoneTel} className="text-sm text-stone-800 hover:text-rose-700 font-medium">
+                <h4 className="font-bold text-stone-900 text-sm font-serif">Direct Phone</h4>
+                <a href={SALON_CONFIG.contact.phoneTel} className="text-sm text-stone-800 hover:text-rose-700 font-semibold mt-0.5 block">
                   {SALON_CONFIG.contact.phone}
                 </a>
                 <p className="text-xs text-stone-400">Front desk & appointment assistance</p>
@@ -98,129 +116,160 @@ export default function Contact() {
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-lg bg-stone-100 text-rose-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
                 <Mail className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-stone-900 text-sm">Email Inquiries</h4>
-                <a href={SALON_CONFIG.contact.emailMailto} className="text-sm text-stone-800 hover:text-rose-700 font-medium">
+                <h4 className="font-bold text-stone-900 text-sm font-serif">Email Inquiries</h4>
+                <a href={SALON_CONFIG.contact.emailMailto} className="text-sm text-stone-800 hover:text-rose-700 font-semibold mt-0.5 block">
                   {SALON_CONFIG.contact.email}
                 </a>
               </div>
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 rounded-lg bg-stone-100 text-rose-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-stone-900 text-sm">Salon Timings</h4>
-                <p className="text-sm text-stone-600">{SALON_CONFIG.hours.weekday}</p>
+                <h4 className="font-bold text-stone-900 text-sm font-serif">Salon Timings</h4>
+                <p className="text-sm text-stone-600 mt-0.5">{SALON_CONFIG.hours.weekday}</p>
                 <p className="text-sm text-stone-600">{SALON_CONFIG.hours.sunday}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Contact Form */}
-        <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-xl border border-stone-200 shadow-xs">
+        {/* Contact Form Section */}
+        <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-stone-200/90 shadow-xs">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">
-              Send an Inquiry
-            </h2>
-            <MessageSquare className="w-5 h-5 text-stone-400" />
+            <div>
+              <h2 className="text-2xl font-serif font-bold text-stone-900">
+                Send an Inquiry
+              </h2>
+              <p className="text-xs text-stone-500 mt-1">
+                Receive prompt consultation answers from our specialist team.
+              </p>
+            </div>
+            {isAuthenticated && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Verified Account</span>
+              </span>
+            )}
           </div>
 
-          {errorMessage && (
-            <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-lg flex items-start space-x-3 text-rose-800 text-xs sm:text-sm">
-              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold">Submission Issue</p>
-                <p className="mt-0.5 text-rose-700">{errorMessage}</p>
+          {!isAuthenticated ? (
+            /* Gated Sign-In Prompt */
+            <div className="py-12 px-6 sm:px-10 text-center bg-gradient-to-b from-[#FAF7F2] to-[#F5EFE6] rounded-3xl border border-stone-200 space-y-5">
+              <div className="w-14 h-14 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center mx-auto shadow-xs border border-rose-200">
+                <Lock className="w-7 h-7 text-rose-700" />
               </div>
-            </div>
-          )}
-
-          {formSubmitted ? (
-            <div className="p-8 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-center space-y-4 animate-in fade-in duration-300">
-              <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto shadow-xs">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-serif font-bold text-lg text-emerald-950">Inquiry Received Successfully</h4>
-                <p className="text-xs sm:text-sm text-emerald-800 mt-1 max-w-md mx-auto leading-relaxed">
-                  Thank you, <strong>{submittedData?.name}</strong>! We have saved your inquiry in our concierge system. A confirmation email has been sent to <strong>{submittedData?.email}</strong> and our team will get back to you within one business day.
+              
+              <div className="space-y-2 max-w-md mx-auto">
+                <h3 className="text-xl font-serif font-bold text-stone-900">
+                  Sign In to Send an Inquiry
+                </h3>
+                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-light">
+                  To protect client communication and ensure priority follow-up from our dermatologists and senior stylists, please sign in to your Enrich account.
                 </p>
               </div>
 
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setFormSubmitted(false)}
-                  className="px-5 py-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3.5">
+                <Link
+                  to="/login?redirect=/contact"
+                  className="inline-flex items-center justify-center px-7 py-3.5 rounded-2xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 shadow-md shadow-rose-900/20 transition-all cursor-pointer active:scale-95"
                 >
-                  Send Another Inquiry
-                </button>
+                  Sign In to Continue
+                </Link>
+                <Link
+                  to="/signup?redirect=/contact"
+                  className="inline-flex items-center justify-center px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-bold text-stone-700 bg-white hover:bg-stone-50 border border-stone-200 shadow-2xs transition-all cursor-pointer active:scale-95"
+                >
+                  Create an Account
+                </Link>
               </div>
+            </div>
+          ) : formSubmitted ? (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center space-y-4">
+              <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
+              <h3 className="text-lg font-bold text-emerald-900 font-serif">Inquiry Submitted Successfully</h3>
+              <p className="text-xs sm:text-sm text-emerald-700 max-w-md mx-auto">
+                Thank you, <strong>{submittedData?.name}</strong>. Our front desk concierge has received your request and will follow up shortly at <strong>{submittedData?.email}</strong>.
+              </p>
+              <button
+                onClick={() => setFormSubmitted(false)}
+                className="mt-4 px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-colors cursor-pointer"
+              >
+                Send Another Message
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase text-stone-700 mb-1">
-                  Full Name <span className="text-rose-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. Sarah Jenkins"
-                  className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
-                  disabled={isSubmitting}
-                />
-              </div>
+              {errorMessage && (
+                <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl flex items-center text-xs text-rose-700 space-x-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-stone-700 mb-1">
-                    Email Address <span className="text-rose-600">*</span>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                    Your Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Priyanshu Saini"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-500/30 text-xs text-stone-900 bg-stone-50/50"
+                    disabled={isSubmitting}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                    Email Address *
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="sarah@example.com"
-                    className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase text-stone-700 mb-1">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="96679 00313"
-                    className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
+                    placeholder="enrichparlour1212@gmail.com"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-500/30 text-xs text-stone-900 bg-stone-50/50"
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-stone-700 mb-1">
-                  Your Message or Inquiry <span className="text-rose-600">*</span>
+                <label className="block text-xs font-bold text-stone-700 mb-1">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="96679 00313"
+                  className="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-500/30 text-xs text-stone-900 bg-stone-50/50"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 mb-1">
+                  Your Message or Question *
                 </label>
                 <textarea
-                  rows="4"
                   required
+                  rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Inquire about treatments, appointments, bridal packages, or custom clinic services..."
-                  className="w-full px-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
+                  placeholder="Tell us about the services, bridal styling, or skincare package you are interested in..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-500/30 text-xs text-stone-900 bg-stone-50/50"
                   disabled={isSubmitting}
                 />
               </div>
@@ -228,17 +277,17 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 disabled:bg-stone-500 text-white text-xs font-semibold shadow-sm transition-colors cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 text-white font-bold text-xs tracking-wide shadow-md shadow-rose-900/20 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin text-rose-300" />
-                    Submitting...
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting Inquiry...
                   </>
                 ) : (
                   <>
-                    <Send className="w-3.5 h-3.5 mr-2 text-rose-300" />
-                    Submit Inquiry
+                    <Send className="w-4 h-4 mr-2" />
+                    Send Inquiry Message
                   </>
                 )}
               </button>

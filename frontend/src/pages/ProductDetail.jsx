@@ -2,6 +2,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Sparkles, 
+  Lock, 
   Star, 
   ShieldCheck, 
   Leaf, 
@@ -20,9 +21,11 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { productService } from '../services/product.service';
+import { useAuth } from '../context/AuthContext';
 import { resolveImageUrl, handleImageError } from '../utils/imageUrl';
 
 export default function ProductDetail() {
+  const { isAuthenticated } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
 

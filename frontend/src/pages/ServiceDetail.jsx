@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { serviceService } from '../services/service.service';
+import { useAuth } from '../context/AuthContext';
 import { customerService } from '../services/customer.service';
 import {
   Clock,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function ServiceDetail() {
+  const { isAuthenticated } = useAuth();
   const { id } = useParams();
 
   const [service, setService] = useState(null);
@@ -201,30 +203,48 @@ export default function ServiceDetail() {
               </h1>
             </div>
 
-            {/* Pricing Section */}
-            <div className="flex items-baseline justify-between">
-              <div>
-                <p className="text-[11px] text-stone-500 uppercase tracking-wider">Service Fee</p>
-                <div className="flex items-baseline space-x-2 mt-0.5">
-                  <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                    ${service.discountPrice > 0 ? service.discountPrice : service.price}
-                  </span>
-                  {service.discountPrice > 0 && (
-                    <span className="text-xs text-stone-400 line-through">
-                      ${service.price}
+            {/* Pricing Section (Gated) */}
+            {isAuthenticated ? (
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <p className="text-[11px] text-stone-500 uppercase tracking-wider">Service Fee</p>
+                  <div className="flex items-baseline space-x-2 mt-0.5">
+                    <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+                      ₹{service.discountPrice > 0 ? service.discountPrice : service.price}
                     </span>
-                  )}
+                    {service.discountPrice > 0 && (
+                      <span className="text-xs text-stone-400 line-through">
+                        ₹{service.price}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <p className="text-[11px] text-stone-500 uppercase tracking-wider">Duration</p>
+                  <p className="text-sm font-semibold text-stone-800 mt-0.5 flex items-center justify-end">
+                    <Clock className="w-3.5 h-3.5 mr-1 text-rose-700" />
+                    {service.duration} Minutes
+                  </p>
                 </div>
               </div>
-
-              <div className="text-right">
-                <p className="text-[11px] text-stone-500 uppercase tracking-wider">Duration</p>
-                <p className="text-sm font-semibold text-stone-800 mt-0.5 flex items-center justify-end">
-                  <Clock className="w-3.5 h-3.5 mr-1 text-rose-700" />
-                  {service.duration} Minutes
-                </p>
+            ) : (
+              <div className="p-4 bg-rose-50/60 rounded-2xl border border-rose-200/80 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <Lock className="w-4 h-4 text-rose-700 shrink-0" />
+                  <div>
+                    <span className="text-xs font-bold text-stone-900 block">Member Exclusive Rate</span>
+                    <span className="text-[11px] text-stone-500">Sign in to unlock treatment price</span>
+                  </div>
+                </div>
+                <Link
+                  to={`/login?redirect=/services/${service._id || service.slug}`}
+                  className="px-3.5 py-1.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs shrink-0 transition-all"
+                >
+                  Sign In
+                </Link>
               </div>
-            </div>
+            )}
 
             {/* Meta summary badges */}
             <div className="grid grid-cols-2 gap-3 py-3 border-y border-stone-100 text-xs text-stone-600">

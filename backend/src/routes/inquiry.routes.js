@@ -12,7 +12,7 @@ import { authorizeRoles } from '../middlewares/role.middleware.js';
 const router = Router();
 
 // Public Route: Submit an inquiry / contact request
-router.post('/', createInquiry);
+router.post('/', verifyJWT, createInquiry);
 
 // Admin-only Routes
 router.use(verifyJWT, authorizeRoles('admin'));

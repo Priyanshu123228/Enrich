@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { serviceService } from '../services/service.service';
 import { staffService } from '../services/staff.service';
@@ -13,6 +14,7 @@ import SocialMediaSection from '../components/SocialMediaSection';
 import { CardSkeleton } from '../components/common/SkeletonLoader';
 import {
   Calendar,
+  Lock,
   ShieldCheck,
   CheckCircle,
   ArrowRight,
@@ -45,6 +47,7 @@ const ICON_MAP = {
 };
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
   // ---------------------------------------------------------------------------
   // Data States
   // ---------------------------------------------------------------------------
@@ -391,9 +394,19 @@ export default function Home() {
                       </div>
 
                       <div className="text-right shrink-0 flex flex-col items-end justify-center pl-2">
-                        <span className="text-sm font-bold text-stone-900 font-serif">
-                          {SALON_CONFIG.currency.symbol}{service.price}
-                        </span>
+                        {isAuthenticated ? (
+                          <span className="text-sm font-bold text-stone-900 font-serif">
+                            {SALON_CONFIG.currency.symbol}{service.price}
+                          </span>
+                        ) : (
+                          <Link
+                            to="/login?redirect=/#services"
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-full border border-rose-200/80 transition-colors whitespace-nowrap"
+                          >
+                            <Lock className="w-2.5 h-2.5" />
+                            <span>Sign in</span>
+                          </Link>
+                        )}
                         <Link
                           to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
                           className="text-[11px] font-bold text-rose-600 hover:text-rose-700 mt-1 inline-flex items-center group-hover:translate-x-0.5 transition-all"
@@ -513,9 +526,19 @@ export default function Home() {
                           <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
                           {service.duration || 45} mins
                         </span>
-                        <span className="text-sm font-bold text-stone-900 font-mono">
-                          {SALON_CONFIG.currency.symbol}{service.price}
-                        </span>
+                        {isAuthenticated ? (
+                          <span className="text-sm font-bold text-stone-900 font-mono">
+                            {SALON_CONFIG.currency.symbol}{service.price}
+                          </span>
+                        ) : (
+                          <Link
+                            to="/login?redirect=/#services"
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2 py-0.5 rounded-full border border-rose-200/80 transition-colors"
+                          >
+                            <Lock className="w-2.5 h-2.5" />
+                            <span>Sign in for price</span>
+                          </Link>
+                        )}
                       </div>
 
                       <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-1">

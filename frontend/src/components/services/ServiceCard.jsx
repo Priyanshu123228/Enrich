@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Star, ArrowRight, Calendar, Heart } from 'lucide-react';
+import { Clock, Star, ArrowRight, Calendar, Heart, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { customerService } from '../../services/customer.service';
 
@@ -115,19 +115,31 @@ export default function ServiceCard({ service, onBook }) {
       {/* Card Footer Actions */}
       <div className="p-5 pt-0 border-t border-stone-100 mt-2 flex items-center justify-between">
         <div>
-          <div className="flex items-baseline space-x-1.5">
-            <span className="text-xl font-bold font-serif text-stone-900">
-              ${service.discountPrice > 0 ? service.discountPrice : service.price}
-            </span>
-            {service.discountPrice > 0 && (
-              <span className="text-xs text-stone-400 line-through">
-                ${service.price}
+          {isAuthenticated ? (
+            <>
+              <div className="flex items-baseline space-x-1.5">
+                <span className="text-xl font-bold font-serif text-stone-900">
+                  ₹{service.discountPrice > 0 ? service.discountPrice : service.price}
+                </span>
+                {service.discountPrice > 0 && (
+                  <span className="text-xs text-stone-400 line-through">
+                    ₹{service.price}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] text-stone-500 uppercase tracking-wider block">
+                Standard Pricing
               </span>
-            )}
-          </div>
-          <span className="text-[10px] text-stone-500 uppercase tracking-wider block">
-            Pricing standard
-          </span>
+            </>
+          ) : (
+            <Link
+              to="/login?redirect=/services"
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200/80 transition-colors"
+            >
+              <Lock className="w-3 h-3 text-rose-600" />
+              <span>Sign in for price</span>
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center space-x-2">

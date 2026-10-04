@@ -49,6 +49,7 @@ const SKIN_TYPES = [
 ];
 
 export default function Cosmetics() {
+  const { isAuthenticated } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -377,20 +378,32 @@ export default function Cosmetics() {
                           {product.description}
                         </p>
 
-                        {/* Price Row */}
-                        <div className="mt-4 flex items-baseline gap-2 pt-3 border-t border-stone-100">
-                          <span className="text-xl font-bold font-serif text-stone-900">
-                            ₹{product.price.toLocaleString()}
-                          </span>
-                          {product.originalPrice > product.price && (
-                            <span className="text-xs text-stone-400 line-through">
-                              ₹{product.originalPrice.toLocaleString()}
-                            </span>
-                          )}
-                          {savings > 0 && (
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                              Save {savings}%
-                            </span>
+                        {/* Price Row (Gated for signed-in users) */}
+                        <div className="mt-4 pt-3 border-t border-stone-100">
+                          {isAuthenticated ? (
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-xl font-bold font-serif text-stone-900">
+                                ₹{product.price.toLocaleString()}
+                              </span>
+                              {product.originalPrice > product.price && (
+                                <span className="text-xs text-stone-400 line-through">
+                                  ₹{product.originalPrice.toLocaleString()}
+                                </span>
+                              )}
+                              {savings > 0 && (
+                                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                  Save {savings}%
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <Link
+                              to="/login?redirect=/cosmetics"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50/80 hover:bg-rose-100 text-rose-800 border border-rose-200/80 text-xs font-bold transition-all"
+                            >
+                              <Lock className="w-3.5 h-3.5 text-rose-600" />
+                              <span>Sign in to view price</span>
+                            </Link>
                           )}
                         </div>
                       </div>
@@ -398,15 +411,25 @@ export default function Cosmetics() {
 
                     {/* Card Footer Actions */}
                     <div className="p-5 pt-0 flex flex-col gap-2">
-                      <a
-                        href={getWhatsAppUrl(product)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-all active:scale-95"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        Order on WhatsApp
-                      </a>
+                      {isAuthenticated ? (
+                        <a
+                          href={getWhatsAppUrl(product)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-all active:scale-95"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          Order on WhatsApp
+                        </a>
+                      ) : (
+                        <Link
+                          to="/login?redirect=/cosmetics"
+                          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-stone-700 bg-stone-100 hover:bg-rose-50 hover:text-rose-700 border border-stone-200 transition-all active:scale-95"
+                        >
+                          <Lock className="w-3.5 h-3.5 text-rose-600" />
+                          Sign in to Order
+                        </Link>
+                      )}
 
                       <Link
                         to={`/cosmetics/${product.slug || product._id}`}
@@ -490,20 +513,38 @@ export default function Cosmetics() {
                   </div>
                 </div>
 
-                {/* Price Display */}
-                <div className="flex items-baseline gap-3 p-3.5 bg-stone-50 rounded-2xl border border-stone-200/80">
-                  <span className="text-2xl font-bold font-serif text-stone-900">
-                    ₹{quickViewProduct.price.toLocaleString()}
-                  </span>
-                  {quickViewProduct.originalPrice > quickViewProduct.price && (
-                    <span className="text-sm text-stone-400 line-through">
-                      ₹{quickViewProduct.originalPrice.toLocaleString()}
+                {/* Price Display (Gated) */}
+                {isAuthenticated ? (
+                  <div className="flex items-baseline gap-3 p-3.5 bg-stone-50 rounded-2xl border border-stone-200/80">
+                    <span className="text-2xl font-bold font-serif text-stone-900">
+                      ₹{quickViewProduct.price.toLocaleString()}
                     </span>
-                  )}
-                  <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full ml-auto">
-                    In Stock ({quickViewProduct.stock || 20} available)
-                  </span>
-                </div>
+                    {quickViewProduct.originalPrice > quickViewProduct.price && (
+                      <span className="text-sm text-stone-400 line-through">
+                        ₹{quickViewProduct.originalPrice.toLocaleString()}
+                      </span>
+                    )}
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full ml-auto">
+                      In Stock ({quickViewProduct.stock || 20} available)
+                    </span>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-rose-50/60 rounded-2xl border border-rose-200/80 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <Lock className="w-5 h-5 text-rose-700 shrink-0" />
+                      <div>
+                        <p className="text-xs font-bold text-stone-900">Member Exclusive Price</p>
+                        <p className="text-[11px] text-stone-500">Sign in to view product price & stock</p>
+                      </div>
+                    </div>
+                    <Link
+                      to="/login?redirect=/cosmetics"
+                      className="px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-xs transition-all shrink-0"
+                    >
+                      Sign In
+                    </Link>
+                  </div>
+                )}
 
                 {/* Description */}
                 <p className="text-xs text-stone-600 leading-relaxed">
