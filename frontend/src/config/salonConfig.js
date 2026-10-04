@@ -31,6 +31,8 @@ export const SALON_CONFIG = {
     email: 'enrichparlour1212@gmail.com',
     emailMailto: 'mailto:enrichparlour1212@gmail.com',
     whatsapp: 'https://wa.me/919667900313',
+    instagram: 'https://www.instagram.com/enrich_beauty25/',
+    facebook: 'https://www.facebook.com/enrichparloursikar',
     address: 'Shubham Apartment, SH 8A, Chandpol, Sikar, Rajasthan 332001',
     addressShort: 'Shubham Apartment, Chandpol, Sikar',
     directionsHint: 'Between main Chandpol circle and SH 8A. Dedicated parking and elevator access available on premises.',

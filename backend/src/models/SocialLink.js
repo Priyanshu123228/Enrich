@@ -14,13 +14,13 @@ export const PLATFORM_META = {
   instagram: {
     displayName: 'Instagram',
     defaultDescription: 'Daily hair transformations, bridal reels, and skincare tips.',
-    placeholderUrl: 'https://instagram.com/enrich_beauty_parlour_sikar',
+    placeholderUrl: 'https://www.instagram.com/enrich_beauty25/',
     color: '#E1306C'
   },
   facebook: {
     displayName: 'Facebook',
     defaultDescription: 'Community updates, beauty workshops, and customer reviews.',
-    placeholderUrl: 'https://facebook.com/enrichbeautyparlour',
+    placeholderUrl: 'https://www.facebook.com/enrichparloursikar',
     color: '#1877F2'
   },
   threads: {

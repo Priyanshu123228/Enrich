@@ -26,32 +26,32 @@ const SUPPORTED_PLATFORMS = [
   {
     id: 'instagram',
     name: 'Instagram',
-    placeholder: 'https://instagram.com/enrich_beauty_parlour_sikar',
-    defaultHandle: '@enrich_beauty_parlour_sikar',
+    placeholder: 'https://www.instagram.com/enrich_beauty25/',
+    defaultHandle: '@enrich_beauty25',
     defaultDesc: 'Daily hair transformations, bridal reels, and skincare tips.',
     color: '#E1306C'
   },
   {
     id: 'facebook',
     name: 'Facebook',
-    placeholder: 'https://facebook.com/enrichbeautyparlour',
-    defaultHandle: '@enrichbeautyparlour',
+    placeholder: 'https://www.facebook.com/enrichparloursikar',
+    defaultHandle: '@enrichparloursikar',
     defaultDesc: 'Community updates, beauty workshops, and customer reviews.',
     color: '#1877F2'
   },
   {
     id: 'threads',
     name: 'Threads',
-    placeholder: 'https://threads.net/@enrich_beauty_parlour_sikar',
-    defaultHandle: '@enrich_beauty_parlour_sikar',
+    placeholder: 'https://threads.net/@enrich_beauty25',
+    defaultHandle: '@enrich_beauty25',
     defaultDesc: 'Behind-the-scenes conversations, announcements, and salon thoughts.',
     color: '#000000'
   },
   {
     id: 'youtube',
     name: 'YouTube',
-    placeholder: 'https://youtube.com/@enrichbeautyparlour',
-    defaultHandle: '@enrichbeautyparlour',
+    placeholder: 'https://youtube.com/@enrichparloursikar',
+    defaultHandle: '@enrichparloursikar',
     defaultDesc: 'Full treatment walk-throughs, makeover vlogs, and beauty tutorials.',
     color: '#FF0000'
   },
@@ -74,8 +74,8 @@ const SUPPORTED_PLATFORMS = [
   {
     id: 'tiktok',
     name: 'TikTok',
-    placeholder: 'https://tiktok.com/@enrichbeautyparlour',
-    defaultHandle: '@enrichbeautyparlour',
+    placeholder: 'https://tiktok.com/@enrichparloursikar',
+    defaultHandle: '@enrichparloursikar',
     defaultDesc: 'Trending styling reels, quick beauty hacks, and client reactions.',
     color: '#000000'
   }
@@ -654,7 +654,7 @@ export default function AdminSocialMedia() {
                   type="text"
                   value={formData.url}
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  placeholder="https://instagram.com/enrich_beauty_parlour_sikar"
+                  placeholder="https://www.instagram.com/enrich_beauty25/"
                   className="w-full px-3.5 py-2 rounded-xl border border-stone-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900"
                 />
               </div>
@@ -671,7 +671,7 @@ export default function AdminSocialMedia() {
                 type="text"
                 value={formData.handle}
                 onChange={(e) => setFormData({ ...formData, handle: e.target.value })}
-                placeholder="e.g. @enrich_beauty_parlour_sikar or +91 96679 00313"
+                placeholder="e.g. @enrich_beauty25 or +91 96679 00313"
                 className="w-full px-3.5 py-2 rounded-xl border border-stone-200 text-xs focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900"
               />
             </div>
