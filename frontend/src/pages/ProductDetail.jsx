@@ -63,7 +63,7 @@ export default function ProductDetail() {
   const getWhatsAppUrl = () => {
     if (!product) return '#';
     const text = `Hello Enrich Beauty & Cosmetic Clinic! I am interested in purchasing "${product.name}" (Price: ₹${product.price}). Please share order instructions and salon delivery details.`;
-    return `https://wa.me/919024659116?text=${encodeURIComponent(text)}`;
+    return `https://wa.me/919667900313?text=${encodeURIComponent(text)}`;
   };
 
   if (loading) {

@@ -104,7 +104,7 @@ export default function Cosmetics() {
 
   const getWhatsAppUrl = (product) => {
     const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to inquire about / purchase "${product.name}" (₹${product.price}). Please share order details and availability.`;
-    return `https://wa.me/919024659116?text=${encodeURIComponent(text)}`;
+    return `https://wa.me/919667900313?text=${encodeURIComponent(text)}`;
   };
   return (
     <div className="bg-stone-50/60 min-h-screen pb-20">
