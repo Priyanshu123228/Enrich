@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 /**
  * Global Axios API Client instance configured with base URL and timeouts
@@ -17,15 +17,15 @@ const api = axios.create({
 });
 
 /**
- * Extract clean, human-readable, and actionable error details from any API error
+ * Extract clean, human-friendly, and non-panicking error details from any API error
  */
 export const extractErrorMessage = (error) => {
-  // Case 1: No response received (Network down, backend not running, timeout, offline, CORS)
+  // Case 1: No response received (Network disconnected, offline, timeout, server warming up, CORS)
   if (!error.response) {
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
       return {
-        message: 'You are currently offline. Please check your internet connection and try again.',
-        errors: ['No active internet connection'],
+        message: 'You appear to be offline. Please check your internet connection and try again.',
+        errors: [],
         status: 0,
         isNetworkError: true
       };
@@ -33,8 +33,8 @@ export const extractErrorMessage = (error) => {
 
     if (error.code === 'ECONNABORTED' || (error.message && error.message.toLowerCase().includes('timeout'))) {
       return {
-        message: 'Request timed out: The server took too long to respond. Please try again.',
-        errors: ['Request timeout'],
+        message: 'Connection is taking longer than usual. Please check your internet connection and try again.',
+        errors: [],
         status: 408,
         isNetworkError: true
       };
@@ -43,16 +43,16 @@ export const extractErrorMessage = (error) => {
     if (error.code === 'ERR_CANCELED') {
       return {
         message: 'The request was cancelled.',
-        errors: ['Request cancelled'],
+        errors: [],
         status: 499,
         isNetworkError: false
       };
     }
 
-    const targetUrl = api.defaults?.baseURL || 'http://localhost:5000/api/v1';
+    // Friendly, reassuring message that never exposes backend URLs or server startup details
     return {
-      message: `Unable to connect to backend server (${targetUrl}). Please ensure the backend server is running and accessible.`,
-      errors: [`Connection failed: ${error.message || 'Server unreachable'}`],
+      message: 'Unable to connect to the salon service right now. Please check your internet connection or try again in a few moments.',
+      errors: [],
       status: 0,
       isNetworkError: true
     };
@@ -101,9 +101,17 @@ export const extractErrorMessage = (error) => {
     }
   } else if (typeof data === 'string' && data.trim().length > 0) {
     if (data.includes('<html') || data.includes('<!DOCTYPE')) {
-      message = `Server returned HTTP ${status} (${error.response.statusText || 'Error'})`;
+      message = 'Our services are briefly updating. Please try again shortly.';
     } else if (data.length < 300) {
       message = data.trim();
+    }
+  }
+
+  // Filter out any technical backend URLs from message if present
+  if (message && message.includes('http')) {
+    message = message.replace(/https?:\/\/[^\s\)]+/g, '').replace(/\(\s*\)/g, '').trim();
+    if (!message) {
+      message = 'Unable to connect to the salon service right now. Please try again in a few moments.';
     }
   }
 
@@ -120,19 +128,19 @@ export const extractErrorMessage = (error) => {
     // Status-code specific descriptive messages
     switch (status) {
       case 400:
-        message = 'Invalid request. Please verify the submitted data.';
+        message = 'Invalid request. Please verify the submitted information.';
         break;
       case 401:
-        message = 'Authentication required. Your session may have expired.';
+        message = 'Authentication required. Please sign in to continue.';
         break;
       case 403:
         message = 'Access forbidden. You do not have permission or verification is required.';
         break;
       case 404:
-        message = 'The requested resource or endpoint was not found.';
+        message = 'The requested item or page was not found.';
         break;
       case 409:
-        message = 'Conflict detected: A record with this information already exists.';
+        message = 'An account or record with this information already exists.';
         break;
       case 422:
         message = 'Unable to process the submitted data. Please check field requirements.';
@@ -141,25 +149,25 @@ export const extractErrorMessage = (error) => {
         message = 'Too many requests. Please wait a moment before trying again.';
         break;
       case 500:
-        message = 'Internal server error occurred on the backend. Please try again.';
+        message = 'Something went wrong on our end. Please try again in a moment.';
         break;
       case 502:
-        message = 'Bad Gateway: Backend server is temporarily unreachable or starting up.';
+        message = 'Our salon system is currently warming up. Please try again in a few seconds.';
         break;
       case 503:
-        message = 'Service Unavailable: Backend is temporarily offline for maintenance.';
+        message = 'Our salon services are briefly undergoing maintenance. Please check back in a few moments.';
         break;
       case 504:
-        message = 'Gateway Timeout: Backend server took too long to complete request.';
+        message = 'Connection is taking longer than expected. Please try again.';
         break;
       default:
-        message = error.response.statusText || `Request failed with status ${status}`;
+        message = 'Something went wrong. Please try again in a moment.';
     }
   }
 
   return {
     message,
-    errors: errorsList.length > 0 ? errorsList : [message],
+    errors: errorsList.length > 0 ? errorsList : [],
     status,
     isNetworkError: false,
     data: data?.data || data || null
@@ -207,4 +215,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
