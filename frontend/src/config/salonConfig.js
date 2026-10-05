@@ -84,7 +84,7 @@ export const SALON_CONFIG = {
       value: 'Sikar, RJ',
       label: 'Prime Location',
       title: 'Prime Location',
-      description: 'Easily accessible at Shubham Apartment on State Highway 8A, Chandpol.',
+      description: 'Easily accessible at Sharda Heights near Ramlila Maidan / Parshuram Park, Chandpol, Sikar.',
     },
   ],
 

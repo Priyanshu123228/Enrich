@@ -462,7 +462,7 @@ export const seedDefaultMedia = asyncHandler(async (req, res) => {
     },
     {
       title: 'Sunlit Glass Facade & Salon Entrance',
-      description: 'Enrich Beauty Parlour & Cosmetic Clinic situated at Shubham Apartment, SH 8A, Chandpol, Sikar.',
+      description: 'Enrich Beauty Parlour & Cosmetic Clinic situated at First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001.',
       type: 'photo',
       category: 'Salon Exterior',
       url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1600&q=80',
