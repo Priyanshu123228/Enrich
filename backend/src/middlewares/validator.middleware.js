@@ -130,14 +130,14 @@ export const validateVerifyResetOTP = (req, res, next) => {
  * Validate Reset Password inputs
  */
 export const validateResetPassword = (req, res, next) => {
-  const { email, otp, newPassword, confirmPassword } = req.body;
+  const { email, otp, resetToken, newPassword, confirmPassword } = req.body;
   const errors = [];
 
   if (!email || !EMAIL_REGEX.test(email.trim())) {
     errors.push('Valid email address is required');
   }
-  if (!otp || !OTP_REGEX.test(otp.toString().trim())) {
-    errors.push('A valid 6-digit verification code is required');
+  if (!resetToken && (!otp || !OTP_REGEX.test(otp.toString().trim()))) {
+    errors.push('A valid 6-digit verification code or verified reset session is required');
   }
   if (!newPassword || newPassword.length < 6) {
     errors.push('New password must be at least 6 characters long');

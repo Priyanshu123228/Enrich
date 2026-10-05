@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 import { emailService } from '../services/email.service.js';
 import { otpService } from '../services/otp.service.js';
@@ -337,8 +338,19 @@ export const verifyResetOTP = asyncHandler(async (req, res) => {
     enteredOtp: otp
   });
 
+  // Generate verified reset token valid for 15 minutes
+  const resetToken = jwt.sign(
+    { userId: user._id, email: normalizedEmail, purpose: 'password_reset' },
+    process.env.JWT_SECRET || 'default_jwt_secret',
+    { expiresIn: '15m' }
+  );
+
   return res.status(200).json(
-    new ApiResponse(200, { email: normalizedEmail, verified: true }, 'Reset code verified successfully. Please enter your new password.')
+    new ApiResponse(
+      200,
+      { email: normalizedEmail, verified: true, resetToken },
+      'Reset code verified successfully. Please enter your new password.'
+    )
   );
 });
 
@@ -348,7 +360,7 @@ export const verifyResetOTP = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const resetPassword = asyncHandler(async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+  const { email, otp, resetToken, newPassword } = req.body;
   const normalizedEmail = email.toLowerCase().trim();
 
   const user = await User.findOne({ email: normalizedEmail }).select('+password');
@@ -356,18 +368,30 @@ export const resetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Invalid or expired password reset request.');
   }
 
-  // If OTP was not already consumed in separate step or to re-verify atomically
-  try {
+  let isAuthorized = false;
+
+  // 1. Verify resetToken if provided
+  if (resetToken) {
+    try {
+      const decoded = jwt.verify(resetToken, process.env.JWT_SECRET || 'default_jwt_secret');
+      if (decoded.email === normalizedEmail && decoded.purpose === 'password_reset') {
+        isAuthorized = true;
+      }
+    } catch {
+      // Fallback to OTP check if token expired
+    }
+  }
+
+  // 2. If no valid resetToken, verify OTP directly
+  if (!isAuthorized) {
+    if (!otp) {
+      throw new ApiError(400, 'Verification code or valid reset session is required.');
+    }
     await otpService.verifyOTP({
       userId: user._id,
       type: 'password_reset',
       enteredOtp: otp
     });
-  } catch (err) {
-    // If user already verified at previous step, check if OTP was consumed or reject
-    if (!err.message.includes('No active verification code')) {
-      throw err;
-    }
   }
 
   // Update password (pre-save hook will hash it)
