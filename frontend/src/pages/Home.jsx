@@ -879,11 +879,11 @@ export default function Home() {
       {/* =========================================================================
           SECTION 7: GALLERY / PARLOUR MEDIA (LUMINOUS STUDIO SHOWCASE)
           ========================================================================= */}
-      <section className="bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-20 sm:py-28 lg:py-32 my-8 sm:my-12 border-y border-stone-200/80 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-10 sm:space-y-12">
+      <section className="w-full bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-16 sm:py-24 lg:py-28 border-y border-stone-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
           
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-stone-200/90 pb-7 sm:pb-8">
-            <div className="space-y-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-stone-200/90 pb-6 sm:pb-7">
+            <div className="space-y-2">
               <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
                 Studio Portfolio
               </span>
@@ -905,7 +905,7 @@ export default function Home() {
           </div>
 
           {/* Gallery Category Filter Tabs */}
-          <div className="flex items-center gap-3 overflow-x-auto pb-4 pt-1 scrollbar-none">
+          <div className="flex items-center gap-2.5 overflow-x-auto pb-3 pt-1 scrollbar-none">
             {galleryCategories.map((cat) => {
               const isActive = activeGalleryCategory.toLowerCase() === cat.toLowerCase();
               return (
@@ -913,7 +913,7 @@ export default function Home() {
                   key={cat}
                   type="button"
                   onClick={() => setActiveGalleryCategory(cat)}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                  className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                     isActive
                       ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
                       : 'bg-white text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200/90 shadow-2xs hover:shadow-xs'
@@ -927,7 +927,7 @@ export default function Home() {
 
           {/* Media Items Grid */}
           {filteredGalleryMedia.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-9 lg:gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
               {filteredGalleryMedia.slice(0, 6).map((item, idx) => {
                 const isVideo = item.mediaType === 'video' || !!item.videoUrl;
                 const isTransformation = item.mediaType === 'before_after' || (!!item.beforeImage && !!item.afterImage);
