@@ -294,6 +294,42 @@ export default function Contact() {
             </form>
           )}
         </div>
+            </div>
+
+      {/* Studio Location Live Map Section */}
+      <div className="bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs">
+        <div className="p-6 sm:p-8 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+              Live Map & Directions
+            </span>
+            <h3 className="text-xl font-serif font-bold text-stone-900">
+              Find Us at Sharda Heights, Sikar
+            </h3>
+            <p className="text-xs text-stone-500 font-light">
+              {SALON_CONFIG.contact.address}
+            </p>
+          </div>
+          <a
+            href={SALON_CONFIG.location.googleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center px-5 py-2.5 bg-rose-700 hover:bg-rose-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+          >
+            <Compass className="w-3.5 h-3.5 mr-1.5" />
+            Navigate on Google Maps
+          </a>
+        </div>
+        <div className="w-full h-80 sm:h-96 relative">
+          <iframe
+            title="Enrich Salon Location Map"
+            src={SALON_CONFIG.location.mapEmbedUrl || 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed'}
+            className="w-full h-full border-0"
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
       </div>
     </div>
   );

@@ -36,7 +36,8 @@ export const SALON_CONFIG = {
     address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
     addressShort: 'First Floor, Sharda Heights, Chandpol, Sikar',
     directionsHint: 'Near Ramlila Maidan and Parshuram Park, Chandpol. Dedicated parking and easy premises access.',
-    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
+    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=First+Floor+Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed',
   },
 
   // Operating Hours
@@ -52,7 +53,8 @@ export const SALON_CONFIG = {
     address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
     transitHint: 'Conveniently accessible near Ramlila Maidan / Parshuram Park, Chandpol, Sikar.',
     parkingHint: 'Dedicated customer parking spaces available in front of the premises.',
-    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
+    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=First+Floor+Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
+    mapEmbedUrl: 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed',
   },
 
   transit: {

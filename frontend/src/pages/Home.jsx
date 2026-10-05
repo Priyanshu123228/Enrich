@@ -1116,114 +1116,122 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          SECTION 10: LOCATION & VISIT INFORMATION
-          ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs">
-          <div className="grid grid-cols-1 lg:grid-cols-12">
-            
-            {/* Location Text Information */}
-            <div className="lg:col-span-6 p-8 sm:p-10 space-y-6">
-              <div className="space-y-1">
-                <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-                  Studio Location
-                </span>
-                <h2 className="text-2xl font-serif font-bold text-stone-900">
-                  Visiting {SALON_CONFIG.business.name}
-                </h2>
-                <p className="text-xs text-stone-500">
-                  Conveniently situated in Sikar with dedicated parking and elevator access.
-                </p>
+            SECTION 10: LOCATION & VISIT INFORMATION
+            ========================================================================= */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs">
+            <div className="grid grid-cols-1 lg:grid-cols-12">
+              
+              {/* Location Text Information */}
+              <div className="lg:col-span-6 p-8 sm:p-10 space-y-6">
+                <div className="space-y-1.5">
+                  <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+                    Studio Location
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+                    Visiting {SALON_CONFIG.business.name}
+                  </h2>
+                  <p className="text-xs sm:text-sm text-stone-500 font-light">
+                    Conveniently situated in Sikar with dedicated customer parking and easy road access.
+                  </p>
+                </div>
+
+                <div className="space-y-4 text-xs sm:text-sm">
+                  <a
+                    href={SALON_CONFIG.location.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start space-x-3 group cursor-pointer p-2 -mx-2 rounded-xl hover:bg-stone-50 transition-colors"
+                  >
+                    <MapPin className="w-5 h-5 text-rose-700 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <p className="font-semibold text-stone-900 group-hover:text-rose-700 transition-colors">Address</p>
+                      <p className="text-stone-600 mt-0.5 leading-relaxed">{SALON_CONFIG.contact.address}</p>
+                    </div>
+                  </a>
+
+                  <div className="flex items-start space-x-3 p-2 -mx-2">
+                    <Train className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-stone-900">Transit & Access</p>
+                      <p className="text-stone-600 mt-0.5">
+                        {SALON_CONFIG.location.transitHint}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-2 -mx-2">
+                    <Car className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-stone-900">Parking</p>
+                      <p className="text-stone-600 mt-0.5">
+                        {SALON_CONFIG.location.parkingHint}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-2 -mx-2">
+                    <Phone className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-stone-900">Concierge Desk</p>
+                      <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-600 hover:text-rose-700 font-medium mt-0.5 block">
+                        {SALON_CONFIG.contact.phone} | {SALON_CONFIG.contact.email}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex flex-wrap gap-3">
+                  <a
+                    href={SALON_CONFIG.location.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-5 py-3 bg-gradient-to-r from-rose-700 to-rose-800 hover:from-rose-800 hover:to-rose-900 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-900/15 cursor-pointer active:scale-95"
+                  >
+                    <Compass className="w-4 h-4 mr-1.5" />
+                    Open in Google Maps
+                  </a>
+
+                  <a
+                    href={SALON_CONFIG.contact.phoneTel}
+                    className="inline-flex items-center px-5 py-3 bg-white hover:bg-stone-50 text-stone-800 border border-stone-300 rounded-xl text-xs font-bold transition-colors shadow-2xs cursor-pointer active:scale-95"
+                  >
+                    <Phone className="w-4 h-4 mr-1.5 text-rose-700" />
+                    Call Desk (96679 00313)
+                  </a>
+                </div>
               </div>
 
-              <div className="space-y-4 text-xs">
-                <div className="flex items-start space-x-3">
-                  <MapPin className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-stone-900">Address</p>
-                    <p className="text-stone-600 mt-0.5">{SALON_CONFIG.contact.address}</p>
+              {/* Interactive Google Map Embed Card */}
+              <div className="lg:col-span-6 bg-stone-100 border-t lg:border-t-0 lg:border-l border-stone-200/90 relative min-h-[380px] sm:min-h-[440px] flex flex-col justify-between overflow-hidden">
+                <iframe
+                  title="Enrich Beauty Parlour & Cosmetic Clinic Location Map"
+                  src={SALON_CONFIG.location.mapEmbedUrl || 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed'}
+                  className="w-full h-full min-h-[340px] grow border-0"
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+                <div className="p-3.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 flex items-center justify-between gap-3 z-10">
+                  <div className="flex items-center space-x-2 text-xs text-stone-700 min-w-0">
+                    <MapPin className="w-4 h-4 text-rose-700 shrink-0" />
+                    <span className="truncate font-semibold">{SALON_CONFIG.contact.addressShort}</span>
                   </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Train className="w-4 h-4 text-stone-700 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-stone-900">Transit & Access</p>
-                    <p className="text-stone-600 mt-0.5">
-                      {SALON_CONFIG.location.transitHint}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Car className="w-4 h-4 text-stone-700 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-stone-900">Parking</p>
-                    <p className="text-stone-600 mt-0.5">
-                      {SALON_CONFIG.location.parkingHint}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Phone className="w-4 h-4 text-stone-700 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-stone-900">Concierge Desk</p>
-                    <p className="text-stone-600 mt-0.5">
-                      {SALON_CONFIG.contact.phone} | {SALON_CONFIG.contact.email}
-                    </p>
-                  </div>
+                  <a
+                    href={SALON_CONFIG.location.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-[11px] font-bold transition-all shadow-xs inline-flex items-center shrink-0"
+                  >
+                    Get Directions
+                    <ArrowRight className="w-3 h-3 ml-1" />
+                  </a>
                 </div>
               </div>
 
-              <div className="pt-2 flex flex-wrap gap-3">
-                <a
-                  href={SALON_CONFIG.location.googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer"
-                >
-                  <Compass className="w-3.5 h-3.5 mr-1.5 text-rose-400" />
-                  Get Directions
-                </a>
-
-                <a
-                  href={SALON_CONFIG.contact.phoneTel}
-                  className="inline-flex items-center px-4 py-2.5 bg-white hover:bg-stone-50 text-stone-800 border border-stone-300 rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer"
-                >
-                  <Phone className="w-3.5 h-3.5 mr-1.5 text-stone-600" />
-                  Call Concierge
-                </a>
-              </div>
             </div>
-
-            {/* Map Card */}
-            <div className="lg:col-span-6 bg-stone-100 border-t lg:border-t-0 lg:border-l border-stone-200 p-8 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-white border border-stone-200 flex items-center justify-center text-rose-700 shadow-sm">
-                <MapPin className="w-7 h-7" />
-              </div>
-              <div>
-                <h4 className="font-serif font-bold text-stone-900 text-base">
-                  {SALON_CONFIG.contact.addressShort}
-                </h4>
-                <p className="text-xs text-stone-500 mt-1.5 max-w-xs leading-relaxed">
-                  {SALON_CONFIG.contact.directionsHint}
-                </p>
-              </div>
-              <a
-                href={SALON_CONFIG.location.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 bg-white hover:bg-stone-50 text-stone-900 border border-stone-300 rounded-lg text-xs font-semibold transition-colors shadow-xs inline-flex items-center"
-              >
-                Open in Google Maps
-                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-              </a>
-            </div>
-
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* =========================================================================
           SECTION 11: APPOINTMENT CTA (ROYAL BERRY LUXURY BANNER)
