@@ -879,33 +879,33 @@ export default function Home() {
       {/* =========================================================================
           SECTION 7: GALLERY / PARLOUR MEDIA (LUMINOUS STUDIO SHOWCASE)
           ========================================================================= */}
-      <section className="bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-16 sm:py-24 border-y border-stone-200/80 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-8">
+      <section className="bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-20 sm:py-28 lg:py-32 my-8 sm:my-12 border-y border-stone-200/80 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-10 sm:space-y-12">
           
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200/90 pb-5">
-            <div className="space-y-1">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-stone-200/90 pb-7 sm:pb-8">
+            <div className="space-y-2.5">
               <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
                 Studio Portfolio
               </span>
-              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
                 Lookbook & Parlour Media
               </h2>
-              <p className="text-xs sm:text-sm text-stone-600 max-w-xl">
+              <p className="text-xs sm:text-sm text-stone-600 max-w-2xl leading-relaxed">
                 Browse our real salon transformations, high-definition photo gallery, video tutorials, and bridal looks.
               </p>
             </div>
 
             <Link
               to="/gallery"
-              className="inline-flex items-center text-xs sm:text-sm font-bold text-rose-700 hover:text-rose-800 shrink-0 group"
+              className="inline-flex items-center text-xs sm:text-sm font-bold text-rose-700 hover:text-rose-800 shrink-0 group transition-colors py-1"
             >
               Full Media Archive
-              <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 ml-1.5 transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
           {/* Gallery Category Filter Tabs */}
-          <div className="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center gap-3 overflow-x-auto pb-4 pt-1 scrollbar-none">
             {galleryCategories.map((cat) => {
               const isActive = activeGalleryCategory.toLowerCase() === cat.toLowerCase();
               return (
@@ -913,10 +913,10 @@ export default function Home() {
                   key={cat}
                   type="button"
                   onClick={() => setActiveGalleryCategory(cat)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                  className={`px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-rose-600 text-white shadow-xs'
-                      : 'bg-white text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200/90 shadow-2xs'
+                      ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
+                      : 'bg-white text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200/90 shadow-2xs hover:shadow-xs'
                   }`}
                 >
                   {cat}
@@ -927,7 +927,7 @@ export default function Home() {
 
           {/* Media Items Grid */}
           {filteredGalleryMedia.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-9 lg:gap-10">
               {filteredGalleryMedia.slice(0, 6).map((item, idx) => {
                 const isVideo = item.mediaType === 'video' || !!item.videoUrl;
                 const isTransformation = item.mediaType === 'before_after' || (!!item.beforeImage && !!item.afterImage);
@@ -961,7 +961,7 @@ export default function Home() {
                     }}
                   >
                     {/* Media Thumbnail Container */}
-                    <div className="relative h-64 w-full overflow-hidden bg-stone-100">
+                    <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-stone-100">
                       <img
                         src={thumbUrl}
                         alt={item.title || 'Parlour gallery photo'}
@@ -974,14 +974,14 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       {/* Top Badges */}
-                      <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between z-10">
-                        <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/95 border border-stone-200 text-stone-800 backdrop-blur-xs shadow-xs">
+                      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                        <span className="px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/95 border border-stone-200 text-stone-800 backdrop-blur-xs shadow-xs">
                           {item.category || 'Studio'}
                         </span>
                         
                         {isVideo && (
-                          <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-rose-600 text-white flex items-center shadow-xs">
-                            <Video className="w-3 h-3 mr-1" />
+                          <span className="px-3.5 py-1.5 rounded-full text-[10px] font-bold bg-rose-600 text-white flex items-center shadow-xs">
+                            <Video className="w-3 h-3 mr-1.5" />
                             {item.duration ? `${item.duration}s` : 'Video'}
                           </span>
                         )}
@@ -1002,12 +1002,12 @@ export default function Home() {
                     </div>
 
                     {/* Text Details */}
-                    <div className="p-5 bg-white border-t border-stone-100">
-                      <h4 className="font-serif font-bold text-sm text-stone-900 group-hover:text-rose-700 transition-colors truncate">
+                    <div className="p-6 sm:p-7 bg-white border-t border-stone-100/90 space-y-1.5">
+                      <h4 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors truncate">
                         {item.title || 'Studio Showcase'}
                       </h4>
                       {item.description && (
-                        <p className="text-xs text-stone-500 line-clamp-1 mt-1 font-light">
+                        <p className="text-xs text-stone-500 line-clamp-2 mt-1 font-light leading-relaxed">
                           {item.description}
                         </p>
                       )}
@@ -1017,8 +1017,8 @@ export default function Home() {
               })}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl border border-stone-200 p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
-              <Camera className="w-8 h-8 text-stone-400 mx-auto" />
+            <div className="bg-white rounded-3xl border border-stone-200 p-12 text-center max-w-md mx-auto space-y-4 shadow-xs my-6">
+              <Camera className="w-9 h-9 text-stone-400 mx-auto" />
               <p className="text-xs text-stone-500">
                 No gallery media found for "{activeGalleryCategory}".
               </p>
