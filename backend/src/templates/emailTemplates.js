@@ -9,7 +9,7 @@ const SALON_CONSTANTS = {
   shortName: 'Enrich Parlour',
   tagline: 'Luxury Hair, Skin & Clinical Aesthetic Studio',
   address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
-  mapsUrl: 'https://maps.app.goo.gl/9y5L3u3fU5W9qF636',
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=First+Floor+Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
   phone: '96679 00313',
   phoneFormatted: '+91 96679 00313',
   email: 'enrichparlour1212@gmail.com',
