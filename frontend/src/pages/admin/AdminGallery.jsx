@@ -151,7 +151,7 @@ export default function AdminGallery() {
         type: formData.type,
         category: formData.category,
         url: effectiveUrl,
-        thumbnail: formData.thumbnail || effectiveUrl,
+        thumbnail: (formData.type === "photo" ? effectiveUrl : (formData.thumbnail || effectiveUrl)),
         duration: formData.duration ? Number(formData.duration) : 0,
         displayOrder: Number(formData.displayOrder) || 0,
         isFeatured: formData.isFeatured,
@@ -371,7 +371,7 @@ export default function AdminGallery() {
               {/* Thumbnail Container */}
               <div className="relative h-48 w-full bg-stone-100 overflow-hidden">
                 <img
-                  src={resolveImageUrl(item.thumbnail || item.url, DEFAULT_SALON_PLACEHOLDER)}
+                  src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />

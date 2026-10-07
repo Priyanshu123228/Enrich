@@ -376,7 +376,11 @@ export const updateMedia = asyncHandler(async (req, res) => {
   if (description !== undefined) media.description = description;
   if (type) media.type = type;
   if (category) media.category = category;
-  if (thumbnail) media.thumbnail = thumbnail;
+  if (type === 'photo' || media.type === 'photo') {
+    media.thumbnail = url || media.url;
+  } else if (thumbnail) {
+    media.thumbnail = thumbnail;
+  }
   if (duration !== undefined) media.duration = Number(duration);
   if (displayOrder !== undefined) media.displayOrder = Number(displayOrder);
   if (isFeatured !== undefined) media.isFeatured = isFeatured === 'true' || isFeatured === true;
