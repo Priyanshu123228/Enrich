@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, ExternalLink, MessageSquare, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
+import { Star, ExternalLink, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { reviewService } from '../services/review.service';
 import { SALON_CONFIG } from '../config/salonConfig';
 
@@ -30,17 +30,19 @@ function GoogleIcon({ className = "w-5 h-5" }) {
 }
 
 /**
- * Star Rating Display
+ * Star Rating Display Component
  */
 function StarRating({ rating = 5, size = "w-4 h-4" }) {
-  const numericRating = Math.round(Number(rating) || 5);
+  const numericRating = Math.max(0, Math.min(5, Number(rating) || 5));
   return (
-    <div className="flex items-center space-x-0.5 text-amber-400">
-      {[...Array(5)].map((_, i) => (
+    <div className="flex items-center space-x-0.5 text-amber-400" aria-label={`${numericRating} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((star) => (
         <Star
-          key={i}
+          key={star}
           className={`${size} ${
-            i < numericRating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'
+            star <= Math.round(numericRating)
+              ? 'fill-amber-400 text-amber-400'
+              : 'fill-stone-200 text-stone-200'
           }`}
         />
       ))}
@@ -49,15 +51,15 @@ function StarRating({ rating = 5, size = "w-4 h-4" }) {
 }
 
 /**
- * Clean Avatar Component
+ * Reviewer Avatar with graceful initial fallback
  */
 function ReviewerAvatar({ authorName, authorPhotoUrl }) {
   const [imgError, setImgError] = useState(false);
-  const initials = (authorName || 'Client')
+  const initials = (authorName || 'G')
     .split(' ')
     .filter(Boolean)
-    .slice(0, 2)
     .map((n) => n[0])
+    .slice(0, 2)
     .join('')
     .toUpperCase() || 'G';
 
@@ -88,29 +90,19 @@ function ReviewerAvatar({ authorName, authorPhotoUrl }) {
 export default function GoogleReviews({ className = "" }) {
   const [googleData, setGoogleData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchReviews = async () => {
       setIsLoading(true);
-      setHasError(false);
-
       try {
-        const res = await reviewService.getGoogleReviews();
-        if (isMounted) {
-          if (res?.data) {
-            setGoogleData(res.data);
-          } else if (res?.success === false) {
-            setHasError(true);
-          }
+        const response = await reviewService.getGoogleReviews();
+        if (isMounted && response?.data) {
+          setGoogleData(response.data);
         }
       } catch (err) {
-        console.warn('[GoogleReviews] Could not load live Google reviews, using fallback link:', err?.message);
-        if (isMounted) {
-          setHasError(true);
-        }
+        console.warn('Google Places API notice:', err?.response?.data?.message || err?.message);
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -125,14 +117,13 @@ export default function GoogleReviews({ className = "" }) {
     };
   }, []);
 
-  // Fallback defaults from configuration
   const defaultMapsUrl =
     SALON_CONFIG.location?.googleMapsUrl ||
-    'https://www.google.com/maps/search/?api=1&query=First+Floor+Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001';
+    'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk';
 
-  const businessName = googleData?.businessName || SALON_CONFIG.business?.name || 'Enrich Beauty Parlour & Cosmetic Clinic';
-  const rating = Number(googleData?.rating || 4.8).toFixed(1);
-  const userRatingCount = googleData?.userRatingCount || 512;
+  const businessName = googleData?.businessName || SALON_CONFIG.business?.name || 'Enrich Ladies Beauty Parlor';
+  const rating = googleData?.rating != null ? Number(googleData.rating).toFixed(1) : null;
+  const userRatingCount = googleData?.userRatingCount != null ? Number(googleData.userRatingCount) : null;
   const googleMapsUri = googleData?.googleMapsUri || defaultMapsUrl;
   const reviews = Array.isArray(googleData?.reviews) ? googleData.reviews : [];
 
@@ -147,7 +138,7 @@ export default function GoogleReviews({ className = "" }) {
             Google Business Reviews
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span className="text-[11px] font-semibold text-emerald-700">Verified Listing</span>
+          <span className="text-[11px] font-semibold text-emerald-700">Verified Profile</span>
         </div>
 
         <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
@@ -155,34 +146,40 @@ export default function GoogleReviews({ className = "" }) {
         </h2>
         
         <p className="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto leading-relaxed font-light">
-          Real feedback and 5-star experiences shared by clients at our salon & cosmetic clinic in Sikar.
+          Real feedback and reviews shared by clients for <strong>{businessName}</strong>, First Floor, Sharda Heights, Sikar.
         </p>
 
         {/* Aggregate Rating Summary Card */}
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-          <div className="flex items-center space-x-3 bg-white px-5 py-3 rounded-2xl border border-stone-200/90 shadow-xs">
-            <div className="text-3xl font-serif font-bold text-stone-900 leading-none">
-              {rating}
+        {rating && (
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+            <div className="flex items-center space-x-3 bg-white px-5 py-3 rounded-2xl border border-stone-200/90 shadow-xs">
+              <div className="text-3xl font-serif font-bold text-stone-900 leading-none">
+                {rating}
+              </div>
+              <div className="space-y-0.5 text-left">
+                <StarRating rating={rating} size="w-4 h-4" />
+                <p className="text-[11px] text-stone-500 font-medium">
+                  {userRatingCount ? (
+                    <>Based on <strong className="text-stone-800 font-bold">{userRatingCount}</strong> Google reviews</>
+                  ) : (
+                    'Verified Google Rating'
+                  )}
+                </p>
+              </div>
             </div>
-            <div className="space-y-0.5 text-left">
-              <StarRating rating={rating} size="w-4 h-4" />
-              <p className="text-[11px] text-stone-500 font-medium">
-                Based on <strong className="text-stone-800 font-bold">{userRatingCount}+</strong> Google reviews
-              </p>
-            </div>
-          </div>
 
-          <a
-            href={googleMapsUri}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs font-bold border border-stone-200 transition-all hover:border-stone-300 shadow-2xs"
-          >
-            <GoogleIcon className="w-4 h-4" />
-            <span>View on Google Maps</span>
-            <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-          </a>
-        </div>
+            <a
+              href={googleMapsUri}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs font-bold border border-stone-200 transition-all hover:border-stone-300 shadow-2xs"
+            >
+              <GoogleIcon className="w-4 h-4" />
+              <span>View on Google Maps</span>
+              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Loading State */}
@@ -211,7 +208,7 @@ export default function GoogleReviews({ className = "" }) {
         </div>
       )}
 
-      {/* Reviews Grid (When Reviews Available from Places API) */}
+      {/* Reviews Grid (Displaying Google-provided reviews) */}
       {!isLoading && reviews.length > 0 && (
         <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -274,51 +271,17 @@ export default function GoogleReviews({ className = "" }) {
             ))}
           </div>
 
-          {/* Compliance Attribution Note */}
-          <div className="text-center text-xs text-stone-400 space-y-1">
+          {/* Attribution & Notice: Showing selected Google reviews */}
+          <div className="text-center text-xs text-stone-500 space-y-1">
             <p>
-              Showing selected genuine reviews from <strong>{businessName}</strong>.
+              Showing selected genuine Google reviews for <strong>{businessName}</strong>.
             </p>
           </div>
         </div>
       )}
 
-      {/* Fallback / Trust Showcase Card (When no API reviews returned or key not yet set) */}
-      {!isLoading && reviews.length === 0 && (
-        <div className="bg-gradient-to-b from-white to-[#FAF7F2] rounded-3xl border border-stone-200/90 p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-6 shadow-xs">
-          <div className="w-16 h-16 rounded-3xl bg-white border border-stone-200 flex items-center justify-center mx-auto shadow-sm">
-            <GoogleIcon className="w-8 h-8" />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-center space-x-1 text-amber-400 mb-1">
-              <StarRating rating={5} size="w-5 h-5" />
-            </div>
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
-              512+ Genuine 5-Star Reviews on Google
-            </h3>
-            <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto leading-relaxed font-light">
-              Our clients trust us for exceptional hair transformations, HD bridal makeup, and clinical hydrafacials at Sharda Heights, Sikar.
-            </p>
-          </div>
-
-          <div className="pt-2">
-            <a
-              href={googleMapsUri}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-rose-900/15 transition-all active:scale-95"
-            >
-              <GoogleIcon className="w-4 h-4" />
-              <span>Read All 512+ Reviews on Google Maps</span>
-              <ExternalLink className="w-3.5 h-3.5 ml-1" />
-            </a>
-          </div>
-        </div>
-      )}
-
-      {/* Bottom CTA Button */}
-      {!isLoading && reviews.length > 0 && (
+      {/* Link to View all reviews on Google */}
+      {!isLoading && (
         <div className="text-center pt-2">
           <a
             href={googleMapsUri}
@@ -327,7 +290,9 @@ export default function GoogleReviews({ className = "" }) {
             className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-rose-900/15 transition-all active:scale-95"
           >
             <GoogleIcon className="w-4 h-4" />
-            <span>View All {userRatingCount}+ Reviews on Google Maps</span>
+            <span>
+              {userRatingCount ? `View all ${userRatingCount} reviews on Google` : 'View all reviews on Google'}
+            </span>
             <ExternalLink className="w-4 h-4 ml-1" />
           </a>
         </div>

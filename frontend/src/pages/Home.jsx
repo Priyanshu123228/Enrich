@@ -55,8 +55,7 @@ export default function Home() {
   const [services, setServices] = useState([]);
   const [staffList, setStaffList] = useState([]);
   const [offers, setOffers] = useState([]);
-  const [reviews, setReviews] = useState([]);
-  const [mediaItems, setMediaItems] = useState({
+    const [mediaItems, setMediaItems] = useState({
     photos: [],
     videos: [],
     transformations: [],
@@ -93,8 +92,7 @@ export default function Home() {
           serviceService.getAllServices({ limit: 50 }),
           staffService.getStaff({ limit: 12 }),
           offerService.getActiveOffers(),
-          reviewService.getPublicReviews({ limit: 8 }),
-          mediaService.getFeaturedMedia()
+                    mediaService.getFeaturedMedia()
         ]);
 
         if (!isMounted) return;
@@ -140,18 +138,7 @@ export default function Home() {
           setOffers(SALON_CONFIG.defaultOffers);
         }
 
-        // 4. Process Reviews (published only)
-        if (reviewsRes.status === 'fulfilled' && reviewsRes.value?.data?.reviews?.length > 0) {
-          const published = reviewsRes.value.data.reviews.filter(r => r.isApproved !== false && r.isPublished !== false);
-          setReviews(published.length > 0 ? published : SALON_CONFIG.defaultReviews);
-        } else if (reviewsRes.status === 'fulfilled' && Array.isArray(reviewsRes.value?.data) && reviewsRes.value.data.length > 0) {
-          const published = reviewsRes.value.data.filter(r => r.isApproved !== false && r.isPublished !== false);
-          setReviews(published.length > 0 ? published : SALON_CONFIG.defaultReviews);
-        } else {
-          setReviews(SALON_CONFIG.defaultReviews);
-        }
-
-        // 5. Process Media / Gallery
+        // 4. Process Media / Gallery
         if (mediaRes.status === 'fulfilled' && mediaRes.value?.data) {
           const data = mediaRes.value.data;
           const photos = data.photos || [];
@@ -1040,86 +1027,6 @@ export default function Home() {
           SECTION: GOOGLE BUSINESS REVIEWS & RATINGS (GENUINE GOOGLE PLACES API)
           ========================================================================= */}
       <GoogleReviews className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
-
-      {/* =========================================================================
-          SECTION 9: CLIENT REVIEWS & EXPERIENCES
-          ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-            Testimonials
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-            Client Experiences & Reviews
-          </h2>
-          <p className="text-xs sm:text-sm text-stone-500">
-            Read verified feedback from clients who have experienced our cosmetic clinic and beauty treatments.
-          </p>
-        </div>
-
-        {reviews.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reviews.slice(0, 6).map((item, idx) => {
-              const rating = item.rating || 5;
-              return (
-                <div
-                  key={item._id || idx}
-                  className="bg-white rounded-xl border border-stone-200 p-6 space-y-4 shadow-xs flex flex-col justify-between hover:shadow-md transition-shadow"
-                >
-                  <div className="space-y-3">
-                    {/* Star Rating */}
-                    <div className="flex items-center space-x-1 text-amber-500">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < rating ? 'fill-amber-400 text-amber-400' : 'text-stone-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Review Comment */}
-                    <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic font-serif font-normal">
-                      "{item.review || item.comment || 'Exceptional service and warm hospitality!'}"
-                    </p>
-                  </div>
-
-                  {/* Customer Info */}
-                  <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="font-bold text-stone-900 block">
-                        {item.customerName || item.author || (item.user?.name) || 'Verified Client'}
-                      </span>
-                      {item.service && (
-                        <span className="text-[11px] text-stone-400">
-                          {typeof item.service === 'object' ? item.service.name : item.service}
-                        </span>
-                      )}
-                    </div>
-                    {item.isVerified !== false && (
-                      <span className="inline-flex items-center text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Verified
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl border border-stone-200 p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-lg bg-stone-100 text-stone-600 flex items-center justify-center mx-auto border border-stone-200">
-              <Star className="w-5 h-5 text-stone-700" />
-            </div>
-            <h3 className="font-serif font-bold text-base text-stone-900">Verified Client Reviews</h3>
-            <p className="text-xs text-stone-500 leading-relaxed">
-              Reviews are collected directly from clients who have completed an appointment.
-            </p>
-          </div>
-        )}
-      </section>
 
       {/* =========================================================================
             SECTION 10: LOCATION & VISIT INFORMATION

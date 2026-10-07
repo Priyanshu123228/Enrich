@@ -9,7 +9,7 @@
 export const SALON_CONFIG = {
   // Business Identity
   business: {
-    name: 'Enrich Beauty Parlour & Cosmetic Clinic',
+    name: 'Enrich Ladies Beauty Parlor',
     shortName: 'Enrich Parlour',
     tagline: 'Hair, Makeup, Skin & Cosmetic Clinic Services in Sikar, Rajasthan',
     badge: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar',
@@ -33,7 +33,7 @@ export const SALON_CONFIG = {
     whatsapp: 'https://wa.me/919667900313',
     instagram: 'https://www.instagram.com/enrich_beauty25/',
     facebook: 'https://www.facebook.com/enrichparloursikar',
-    address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
+    address: 'First Floor, Sharda Heights, Ramlila Maidan, Chandpol, Sikar, Rajasthan 332001, India',
     addressShort: 'First Floor, Sharda Heights, Chandpol, Sikar',
     directionsHint: 'Near Ramlila Maidan and Parshuram Park, Chandpol. Dedicated parking and easy premises access.',
     googleMapsUrl: 'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk',
@@ -263,38 +263,7 @@ export const SALON_CONFIG = {
   ],
 
   // Default Reviews Fallback
-  defaultReviews: [
-    {
-      _id: 'rev_1',
-      customerName: 'Sunita Meena',
-      rating: 5,
-      review: 'The best parlour in Sikar! My bridal makeup was absolutely flawless and lasted throughout the ceremony without any creasing.',
-      service: 'Signature Bridal HD Makeover',
-      date: '2026-09-12',
-      isVerified: true,
-      isPublished: true,
-    },
-    {
-      _id: 'rev_2',
-      customerName: 'Komal Sharma',
-      rating: 5,
-      review: 'Very hygienic and modern environment. The hydrafacial gave my skin an instant glassy glow. Will definitely come back regularly.',
-      service: 'Clinical Hydrafacial Treatment',
-      date: '2026-09-24',
-      isVerified: true,
-      isPublished: true,
-    },
-    {
-      _id: 'rev_3',
-      customerName: 'Deepika Rathore',
-      rating: 5,
-      review: 'Priya did a fantastic job with my hair highlights. Exactly the shade I wanted with zero damage. Great hospitality too!',
-      service: 'Balayage & Global Highlights',
-      date: '2026-10-01',
-      isVerified: true,
-      isPublished: true,
-    },
-  ],
+  defaultReviews: [],
 
   // Default Media Gallery Fallback
   defaultMedia: {
