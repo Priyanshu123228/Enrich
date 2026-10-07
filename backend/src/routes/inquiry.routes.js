@@ -8,11 +8,12 @@ import {
 } from '../controllers/inquiry.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { authorizeRoles } from '../middlewares/role.middleware.js';
+import { inquiryLimiter } from '../middlewares/rateLimiter.middleware.js';
 
 const router = Router();
 
-// Public Route: Submit an inquiry / contact request
-router.post('/', verifyJWT, createInquiry);
+// Public Route: Submit an inquiry / contact request with Anti-Spam Rate Limiter
+router.post('/', inquiryLimiter, createInquiry);
 
 // Admin-only Routes
 router.use(verifyJWT, authorizeRoles('admin'));

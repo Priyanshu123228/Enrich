@@ -1,3 +1,4 @@
+import SEO from '../components/common/SEO';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { offerService } from '../services/offer.service';
@@ -59,6 +60,12 @@ export default function Offers() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+      <SEO
+        title="Special Beauty Packages & Promos | Enrich Sikar"
+        description="View exclusive bridal packages, festival discounts, and skin & hair makeover bundles in Sikar."
+        url="/offers"
+      />
+
       
       {/* Page Header */}
       <div className="text-center max-w-3xl mx-auto space-y-3">

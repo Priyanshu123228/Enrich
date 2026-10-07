@@ -1,3 +1,4 @@
+import SEO from '../components/common/SEO';
 ﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -111,6 +112,12 @@ export default function Cosmetics() {
   };
   return (
     <div className="bg-stone-50/60 min-h-screen pb-20">
+      <SEO
+        title="Cosmetics & Clinical Beauty Retail | Enrich Sikar"
+        description="Shop genuine salon cosmetics, professional skin serums, and clinical hair care products at Enrich Ladies Beauty Parlor, Sikar."
+        url="/cosmetics"
+      />
+
       {/* 1. Ultra-Luxury Champagne & Rose Hero Banner */}
       <section className="relative bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 overflow-hidden py-16 sm:py-24 border-b border-stone-200/90">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-rose-200/25 rounded-full blur-3xl pointer-events-none"></div>

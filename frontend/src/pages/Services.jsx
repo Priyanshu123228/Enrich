@@ -1,3 +1,4 @@
+import SEO from '../components/common/SEO';
 import { useState, useEffect } from 'react';
 import { serviceService } from '../services/service.service';
 import ServiceCard from '../components/services/ServiceCard';
@@ -90,6 +91,12 @@ export default function Services() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+      <SEO
+        title="Salon & Cosmetic Clinic Services Menu | Enrich Sikar"
+        description="Explore our complete treatment menu: HD Bridal Makeup, Keratin Hair Spa, Hydrafacial, Skin Peels, Bleach & Waxing in Sikar, Rajasthan."
+        url="/services"
+      />
+
       
       {/* Page Header */}
       <div className="text-center max-w-2xl mx-auto space-y-3">

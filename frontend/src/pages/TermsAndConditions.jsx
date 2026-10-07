@@ -1,3 +1,4 @@
+import SEO from '../components/common/SEO';
 import { FileText, Shield, Clock, AlertCircle, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SALON_CONFIG } from '../config/salonConfig';
@@ -5,6 +6,12 @@ import { SALON_CONFIG } from '../config/salonConfig';
 export default function TermsAndConditions() {
   return (
     <div className="min-h-screen bg-stone-50 py-12 sm:py-16">
+      <SEO
+        title="Terms & Conditions | Enrich Ladies Beauty Parlor Sikar"
+        description="Terms of service and booking policies for Enrich Ladies Beauty Parlor & Cosmetic Clinic in Sikar, Rajasthan."
+        url="/terms-and-conditions"
+      />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* Back Link */}

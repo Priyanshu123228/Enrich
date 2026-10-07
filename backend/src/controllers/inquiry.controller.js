@@ -11,6 +11,15 @@ import { emailService } from '../services/email.service.js';
  */
 export const createInquiry = asyncHandler(async (req, res) => {
   const { name, email, phone, service, subject, message } = req.body;
+  // 0. Anti-Bot Honeypot Trap
+  if (req.body.website || req.body.hp_website || req.body.honeypot || req.body.company_fax) {
+    console.warn('[Anti-Spam] Bot trap triggered on inquiry submission. IP:', req.ip);
+    // Return 200 OK so bots think they succeeded without spamming admin email
+    return res.status(200).json(
+      new ApiResponse(200, {}, 'Thank you for reaching out! Your inquiry has been received.')
+    );
+  }
+
 
   // 1. Validation
   if (!name || !name.trim()) {

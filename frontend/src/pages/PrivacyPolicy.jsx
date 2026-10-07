@@ -1,3 +1,4 @@
+import SEO from '../components/common/SEO';
 import { Shield, Lock, Eye, FileText, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SALON_CONFIG } from '../config/salonConfig';
@@ -5,6 +6,12 @@ import { SALON_CONFIG } from '../config/salonConfig';
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-stone-50 py-12 sm:py-16">
+      <SEO
+        title="Privacy Policy | Enrich Ladies Beauty Parlor Sikar"
+        description="Data privacy and client protection policies for Enrich Ladies Beauty Parlor & Cosmetic Clinic."
+        url="/privacy-policy"
+      />
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* Back Link */}

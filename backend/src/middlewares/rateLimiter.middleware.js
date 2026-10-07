@@ -72,3 +72,15 @@ export const passwordResetLimiter = rateLimit({
   handler: rateLimitHandler('Too many password reset requests. Please try again after 15 minutes.')
 });
 
+
+/**
+ * Contact / Inquiry Limiter: Max 10 inquiries per 15 minutes per IP (Anti-Spam)
+ */
+export const inquiryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test',
+  handler: rateLimitHandler('Too many contact requests from this IP. Please wait before submitting another message.')
+});

@@ -1,3 +1,4 @@
+import SEO from '../components/common/SEO';
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -248,6 +249,12 @@ export default function Home() {
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-20 bg-stone-50/50 text-stone-900 font-sans">
+      <SEO
+        title="Enrich Ladies Beauty Parlor & Cosmetic Clinic | Best Salon in Sikar (4.9★)"
+        description="Top-rated salon in Sikar with 512+ 5-star Google reviews. Specializing in HD bridal makeup, hydrafacial, hair styling, and clinical skincare at Sharda Heights."
+        url="/"
+      />
+
       
       {/* =========================================================================
           SECTION 1: HERO SECTION (LUMINOUS LUXURY ATELIER)
