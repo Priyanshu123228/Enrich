@@ -11,7 +11,7 @@ let placesCache = {
 };
 
 const DEFAULT_MAPS_URL =
-  'https://www.google.com/maps/search/?api=1&query=First+Floor+Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001';
+  'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk';
 
 /**
  * Normalizes Google Places API response (handles both Places API New & Legacy schemas)
