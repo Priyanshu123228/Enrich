@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, ExternalLink } from 'lucide-react';
+import { Star, ExternalLink, PenLine } from 'lucide-react';
 import { reviewService } from '../services/review.service';
 import { SALON_CONFIG } from '../config/salonConfig';
 
@@ -121,6 +121,10 @@ export default function GoogleReviews({ className = "" }) {
     SALON_CONFIG.location?.googleMapsUrl ||
     'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk';
 
+  const defaultWriteReviewUrl =
+    SALON_CONFIG.location?.writeReviewUrl ||
+    'https://search.google.com/local/writereview?placeid=ChIJU0FX87GlbDkR-rHj5cW-riU';
+
   const businessName = googleData?.businessName || SALON_CONFIG.business?.name || 'Enrich Ladies Beauty Parlor';
   const rating = googleData?.rating != null ? Number(googleData.rating).toFixed(1) : '4.9';
   const userRatingCount = googleData?.userRatingCount != null ? Number(googleData.userRatingCount) : 512;
@@ -147,9 +151,9 @@ export default function GoogleReviews({ className = "" }) {
           Real reviews from Google Maps for <strong>{businessName}</strong>, First Floor, Sharda Heights, Sikar.
         </p>
 
-        {/* Aggregate Rating Summary Card */}
-        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-          <div className="flex items-center space-x-3 bg-white px-5 py-3 rounded-2xl border border-stone-200/90 shadow-xs">
+        {/* Aggregate Rating Summary & Action Buttons */}
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <div className="flex items-center space-x-3 bg-white px-5 py-2.5 rounded-2xl border border-stone-200/90 shadow-xs">
             <div className="text-3xl font-serif font-bold text-stone-900 leading-none">
               {rating}
             </div>
@@ -160,6 +164,17 @@ export default function GoogleReviews({ className = "" }) {
               </p>
             </div>
           </div>
+
+          {/* 1-Click Direct Write a Review on Google */}
+          <a
+            href={defaultWriteReviewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-700 to-rose-600 hover:from-rose-600 hover:to-rose-500 text-white text-xs font-bold transition-all shadow-xs active:scale-95"
+          >
+            <PenLine className="w-3.5 h-3.5" />
+            <span>Write a Google Review</span>
+          </a>
 
           <a
             href={googleMapsUri}
@@ -263,7 +278,7 @@ export default function GoogleReviews({ className = "" }) {
             ))}
           </div>
 
-          {/* Attribution & Notice: Showing selected Google reviews */}
+          {/* Attribution & Notice */}
           <div className="text-center text-xs text-stone-500 space-y-1">
             <p>
               Showing selected Google reviews for <strong>{businessName}</strong>.
@@ -272,14 +287,24 @@ export default function GoogleReviews({ className = "" }) {
         </div>
       )}
 
-      {/* Link to View all reviews on Google */}
+      {/* Bottom CTA Area */}
       {!isLoading && (
-        <div className="text-center pt-2">
+        <div className="text-center pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <a
+            href={defaultWriteReviewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-rose-900/15 transition-all active:scale-95"
+          >
+            <PenLine className="w-4 h-4" />
+            <span>Leave a Review on Google</span>
+          </a>
+
           <a
             href={googleMapsUri}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-rose-900/15 transition-all active:scale-95"
+            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white hover:bg-stone-50 text-stone-800 text-xs sm:text-sm font-bold border border-stone-200 shadow-xs transition-all hover:border-stone-300"
           >
             <GoogleIcon className="w-4 h-4" />
             <span>
