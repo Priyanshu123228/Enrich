@@ -139,21 +139,43 @@ export default function Home() {
           setOffers(SALON_CONFIG.defaultOffers);
         }
 
-        // 4. Process Media / Gallery
+        // 4. Process Media / Gallery (Sync with live gallery database)
         const def = SALON_CONFIG.defaultMedia || {};
         const defAll = [...(def.photos || []), ...(def.videos || []), ...(def.transformations || [])];
 
-        if (mediaRes.status === 'fulfilled' && mediaRes.value?.data) {
-          const data = mediaRes.value.data;
-          const photos = data.photos || [];
-          const videos = data.videos || [];
-          const transformations = data.transformations || data.beforeAfters || [];
-          const all = [...photos, ...videos, ...transformations];
+        let loadedMedia = null;
+
+        if (mediaRes.status === 'fulfilled' && mediaRes.value) {
+          const raw = mediaRes.value;
+          const data = raw.data || raw;
+          const photos = data.photos || (Array.isArray(data.media) ? data.media.filter(m => m.type === 'photo') : []);
+          const videos = data.videos || (Array.isArray(data.media) ? data.media.filter(m => m.type === 'video') : []);
+          const transformations = data.transformations || data.beforeAfters || (Array.isArray(data.media) ? data.media.filter(m => m.category === 'Before & After') : []);
+          const all = (Array.isArray(data.media) && data.media.length > 0) ? data.media : [...photos, ...videos, ...transformations];
+
           if (all.length > 0) {
-            setMediaItems({ photos, videos, transformations, all });
-          } else {
-            setMediaItems({ ...def, all: defAll });
+            loadedMedia = { photos, videos, transformations, all };
           }
+        }
+
+        // If featured list is empty, fallback to fetching recent gallery portfolio
+        if (!loadedMedia) {
+          try {
+            const galleryRes = await mediaService.getGalleryMedia({ limit: 12 });
+            const gData = galleryRes?.data?.media || galleryRes?.data || [];
+            if (Array.isArray(gData) && gData.length > 0) {
+              const photos = gData.filter(m => m.type === 'photo');
+              const videos = gData.filter(m => m.type === 'video');
+              const transformations = gData.filter(m => m.category === 'Before & After');
+              loadedMedia = { photos, videos, transformations, all: gData };
+            }
+          } catch (gErr) {
+            console.warn('Fallback gallery fetch error:', gErr);
+          }
+        }
+
+        if (loadedMedia) {
+          setMediaItems(loadedMedia);
         } else {
           setMediaItems({ ...def, all: defAll });
         }
