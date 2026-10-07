@@ -547,16 +547,7 @@ export const seedCompleteDatabase = async () => {
       paymentStatus: 'paid'
     });
 
-    // Reviews from completed visits
-    await Review.create({
-      customer: customer1._id,
-      service: createdServices[0]._id,
-      staff: createdStaff[0]._id,
-      appointment: pastApp1._id,
-      rating: 5,
-      comment: 'Elena provided an incredible consultation and haircut. The salon is serene, sanitary, and very professional.',
-      isApproved: true
-    });
+    // No fake reviews seeded
 
     await Review.create({
       customer: customer2._id,
