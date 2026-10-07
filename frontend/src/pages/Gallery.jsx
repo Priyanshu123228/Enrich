@@ -102,13 +102,20 @@ export default function Gallery() {
     [safeMediaList]
   );
 
-  // Featured Hero Video (first featured or 1st video)
+  // Admin-designated Top 4K Spotlight Hero Video
+  // Priority rule:
+  // 1. Video where isFeatured is true, sorted by displayOrder (0 first)
+  // 2. Fallback to video with lowest displayOrder
   const featuredVideo = useMemo(() => {
-    if (videoList.length === 0) return null;
-    return videoList.find((v) => v?.isFeatured || v?.featured) || videoList[0];
+    if (!Array.isArray(videoList) || videoList.length === 0) return null;
+    const featuredList = videoList.filter((v) => v?.isFeatured || v?.featured);
+    if (featuredList.length > 0) {
+      return [...featuredList].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))[0];
+    }
+    return [...videoList].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))[0];
   }, [videoList]);
 
-  // Secondary reels list (excluding the featured one, up to 4 for desktop row)
+  // Secondary reels list (excluding the top 4k featured hero, up to 4 for horizontal desktop row)
   const secondaryReels = useMemo(() => {
     if (!featuredVideo) return videoList.slice(0, 4);
     return videoList.filter((v) => (v?._id || v?.id) !== (featuredVideo?._id || featuredVideo?.id)).slice(0, 4);
@@ -212,7 +219,7 @@ export default function Gallery() {
           </div>
         </div>
 
-        {/* Secondary Category Filter Pills (When in Photos or All view) */}
+        {/* Secondary Category Filter Pills */}
         {selectedType !== 'before-after' && categories.length > 0 && (
           <div className="pt-2 flex items-center justify-center space-x-2 overflow-x-auto max-w-full pb-2 scrollbar-none">
             <button
@@ -268,7 +275,7 @@ export default function Gallery() {
         <div className="space-y-20 sm:space-y-28">
 
           {/* ========================================================================= */}
-          {/* 2. FEATURED EXPERIENCE (MAIN VISUAL ANCHOR) */}
+          {/* 2. FEATURED EXPERIENCE (MAIN 4K VISUAL ANCHOR) */}
           {/* ========================================================================= */}
           {featuredVideo && selectedType !== 'photo' && (
             <section className="space-y-4">
@@ -342,29 +349,23 @@ export default function Gallery() {
               {/* Luxury Editorial Masonry Layout */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6 auto-rows-[220px] sm:auto-rows-[240px]">
                 {photoList.map((item, idx) => {
-                  // Determine dynamic editorial rhythm for varied visual interest
                   const pattern = idx % 6;
                   let colSpan = 'lg:col-span-4';
                   let rowSpan = 'row-span-1';
 
                   if (pattern === 0) {
-                    // Large featured anchor photo
                     colSpan = 'sm:col-span-2 lg:col-span-8';
                     rowSpan = 'row-span-2';
                   } else if (pattern === 1) {
-                    // Tall portrait photo
                     colSpan = 'sm:col-span-1 lg:col-span-4';
                     rowSpan = 'row-span-2';
                   } else if (pattern === 2 || pattern === 3) {
-                    // Standard editorial cards
                     colSpan = 'sm:col-span-1 lg:col-span-6';
                     rowSpan = 'row-span-1';
                   } else if (pattern === 4) {
-                    // Wide panoramic card
                     colSpan = 'sm:col-span-2 lg:col-span-8';
                     rowSpan = 'row-span-1';
                   } else if (pattern === 5) {
-                    // Accent card
                     colSpan = 'sm:col-span-1 lg:col-span-4';
                     rowSpan = 'row-span-1';
                   }
@@ -392,17 +393,14 @@ export default function Gallery() {
                         onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                       />
 
-                      {/* Subtle Dark Gradient Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/20 to-transparent opacity-60 group-hover:opacity-85 transition-opacity duration-300" />
 
-                      {/* Category Label */}
                       <div className="absolute top-3 left-3 z-10">
                         <span className="px-2.5 py-1 rounded-full bg-stone-900/80 backdrop-blur-xs text-stone-200 text-[10px] font-semibold uppercase tracking-wider border border-stone-700/80">
                           {item.category || 'Artistry'}
                         </span>
                       </div>
 
-                      {/* Content Overlay */}
                       <div className="relative p-4 sm:p-5 space-y-1 text-white z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
                         <h4 className="font-serif font-bold text-sm sm:text-base leading-snug line-clamp-1 group-hover:text-rose-200 transition-colors">
                           {item.title}
@@ -462,8 +460,6 @@ export default function Gallery() {
           <section className="bg-stone-950 text-white rounded-3xl p-8 sm:p-12 border border-stone-800 shadow-xl overflow-hidden relative">
             <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-rose-900/20 blur-3xl pointer-events-none" />
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              
-              {/* Left Info & Rating */}
               <div className="space-y-2 max-w-xl">
                 <div className="flex items-center gap-2 text-rose-400 text-xs font-bold tracking-widest uppercase">
                   <Sparkle className="w-3.5 h-3.5" />
@@ -473,7 +469,6 @@ export default function Gallery() {
                   512+ Google Reviews
                 </h3>
                 
-                {/* 5-Star Visual Row */}
                 <div className="flex items-center gap-2 pt-1">
                   <div className="flex items-center text-amber-400">
                     {[...Array(5)].map((_, i) => (
@@ -489,7 +484,6 @@ export default function Gallery() {
                 </p>
               </div>
 
-              {/* Right CTA */}
               <div className="shrink-0 w-full sm:w-auto">
                 <a
                   href="https://maps.google.com"

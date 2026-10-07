@@ -16,7 +16,9 @@ import {
   X,
   UploadCloud,
   Layers,
-  Clock
+  Clock,
+  Sparkles,
+  Crown
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
@@ -44,6 +46,7 @@ export default function AdminGallery() {
     duration: '',
     displayOrder: 0,
     isFeatured: false,
+    isTop4kSpotlight: false,
     isActive: true,
     beforeUrl: '',
     afterUrl: ''
@@ -104,6 +107,7 @@ export default function AdminGallery() {
   const handleOpenModal = (media = null) => {
     if (media) {
       setEditingMedia(media);
+      const isTop = media.type === 'video' && media.isFeatured && (media.displayOrder === 0 || media.displayOrder === -1);
       setFormData({
         title: media.title,
         description: media.description || '',
@@ -114,6 +118,7 @@ export default function AdminGallery() {
         duration: media.duration || '',
         displayOrder: media.displayOrder || 0,
         isFeatured: media.isFeatured || false,
+        isTop4kSpotlight: isTop,
         isActive: media.isActive !== false,
         beforeUrl: media.beforeAfter?.beforeUrl || '',
         afterUrl: media.beforeAfter?.afterUrl || ''
@@ -130,6 +135,7 @@ export default function AdminGallery() {
         duration: '',
         displayOrder: 0,
         isFeatured: false,
+        isTop4kSpotlight: false,
         isActive: true,
         beforeUrl: '',
         afterUrl: ''
@@ -145,6 +151,9 @@ export default function AdminGallery() {
 
     try {
       const effectiveUrl = formData.url || formData.beforeUrl || formData.afterUrl;
+      const displayOrderNum = formData.isTop4kSpotlight ? 0 : Number(formData.displayOrder) || 0;
+      const featuredVal = formData.isTop4kSpotlight ? true : formData.isFeatured;
+
       const payload = {
         title: formData.title,
         description: formData.description,
@@ -152,11 +161,11 @@ export default function AdminGallery() {
         category: formData.category,
         url: effectiveUrl,
         thumbnail: formData.type === 'video'
-        ? (formData.thumbnail && !formData.thumbnail.includes('.mp4') ? formData.thumbnail : effectiveUrl)
-        : effectiveUrl,
+          ? (formData.thumbnail && !formData.thumbnail.includes('.mp4') ? formData.thumbnail : effectiveUrl)
+          : effectiveUrl,
         duration: formData.duration ? Number(formData.duration) : 0,
-        displayOrder: Number(formData.displayOrder) || 0,
-        isFeatured: formData.isFeatured,
+        displayOrder: displayOrderNum,
+        isFeatured: featuredVal,
         isActive: formData.isActive,
         beforeUrl: formData.beforeUrl,
         afterUrl: formData.afterUrl
@@ -192,6 +201,30 @@ export default function AdminGallery() {
     }
   };
 
+  // 1-Click action to designate a video as the primary Top 4K Spotlight Hero video
+  const handleSetTop4kVideo = async (id, title) => {
+    try {
+      await mediaService.updateMedia(id, { isFeatured: true, displayOrder: 0 });
+      setMediaList((prev) =>
+        prev.map((item) => {
+          if (item._id === id) {
+            return { ...item, isFeatured: true, displayOrder: 0 };
+          }
+          if (item.type === 'video' && item.displayOrder === 0) {
+            return { ...item, displayOrder: 1 };
+          }
+          return item;
+        })
+      );
+      setFeedback({
+        type: 'success',
+        message: '🌟 "' + title + '" is now set as the Top 4K Spotlight Hero Video in the Gallery portfolio!'
+      });
+    } catch (err) {
+      setFeedback({ type: 'error', message: err.message || 'Failed to set top 4K video' });
+    }
+  };
+
   const handleToggleStatus = async (id) => {
     try {
       await mediaService.toggleMediaStatus(id);
@@ -205,12 +238,12 @@ export default function AdminGallery() {
   };
 
   const handleDelete = async (id, title) => {
-    if (!window.confirm(`Are you sure you want to permanently delete "${title}"?`)) return;
+    if (!window.confirm('Are you sure you want to permanently delete "' + title + '"?')) return;
 
     try {
       await mediaService.deleteMedia(id);
       setMediaList((prev) => prev.filter((item) => item._id !== id));
-      setFeedback({ type: 'success', message: `Deleted "${title}".` });
+      setFeedback({ type: 'success', message: 'Deleted "' + title + '".' });
     } catch (err) {
       setFeedback({ type: 'error', message: err.message || 'Failed to delete media' });
     }
@@ -248,7 +281,7 @@ export default function AdminGallery() {
             Media Gallery Management
           </h1>
           <p className="text-xs sm:text-sm text-stone-500 mt-1">
-            Upload salon photos, video tours, hair transformations, and real portfolio showcases.
+            Upload salon photos, choose your <strong>Top 4K Spotlight Hero Video</strong>, manage reels, and curate portfolio showcases.
           </p>
         </div>
 
@@ -298,11 +331,11 @@ export default function AdminGallery() {
       {/* Global Feedback Alert */}
       {feedback.message && (
         <div
-          className={`p-4 rounded-lg flex items-center justify-between text-xs sm:text-sm ${
+          className={'p-4 rounded-lg flex items-center justify-between text-xs sm:text-sm ' + (
             feedback.type === 'success'
               ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
               : 'bg-red-50 border border-red-200 text-red-800'
-          }`}
+          )}
         >
           <div className="flex items-center space-x-2">
             {feedback.type === 'success' ? (
@@ -312,7 +345,7 @@ export default function AdminGallery() {
             )}
             <span className="font-medium">{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback({ type: '', message: '' })} className="text-stone-400">
+          <button onClick={() => setFeedback({ type: '', message: '' })} className="text-stone-400 cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -334,7 +367,6 @@ export default function AdminGallery() {
 
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          {/* Type */}
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
@@ -345,7 +377,6 @@ export default function AdminGallery() {
             <option value="video">Videos Only</option>
           </select>
 
-          {/* Category */}
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
@@ -357,7 +388,6 @@ export default function AdminGallery() {
             ))}
           </select>
 
-          {/* Status */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -378,162 +408,207 @@ export default function AdminGallery() {
         </div>
       ) : mediaList.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {mediaList.map((item) => (
-            <div
-              key={item._id}
-              className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs hover:border-stone-300 transition-colors flex flex-col justify-between"
-            >
-              {/* Thumbnail Container */}
-              <div className="relative h-48 w-full bg-stone-900 overflow-hidden flex items-center justify-center">
-                {item.type === 'video' && (!item.thumbnail || item.thumbnail.includes('.mp4') || item.thumbnail.includes('.webm') || item.thumbnail === item.url) ? (
-                  <video
-                    src={resolveImageUrl(item.url)}
-                    preload="metadata"
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover pointer-events-none"
-                  />
-                ) : (
-                  <img
-                    src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
-                  />
+          {mediaList.map((item) => {
+            const isTopSpotlight = item.type === 'video' && item.isFeatured && (item.displayOrder === 0 || item.displayOrder === -1);
+
+            return (
+              <div
+                key={item._id}
+                className={'bg-white rounded-xl border overflow-hidden shadow-xs transition-all flex flex-col justify-between ' + (
+                  isTopSpotlight
+                    ? 'ring-2 ring-amber-500 border-amber-400'
+                    : 'border-stone-200 hover:border-stone-300'
                 )}
+              >
+                {/* Thumbnail Container */}
+                <div className="relative h-48 w-full bg-stone-900 overflow-hidden flex items-center justify-center">
+                  {item.type === 'video' && (!item.thumbnail || item.thumbnail.includes('.mp4') || item.thumbnail.includes('.webm') || item.thumbnail === item.url) ? (
+                    <video
+                      src={resolveImageUrl(item.url)}
+                      preload="metadata"
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover pointer-events-none"
+                    />
+                  ) : (
+                    <img
+                      src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+                    />
+                  )}
 
-                {/* Top Badges */}
-                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-stone-900 text-white">
-                    {item.type}
-                  </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/90 text-stone-900 shadow-xs">
-                    {item.category}
-                  </span>
-                </div>
+                  {/* Top Badges */}
+                  <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 z-10">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-stone-900 text-white">
+                      {item.type}
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/90 text-stone-900 shadow-xs">
+                      {item.category}
+                    </span>
+                    {isTopSpotlight && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-stone-950 flex items-center gap-1 shadow-md">
+                        <Crown className="w-3 h-3 fill-stone-950" />
+                        Top 4K Hero
+                      </span>
+                    )}
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleFeatured(item._id, item.isFeatured);
-                  }}
-                  className={`absolute top-2.5 right-2.5 p-1.5 rounded-lg transition-all cursor-pointer shadow-xs ${
-                    item.isFeatured
-                      ? 'bg-amber-500 text-white hover:bg-amber-600 ring-2 ring-white'
-                      : 'bg-stone-900/60 text-stone-300 hover:bg-stone-900 hover:text-white'
-                  }`}
-                  title={item.isFeatured ? "Featured on Homepage (Click to turn off)" : "Not on Homepage (Click to feature)"}
-                >
-                  <Star className={`w-3.5 h-3.5 ${item.isFeatured ? 'fill-current text-white' : ''}`} />
-                </button>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-4 space-y-2">
-                <div className="flex justify-between items-start gap-2">
-                  <h3 className="font-bold font-serif text-sm text-stone-900 line-clamp-1">
-                    {item.title}
-                  </h3>
-                  <span className="text-[10px] font-mono text-stone-400 shrink-0">
-                    Order: {item.displayOrder}
-                  </span>
-                </div>
-
-                {item.description && (
-                  <p className="text-xs text-stone-500 line-clamp-2">{item.description}</p>
-                )}
-              </div>
-
-              {/* Card Actions Footer */}
-              <div className="p-4 pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-                {/* Status Toggle Button */}
-                <button
-                  onClick={() => handleToggleStatus(item._id)}
-                  className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider cursor-pointer border ${
-                    item.isActive
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : 'bg-stone-100 text-stone-500 border-stone-200'
-                  }`}
-                >
-                  {item.isActive ? 'Active' : 'Hidden'}
-                </button>
-
-                {/* Action Buttons */}
-                <div className="flex items-center space-x-1.5">
                   <button
-                    onClick={() => handleOpenModal(item)}
-                    className="p-1.5 rounded-lg text-stone-600 hover:bg-stone-100 cursor-pointer"
-                    title="Edit media details"
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFeatured(item._id, item.isFeatured);
+                    }}
+                    className={'absolute top-2.5 right-2.5 p-1.5 rounded-lg transition-all shadow-md cursor-pointer z-10 ' + (
+                      item.isFeatured
+                        ? 'bg-amber-500 text-stone-950 hover:bg-amber-400'
+                        : 'bg-stone-900/80 text-stone-300 hover:text-white hover:bg-stone-900'
+                    )}
+                    title={item.isFeatured ? 'Featured on Homepage (Click to disable)' : 'Click to feature on Homepage'}
                   >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item._id, item.title)}
-                    className="p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 cursor-pointer"
-                    title="Delete media"
-                  >
-                    <Trash2 className="w-4 h-4" />
+                    <Star className={'w-3.5 h-3.5 ' + (item.isFeatured ? 'fill-current' : '')} />
                   </button>
                 </div>
-              </div>
 
-            </div>
-          ))}
+                {/* Info & Admin Controls */}
+                <div className="p-4 space-y-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-sm text-stone-900 line-clamp-1">
+                      {item.title}
+                    </h3>
+                    {item.description && (
+                      <p className="text-[11px] text-stone-500 line-clamp-2 mt-0.5">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Dedicated 1-Click Top 4K Spotlight Hero Button for Videos */}
+                  {item.type === 'video' && (
+                    <div className="pt-1">
+                      {isTopSpotlight ? (
+                        <div className="w-full py-1.5 px-2.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-bold flex items-center justify-between">
+                          <span className="flex items-center gap-1">
+                            <Crown className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
+                            Primary 4K Hero in Gallery
+                          </span>
+                          <span className="text-[10px] text-amber-700 font-mono">Order 0</span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetTop4kVideo(item._id, item.title)}
+                          className="w-full py-1.5 px-2.5 rounded-lg bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 border border-stone-200 hover:border-amber-300 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                          title="Click to place this video as the large 4K featured hero at the top of the Gallery"
+                        >
+                          <Crown className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Set as Top 4K Spotlight</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-[11px] text-stone-500">
+                    <span>Order: {item.displayOrder || 0}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(item._id)}
+                      className={'px-2 py-0.5 rounded font-semibold cursor-pointer ' + (
+                        item.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-stone-100 text-stone-500'
+                      )}
+                    >
+                      {item.isActive ? 'Active' : 'Inactive'}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-end space-x-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenModal(item)}
+                      className="p-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer"
+                      title="Edit details"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item._id, item.title)}
+                      className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                      title="Delete asset"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 p-12 text-center text-xs text-stone-400 italic">
-          No media records found.
+        <div className="bg-white rounded-xl border border-stone-200 p-12 text-center max-w-md mx-auto space-y-3">
+          <Layers className="w-10 h-10 text-stone-400 mx-auto" />
+          <h3 className="font-serif font-bold text-stone-900 text-base">No Media Assets Found</h3>
+          <p className="text-xs text-stone-500">No media matches the selected filters.</p>
         </div>
       )}
 
-      {/* CREATE / EDIT MEDIA MODAL */}
+      {/* Upload / Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-6 sm:p-8 shadow-xl border border-stone-200 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-3 border-b border-stone-100">
-              <h3 className="text-lg font-serif font-bold text-stone-900">
-                {editingMedia ? 'Edit Media Details' : 'Upload Gallery Media'}
-              </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-stone-400 hover:text-stone-700">
+        <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-stone-200 shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-6">
+            
+            <div className="flex items-center justify-between pb-4 border-b border-stone-100">
+              <h2 className="text-lg font-serif font-bold text-stone-900">
+                {editingMedia ? 'Edit Media Showcase' : 'Upload New Media Asset'}
+              </h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-stone-400 hover:text-stone-600 cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-              
-              {/* Type Select */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold uppercase text-stone-700 mb-1">Asset Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => {
-                      const newType = e.target.value;
-                      setFormData({
-                        ...formData,
-                        type: newType,
-                        category: newType === 'photo' ? photoCategories[0] : videoCategories[0]
-                      });
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-xs bg-white"
+              {/* Media Type Tabs */}
+              <div>
+                <label className="block font-semibold uppercase text-stone-700 mb-1.5">Asset Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, type: 'photo', category: 'Salon Interior' })}
+                    className={'py-2 rounded-lg border font-semibold flex items-center justify-center gap-1.5 cursor-pointer ' + (
+                      formData.type === 'photo'
+                        ? 'bg-stone-900 text-white border-stone-900'
+                        : 'border-stone-200 text-stone-600 hover:bg-stone-50'
+                    )}
                   >
-                    <option value="photo">Photo / Picture</option>
-                    <option value="video">Video Recording</option>
-                  </select>
+                    <Camera className="w-3.5 h-3.5" /> Photo Showcase
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, type: 'video', category: 'Salon Tour' })}
+                    className={'py-2 rounded-lg border font-semibold flex items-center justify-center gap-1.5 cursor-pointer ' + (
+                      formData.type === 'video'
+                        ? 'bg-stone-900 text-white border-stone-900'
+                        : 'border-stone-200 text-stone-600 hover:bg-stone-50'
+                    )}
+                  >
+                    <Video className="w-3.5 h-3.5" /> Video Story / Reel
+                  </button>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block font-semibold uppercase text-stone-700 mb-1">Title *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="e.g. Master Balayage Showcase"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-xs"
-                  />
-                </div>
+              {/* Title */}
+              <div>
+                <label className="block font-semibold uppercase text-stone-700 mb-1">Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="e.g. Royal Rajasthani Bridal Makeover"
+                  className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                />
               </div>
 
               {/* Category */}
@@ -542,7 +617,7 @@ export default function AdminGallery() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-xs bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-xs bg-white cursor-pointer"
                 >
                   {(formData.type === 'photo' ? photoCategories : videoCategories).map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -550,7 +625,7 @@ export default function AdminGallery() {
                 </select>
               </div>
 
-              {/* Direct File / Video Upload / Custom Thumbnail */}
+              {/* Upload Section */}
               {formData.category === 'Before & After' ? (
                 <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-4">
                   <span className="font-bold text-stone-800 uppercase tracking-wide block text-[11px]">
@@ -641,7 +716,35 @@ export default function AdminGallery() {
                 />
               </div>
 
-              {/* Duration (if video) & Display Order */}
+              {/* Top 4K Spotlight & Featured Toggles for Video */}
+              {formData.type === 'video' && (
+                <div className="p-3.5 bg-amber-50/80 rounded-xl border border-amber-200 space-y-2">
+                  <label className="flex items-center space-x-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isTop4kSpotlight}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          isTop4kSpotlight: e.target.checked,
+                          isFeatured: e.target.checked ? true : formData.isFeatured,
+                          displayOrder: e.target.checked ? 0 : formData.displayOrder
+                        })
+                      }
+                      className="rounded border-amber-300 text-amber-600 focus:ring-amber-500 w-4 h-4"
+                    />
+                    <span className="font-bold text-amber-900 flex items-center gap-1.5">
+                      <Crown className="w-3.5 h-3.5 text-amber-600" />
+                      Set as Primary Top 4K Spotlight Video in Gallery
+                    </span>
+                  </label>
+                  <p className="text-[11px] text-amber-800/80 pl-6">
+                    This video will appear as the large, primary 16:9 cinematic feature on the top of the Portfolio page.
+                  </p>
+                </div>
+              )}
+
+              {/* Duration & Display Order */}
               <div className="grid grid-cols-2 gap-3">
                 {formData.type === 'video' && (
                   <div>
@@ -694,7 +797,7 @@ export default function AdminGallery() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50"
+                  className="px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -704,13 +807,13 @@ export default function AdminGallery() {
                   className="px-6 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {isSaving ? (
-      <span className="flex items-center gap-2">
-        <Loader2 className="w-4 h-4 animate-spin text-rose-300" />
-        Saving & Updating...
-      </span>
-    ) : (
-      editingMedia ? 'Save Changes' : 'Upload Asset'
-    )}
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-rose-300" />
+                      Saving & Updating...
+                    </span>
+                  ) : (
+                    editingMedia ? 'Save Changes' : 'Upload Asset'
+                  )}
                 </button>
               </div>
 
