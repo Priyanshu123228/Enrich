@@ -21,6 +21,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
 export default function AdminOffers() {
   const [offers, setOffers] = useState([]);

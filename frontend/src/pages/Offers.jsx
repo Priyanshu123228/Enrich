@@ -1,4 +1,5 @@
 import SEO from '../components/common/SEO';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { offerService } from '../services/offer.service';

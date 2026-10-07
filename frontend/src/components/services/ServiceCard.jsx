@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 import { Clock, Star, ArrowRight, Calendar, Heart, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { customerService } from '../../services/customer.service';
@@ -41,10 +42,7 @@ export default function ServiceCard({ service, onBook }) {
             src={imageUrl}
             alt={service.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              e.target.src =
-                'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
-            }}
+            onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
           />
           <div className="absolute inset-0 bg-stone-900/40" />
 

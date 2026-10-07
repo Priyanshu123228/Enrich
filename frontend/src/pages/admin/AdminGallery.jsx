@@ -19,6 +19,7 @@ import {
   Clock
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
 export default function AdminGallery() {
   const [mediaList, setMediaList] = useState([]);
@@ -370,7 +371,7 @@ export default function AdminGallery() {
               {/* Thumbnail Container */}
               <div className="relative h-48 w-full bg-stone-100 overflow-hidden">
                 <img
-                  src={item.thumbnail || item.url}
+                  src={resolveImageUrl(item.thumbnail || item.url, DEFAULT_SALON_PLACEHOLDER)}
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />

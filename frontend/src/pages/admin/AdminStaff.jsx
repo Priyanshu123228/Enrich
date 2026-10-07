@@ -18,6 +18,7 @@ import {
   UserX
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
+import { resolveImageUrl, handleImageError, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
 
 export default function AdminStaff() {
   const [staffMembers, setStaffMembers] = useState([]);
@@ -310,7 +311,7 @@ export default function AdminStaff() {
                     {/* Stylist info */}
                     <td className="py-4 px-6 flex items-center space-x-3">
                       <img
-                        src={staff.avatar?.url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'}
+                        src={resolveImageUrl(staff.avatar?.url || staff.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
                         alt={staff.name}
                         className="w-12 h-12 rounded-lg object-cover shrink-0 border border-stone-200"
                       />

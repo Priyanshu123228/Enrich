@@ -62,7 +62,7 @@ export const getGalleryMedia = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const getFeaturedMedia = asyncHandler(async (req, res) => {
-  const [featuredPhotos, featuredVideos, beforeAfters] = await Promise.all([
+  let [featuredPhotos, featuredVideos, beforeAfters] = await Promise.all([
     Media.find({ isActive: true, type: 'photo', isFeatured: true })
       .sort({ displayOrder: 1, createdAt: -1 })
       .limit(8)
@@ -77,12 +77,28 @@ export const getFeaturedMedia = asyncHandler(async (req, res) => {
       .lean()
   ]);
 
+  // Fallback to newest active photos/videos if none are explicitly flagged as isFeatured
+  if (!featuredPhotos || featuredPhotos.length === 0) {
+    featuredPhotos = await Media.find({ isActive: true, type: 'photo' })
+      .sort({ displayOrder: 1, createdAt: -1 })
+      .limit(8)
+      .lean();
+  }
+
+  if (!featuredVideos || featuredVideos.length === 0) {
+    featuredVideos = await Media.find({ isActive: true, type: 'video' })
+      .sort({ displayOrder: 1, createdAt: -1 })
+      .limit(4)
+      .lean();
+  }
+
   return res.status(200).json(
     new ApiResponse(
       200,
       {
         photos: featuredPhotos,
         videos: featuredVideos,
+        transformations: beforeAfters,
         beforeAfters
       },
       'Featured showcase media fetched successfully'

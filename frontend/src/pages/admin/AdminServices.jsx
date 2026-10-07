@@ -15,6 +15,7 @@ import {
   Tag
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
 export default function AdminServices() {
   const [services, setServices] = useState([]);
@@ -276,7 +277,7 @@ export default function AdminServices() {
                     {/* Thumbnail & Title */}
                     <td className="py-4 px-6 flex items-center space-x-3">
                       <img
-                        src={service.images?.[0]?.url || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80'}
+                        src={resolveImageUrl(service.images?.[0]?.url || service.images?.[0], DEFAULT_SALON_PLACEHOLDER)}
                         alt={service.name}
                         className="w-12 h-12 rounded-lg object-cover shrink-0 border border-stone-200"
                       />

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { resolveImageUrl, handleImageError } from '../../utils/imageUrl';
 import { MoveHorizontal } from 'lucide-react';
 
 export default function BeforeAfterSlider({

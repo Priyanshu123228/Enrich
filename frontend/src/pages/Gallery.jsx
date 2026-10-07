@@ -1,4 +1,5 @@
 import SEO from '../components/common/SEO';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
 import { useState, useEffect } from 'react';
 import { mediaService } from '../services/media.service';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
@@ -228,7 +229,7 @@ export default function Gallery() {
                   className="group relative h-72 rounded-xl overflow-hidden bg-stone-900 border border-stone-200 shadow-xs hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-end"
                 >
                   <img
-                    src={item.thumbnail || item.url}
+                    src={resolveImageUrl(item.thumbnail || item.url, DEFAULT_SALON_PLACEHOLDER)}
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-95"
                     loading="lazy"
@@ -278,7 +279,7 @@ export default function Gallery() {
                 className="group relative h-72 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shadow-xs hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-end"
               >
                 <img
-                  src={item.thumbnail || item.url}
+                  src={resolveImageUrl(item.thumbnail || item.url, DEFAULT_SALON_PLACEHOLDER)}
                   alt={item.title}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"

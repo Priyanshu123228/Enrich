@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
+import { resolveImageUrl, handleImageError, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
 import { Star, Award, Scissors, ArrowRight, Calendar } from 'lucide-react';
 
 export default function StaffCard({ staff }) {
-  const avatarUrl =
-    staff.avatar?.url ||
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
+  const rawAvatar = staff.avatar?.url || (typeof staff.avatar === 'string' ? staff.avatar : '') || '';
+  const avatarUrl = resolveImageUrl(rawAvatar, DEFAULT_AVATAR_PLACEHOLDER);
 
   const statusColors = {
     active: 'bg-emerald-100 text-emerald-800 border-emerald-200',
@@ -22,10 +22,7 @@ export default function StaffCard({ staff }) {
             src={avatarUrl}
             alt={staff.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              e.target.src =
-                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
-            }}
+            onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
           />
           <div className="absolute inset-0 bg-stone-900/40" />
 

@@ -1,29 +1,30 @@
 import { useState, useRef } from 'react';
-import { Upload, X, Loader2, Image as ImageIcon, Video, CheckCircle2 } from 'lucide-react';
+import { Upload, X, Loader2, Image as ImageIcon, Video, Link2 } from 'lucide-react';
 import { mediaService } from '../../services/media.service';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
 /**
- * Reusable Direct File / Image Upload Component with instant preview and progress
+ * Reusable Direct File & URL Media Upload Component
  */
 export default function ImageUpload({
   value,
   onChange,
-  label = 'Upload Photo',
+  label = 'Upload Photo / Video',
   accept = 'image/*',
   type = 'image', // 'image' | 'video'
   isCircular = false,
-  aspectRatio = 'aspect-video', // 'aspect-square', 'aspect-video', etc.
-  helpText = 'Supports PNG, JPG, WEBP up to 20MB'
+  aspectRatio = 'aspect-video',
+  helpText = 'Supports PNG, JPG, WEBP or MP4 up to 50MB'
 }) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [dragOver, setDragOver] = useState(false);
+  const [isUrlMode, setIsUrlMode] = useState(false);
+  const [manualUrl, setManualUrl] = useState('');
   const fileInputRef = useRef(null);
 
   const handleFile = async (file) => {
     if (!file) return;
-
-    // Validate size (max 25MB for image, 100MB for video)
     const maxSize = type === 'video' ? 100 * 1024 * 1024 : 25 * 1024 * 1024;
     if (file.size > maxSize) {
       setUploadError(`File too large. Maximum size is ${type === 'video' ? '100MB' : '25MB'}.`);
@@ -63,40 +64,75 @@ export default function ImageUpload({
   const handleRemove = (e) => {
     e.stopPropagation();
     onChange('', '');
+    setManualUrl('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const handleManualUrlSubmit = (e) => {
+    e.preventDefault();
+    if (manualUrl.trim()) {
+      onChange(manualUrl.trim(), '');
+      setIsUrlMode(false);
+    }
+  };
+
+  const resolvedValue = resolveImageUrl(value);
+
   return (
     <div className="space-y-1.5">
-      {label && (
-        <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
-          {label}
-        </label>
+      <div className="flex items-center justify-between">
+        {label && (
+          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700">
+            {label}
+          </label>
+        )}
+        <button
+          type="button"
+          onClick={() => setIsUrlMode(!isUrlMode)}
+          className="text-[11px] font-medium text-rose-700 hover:text-rose-800 flex items-center gap-1 cursor-pointer"
+        >
+          <Link2 className="w-3 h-3" />
+          {isUrlMode ? 'Switch to File Upload' : 'Paste Media Path / URL'}
+        </button>
+      </div>
+
+      {isUrlMode && (
+        <form onSubmit={handleManualUrlSubmit} className="flex gap-2 mb-2">
+          <input
+            type="text"
+            placeholder="e.g. /images/salon/interior.webp or https://..."
+            value={manualUrl}
+            onChange={(e) => setManualUrl(e.target.value)}
+            className="flex-1 px-3 py-1.5 text-xs border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-stone-900 bg-white"
+          />
+          <button
+            type="submit"
+            className="px-3 py-1.5 bg-stone-900 text-white text-xs font-semibold rounded-lg hover:bg-stone-800 cursor-pointer"
+          >
+            Apply
+          </button>
+        </form>
       )}
 
       {value ? (
-        // PREVIEW STATE
         <div className="relative group rounded-xl overflow-hidden border border-stone-200 bg-stone-50">
           {type === 'video' ? (
             <video
-              src={value}
+              src={resolvedValue}
               controls
               className={`w-full max-h-56 object-cover ${aspectRatio} bg-black`}
             />
           ) : (
             <div className={`w-full overflow-hidden flex items-center justify-center ${isCircular ? 'w-28 h-28 mx-auto rounded-full' : `${aspectRatio} max-h-56`}`}>
               <img
-                src={value}
+                src={resolvedValue}
                 alt="Uploaded preview"
                 className={`w-full h-full object-cover ${isCircular ? 'rounded-full' : ''}`}
-                onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=400&q=80';
-                }}
+                onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
               />
             </div>
           )}
 
-          {/* Action Overlay */}
           <div className="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
             <button
               type="button"
@@ -117,7 +153,6 @@ export default function ImageUpload({
           </div>
         </div>
       ) : (
-        // UPLOAD DROPZONE
         <div
           onClick={() => !isUploading && fileInputRef.current?.click()}
           onDragOver={(e) => {

@@ -124,7 +124,7 @@ export default function ServiceDetail() {
                       activeImageIndex === idx ? 'border-stone-900 scale-95' : 'border-stone-200 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img src={img.url} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
+                    <img src={resolveImageUrl(img.url || img, DEFAULT_SALON_PLACEHOLDER)} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

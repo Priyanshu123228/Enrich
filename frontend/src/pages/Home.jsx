@@ -1,4 +1,5 @@
 import SEO from '../components/common/SEO';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../utils/imageUrl';
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -144,7 +145,7 @@ export default function Home() {
           const data = mediaRes.value.data;
           const photos = data.photos || [];
           const videos = data.videos || [];
-          const transformations = data.transformations || [];
+          const transformations = data.transformations || data.beforeAfters || [];
           const all = [...photos, ...videos, ...transformations];
           if (all.length > 0) {
             setMediaItems({ photos, videos, transformations, all });

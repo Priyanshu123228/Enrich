@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { serviceService } from '../../services/service.service';
 import { staffService } from '../../services/staff.service';
@@ -419,7 +420,7 @@ export default function BookingWizard() {
                   }`}
                 >
                   <img
-                    src={service.images?.[0]?.url || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80'}
+                    src={resolveImageUrl(service.images?.[0]?.url || service.images?.[0], DEFAULT_SALON_PLACEHOLDER)}
                     alt={service.name}
                     className="w-16 h-16 rounded-md object-cover shrink-0 border border-stone-200"
                   />
@@ -513,7 +514,7 @@ export default function BookingWizard() {
                 >
                   <div className="space-y-3">
                     <img
-                      src={staff.avatar?.url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'}
+                      src={resolveImageUrl(staff.avatar?.url || staff.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
                       alt={staff.name}
                       className="w-14 h-14 rounded-lg object-cover border border-stone-200"
                     />
