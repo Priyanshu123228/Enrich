@@ -57,11 +57,10 @@ export default function Home() {
   const [services, setServices] = useState([]);
   const [staffList, setStaffList] = useState([]);
   const [offers, setOffers] = useState([]);
-    const [mediaItems, setMediaItems] = useState({
-    photos: [],
-    videos: [],
-    transformations: [],
-    all: []
+    const [mediaItems, setMediaItems] = useState(() => {
+    const def = SALON_CONFIG.defaultMedia || {};
+    const defAll = [...(def.photos || []), ...(def.videos || []), ...(def.transformations || [])];
+    return { photos: def.photos || [], videos: def.videos || [], transformations: def.transformations || [], all: defAll };
   });
 
   // ---------------------------------------------------------------------------
@@ -141,6 +140,9 @@ export default function Home() {
         }
 
         // 4. Process Media / Gallery
+        const def = SALON_CONFIG.defaultMedia || {};
+        const defAll = [...(def.photos || []), ...(def.videos || []), ...(def.transformations || [])];
+
         if (mediaRes.status === 'fulfilled' && mediaRes.value?.data) {
           const data = mediaRes.value.data;
           const photos = data.photos || [];
@@ -150,10 +152,10 @@ export default function Home() {
           if (all.length > 0) {
             setMediaItems({ photos, videos, transformations, all });
           } else {
-            setMediaItems(SALON_CONFIG.defaultMedia);
+            setMediaItems({ ...def, all: defAll });
           }
         } else {
-          setMediaItems(SALON_CONFIG.defaultMedia);
+          setMediaItems({ ...def, all: defAll });
         }
 
       } catch (err) {
@@ -163,7 +165,9 @@ export default function Home() {
           setStaffList(SALON_CONFIG.defaultStylists);
           setOffers(SALON_CONFIG.defaultOffers);
           setReviews(SALON_CONFIG.defaultReviews);
-          setMediaItems(SALON_CONFIG.defaultMedia);
+          const defCatch = SALON_CONFIG.defaultMedia || {};
+          const defCatchAll = [...(defCatch.photos || []), ...(defCatch.videos || []), ...(defCatch.transformations || [])];
+          setMediaItems({ ...defCatch, all: defCatchAll });
         }
       } finally {
         if (isMounted) {
@@ -216,22 +220,40 @@ export default function Home() {
   ];
 
   const filteredGalleryMedia = useMemo(() => {
-    const all = mediaItems.all || [];
+    const all =
+      (mediaItems.all && mediaItems.all.length > 0)
+        ? mediaItems.all
+        : [...(mediaItems.photos || []), ...(mediaItems.videos || []), ...(mediaItems.transformations || [])];
+
     if (activeGalleryCategory === 'All') {
       return all;
     }
     if (activeGalleryCategory === 'Photos') {
-      return all.filter(m => m.mediaType === 'photo' || (!m.mediaType && !m.videoUrl && !m.beforeImage));
+      return all.filter(
+        m => (m.type === 'photo' || m.mediaType === 'photo' || (!m.duration && !m.videoUrl && !m.beforeAfter && !m.beforeImage)) && !m.duration
+      );
     }
     if (activeGalleryCategory === 'Videos') {
-      return all.filter(m => m.mediaType === 'video' || m.videoUrl);
+      return all.filter(
+        m => m.type === 'video' || m.mediaType === 'video' || m.duration > 0 || m.videoUrl
+      );
     }
     if (activeGalleryCategory === 'Before & After') {
-      return all.filter(m => m.mediaType === 'before_after' || (m.beforeImage && m.afterImage));
+      return all.filter(
+        m => m.category === 'Before & After' || m.type === 'before_after' || m.mediaType === 'before_after' || m.beforeAfter?.beforeUrl || m.beforeImage
+      );
     }
-    return all.filter(
-      m => m.category && m.category.toLowerCase() === activeGalleryCategory.toLowerCase()
-    );
+
+    return all.filter((m) => {
+      const cat = (m.category || '').toLowerCase();
+      const target = activeGalleryCategory.toLowerCase();
+      if (target === 'skin') return cat.includes('skin');
+      if (target === 'hair') return cat.includes('hair');
+      if (target === 'makeup') return cat.includes('makeup');
+      if (target === 'bridal') return cat.includes('bridal');
+      if (target === 'nails') return cat.includes('nail');
+      return cat === target;
+    });
   }, [mediaItems, activeGalleryCategory]);
 
   const lightboxMediaList = useMemo(() => {
