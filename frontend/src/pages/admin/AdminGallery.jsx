@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { mediaService } from '../../services/media.service';
 import {
   Camera,
@@ -104,10 +104,29 @@ export default function AdminGallery() {
     fetchAdminMedia();
   }, [typeFilter, categoryFilter, statusFilter, searchQuery]);
 
+  // Dynamically calculate the single TRUE Top 4K video so only ONE card gets highlighted
+  const top4kVideo = useMemo(() => {
+    const videos = mediaList.filter((m) => m.type === 'video' && m.isActive !== false);
+    if (videos.length === 0) return null;
+    const featured = videos.filter((v) => v.isFeatured);
+    if (featured.length > 0) {
+      return [...featured].sort((a, b) => {
+        const orderDiff = (a.displayOrder || 0) - (b.displayOrder || 0);
+        if (orderDiff !== 0) return orderDiff;
+        return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+      })[0];
+    }
+    return [...videos].sort((a, b) => {
+      const orderDiff = (a.displayOrder || 0) - (b.displayOrder || 0);
+      if (orderDiff !== 0) return orderDiff;
+      return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+    })[0];
+  }, [mediaList]);
+
   const handleOpenModal = (media = null) => {
     if (media) {
       setEditingMedia(media);
-      const isTop = media.type === 'video' && media.isFeatured && (media.displayOrder === 0 || media.displayOrder === -1);
+      const isTop = top4kVideo && media._id === top4kVideo._id;
       setFormData({
         title: media.title,
         description: media.description || '',
@@ -118,7 +137,7 @@ export default function AdminGallery() {
         duration: media.duration || '',
         displayOrder: media.displayOrder || 0,
         isFeatured: media.isFeatured || false,
-        isTop4kSpotlight: isTop,
+        isTop4kSpotlight: Boolean(isTop),
         isActive: media.isActive !== false,
         beforeUrl: media.beforeAfter?.beforeUrl || '',
         afterUrl: media.beforeAfter?.afterUrl || ''
@@ -173,9 +192,20 @@ export default function AdminGallery() {
 
       if (editingMedia) {
         await mediaService.updateMedia(editingMedia._id, payload);
+        if (formData.isTop4kSpotlight) {
+          try {
+            await mediaService.setTop4kVideo(editingMedia._id);
+          } catch (_) {}
+        }
         setFeedback({ type: 'success', message: 'Media asset updated successfully.' });
       } else {
-        await mediaService.createMedia(payload);
+        const createRes = await mediaService.createMedia(payload);
+        const newId = createRes?.data?._id || createRes?.data?.media?._id;
+        if (formData.isTop4kSpotlight && newId) {
+          try {
+            await mediaService.setTop4kVideo(newId);
+          } catch (_) {}
+        }
         setFeedback({ type: 'success', message: 'New media asset uploaded successfully.' });
       }
 
@@ -195,30 +225,39 @@ export default function AdminGallery() {
       setMediaList((prev) =>
         prev.map((item) => (item._id === id ? { ...item, isFeatured: newVal } : item))
       );
-      setFeedback({ type: 'success', message: newVal ? 'Added to Homepage Featured Showcase.' : 'Removed from Homepage (still in Gallery).' });
+      setFeedback({
+        type: 'success',
+        message: newVal ? 'Added to Homepage Featured Showcase.' : 'Removed from Homepage (still in Gallery).'
+      });
     } catch (err) {
       setFeedback({ type: 'error', message: err.message || 'Failed to update featured status' });
     }
   };
 
-  // 1-Click action to designate a video as the primary Top 4K Spotlight Hero video
+  // 1-Click action to designate a video as the unique Top 4K Spotlight Hero video
   const handleSetTop4kVideo = async (id, title) => {
     try {
-      await mediaService.updateMedia(id, { isFeatured: true, displayOrder: 0 });
+      if (typeof mediaService.setTop4kVideo === 'function') {
+        await mediaService.setTop4kVideo(id);
+      } else {
+        await mediaService.updateMedia(id, { isFeatured: true, displayOrder: 0 });
+      }
+
       setMediaList((prev) =>
         prev.map((item) => {
           if (item._id === id) {
-            return { ...item, isFeatured: true, displayOrder: 0 };
+            return { ...item, isFeatured: true, displayOrder: 0, updatedAt: new Date().toISOString() };
           }
-          if (item.type === 'video' && item.displayOrder === 0) {
-            return { ...item, displayOrder: 1 };
+          if (item.type === 'video') {
+            return { ...item, displayOrder: (item.displayOrder || 0) + 1 };
           }
           return item;
         })
       );
+
       setFeedback({
         type: 'success',
-        message: '🌟 "' + title + '" is now set as the Top 4K Spotlight Hero Video in the Gallery portfolio!'
+        message: '🌟 "' + title + '" is now the active Top 4K Spotlight Hero video in the Gallery portfolio!'
       });
     } catch (err) {
       setFeedback({ type: 'error', message: err.message || 'Failed to set top 4K video' });
@@ -272,29 +311,29 @@ export default function AdminGallery() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       
       {/* Header Banner */}
-      <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-stone-200 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded bg-stone-100 text-stone-700 text-xs font-semibold uppercase tracking-wider mb-2 border border-stone-200">
+          <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 text-xs font-semibold uppercase tracking-wider mb-2 border border-stone-200">
             <span>Asset Studio</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
             Media Gallery Management
           </h1>
           <p className="text-xs sm:text-sm text-stone-500 mt-1">
-            Upload salon photos, choose your <strong>Top 4K Spotlight Hero Video</strong>, manage reels, and curate portfolio showcases.
+            Choose your <strong>Top 4K Spotlight Hero Video</strong>, upload client transformations, and curate the portfolio.
           </p>
         </div>
 
         <div className="flex items-center space-x-3">
           <button
             onClick={handleSeed}
-            className="px-4 py-2 rounded-lg border border-stone-300 hover:bg-stone-50 text-stone-700 text-xs font-semibold cursor-pointer"
+            className="px-4 py-2 rounded-xl border border-stone-300 hover:bg-stone-50 text-stone-700 text-xs font-semibold cursor-pointer"
           >
             Seed Sample Media
           </button>
           <button
             onClick={() => handleOpenModal()}
-            className="inline-flex items-center px-5 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center px-5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition-colors cursor-pointer shadow-sm"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Upload Media
@@ -304,23 +343,23 @@ export default function AdminGallery() {
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-1">
+        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Total Assets</span>
           <p className="text-2xl font-serif font-bold text-stone-900">{mediaList.length}</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-1">
+        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider flex items-center">
             <Camera className="w-3.5 h-3.5 mr-1 text-stone-500" /> Photos
           </span>
           <p className="text-2xl font-serif font-bold text-stone-900">{totalPhotos}</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-1">
+        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <span className="text-[11px] font-bold text-stone-700 uppercase tracking-wider flex items-center">
             <Video className="w-3.5 h-3.5 mr-1 text-stone-500" /> Videos
           </span>
           <p className="text-2xl font-serif font-bold text-stone-900">{totalVideos}</p>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-xs space-y-1">
+        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs space-y-1">
           <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider flex items-center">
             <Star className="w-3.5 h-3.5 mr-1 fill-amber-500 text-amber-500" /> Featured Work
           </span>
@@ -328,10 +367,41 @@ export default function AdminGallery() {
         </div>
       </div>
 
+      {/* Active Top 4K Hero Banner Reminder */}
+      {top4kVideo && (
+        <div className="bg-gradient-to-r from-amber-50 via-amber-100/60 to-rose-50 border border-amber-300/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 text-stone-950 flex items-center justify-center shadow-md shrink-0">
+              <Crown className="w-5 h-5 fill-stone-950" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900">
+                  Current Top 4K Spotlight Hero
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 text-[10px] font-mono font-bold">
+                  Active in Gallery
+                </span>
+              </div>
+              <h4 className="font-serif font-bold text-stone-900 text-sm sm:text-base line-clamp-1">
+                {top4kVideo.title}
+              </h4>
+            </div>
+          </div>
+
+          <button
+            onClick={() => handleOpenModal(top4kVideo)}
+            className="px-4 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold cursor-pointer shrink-0 shadow-xs"
+          >
+            Edit Top 4K Video
+          </button>
+        </div>
+      )}
+
       {/* Global Feedback Alert */}
       {feedback.message && (
         <div
-          className={'p-4 rounded-lg flex items-center justify-between text-xs sm:text-sm ' + (
+          className={'p-4 rounded-xl flex items-center justify-between text-xs sm:text-sm ' + (
             feedback.type === 'success'
               ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
               : 'bg-red-50 border border-red-200 text-red-800'
@@ -352,7 +422,7 @@ export default function AdminGallery() {
       )}
 
       {/* Filters Bar */}
-      <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-xs flex flex-col md:flex-row gap-3 justify-between items-center text-xs">
+      <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex flex-col md:flex-row gap-3 justify-between items-center text-xs">
         {/* Search */}
         <div className="relative w-full md:w-72">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
@@ -361,7 +431,7 @@ export default function AdminGallery() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title..."
-            className="w-full pl-9 pr-4 py-2 rounded-lg border border-stone-300 text-xs focus:outline-stone-500"
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-stone-300 text-xs focus:outline-stone-500"
           />
         </div>
 
@@ -370,7 +440,7 @@ export default function AdminGallery() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 rounded-lg border border-stone-300 text-xs bg-white cursor-pointer"
+            className="px-3 py-2 rounded-xl border border-stone-300 text-xs bg-white cursor-pointer"
           >
             <option value="all">All Types</option>
             <option value="photo">Photos Only</option>
@@ -380,7 +450,7 @@ export default function AdminGallery() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3 py-2 rounded-lg border border-stone-300 text-xs bg-white cursor-pointer max-w-[160px]"
+            className="px-3 py-2 rounded-xl border border-stone-300 text-xs bg-white cursor-pointer max-w-[160px]"
           >
             <option value="all">All Categories</option>
             {[...photoCategories, ...videoCategories].map((c) => (
@@ -391,7 +461,7 @@ export default function AdminGallery() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 rounded-lg border border-stone-300 text-xs bg-white cursor-pointer"
+            className="px-3 py-2 rounded-xl border border-stone-300 text-xs bg-white cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active Only</option>
@@ -409,14 +479,14 @@ export default function AdminGallery() {
       ) : mediaList.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {mediaList.map((item) => {
-            const isTopSpotlight = item.type === 'video' && item.isFeatured && (item.displayOrder === 0 || item.displayOrder === -1);
+            const isTopSpotlight = item.type === 'video' && top4kVideo && item._id === top4kVideo._id;
 
             return (
               <div
                 key={item._id}
-                className={'bg-white rounded-xl border overflow-hidden shadow-xs transition-all flex flex-col justify-between ' + (
+                className={'bg-white rounded-2xl border overflow-hidden shadow-xs transition-all flex flex-col justify-between ' + (
                   isTopSpotlight
-                    ? 'ring-2 ring-amber-500 border-amber-400'
+                    ? 'ring-2 ring-amber-500 border-amber-400 shadow-md'
                     : 'border-stone-200 hover:border-stone-300'
                 )}
               >
@@ -439,18 +509,18 @@ export default function AdminGallery() {
                     />
                   )}
 
-                  {/* Top Badges */}
-                  <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 z-10">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-stone-900 text-white">
+                  {/* Top Badges (Clean, non-truncating layout) */}
+                  <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 z-10 max-w-[75%]">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-stone-950/90 text-white shadow-xs">
                       {item.type}
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/90 text-stone-900 shadow-xs">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-white/95 text-stone-900 shadow-xs line-clamp-1 max-w-[110px]">
                       {item.category}
                     </span>
                     {isTopSpotlight && (
                       <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-stone-950 flex items-center gap-1 shadow-md">
                         <Crown className="w-3 h-3 fill-stone-950" />
-                        Top 4K Hero
+                        Top 4K
                       </span>
                     )}
                   </div>
@@ -466,7 +536,7 @@ export default function AdminGallery() {
                         ? 'bg-amber-500 text-stone-950 hover:bg-amber-400'
                         : 'bg-stone-900/80 text-stone-300 hover:text-white hover:bg-stone-900'
                     )}
-                    title={item.isFeatured ? 'Featured on Homepage (Click to disable)' : 'Click to feature on Homepage'}
+                    title={item.isFeatured ? 'Featured on Homepage (Click to toggle)' : 'Click to feature on Homepage'}
                   >
                     <Star className={'w-3.5 h-3.5 ' + (item.isFeatured ? 'fill-current' : '')} />
                   </button>
@@ -479,43 +549,45 @@ export default function AdminGallery() {
                       {item.title}
                     </h3>
                     {item.description && (
-                      <p className="text-[11px] text-stone-500 line-clamp-2 mt-0.5">
+                      <p className="text-[11px] text-stone-500 line-clamp-2 mt-0.5 font-light leading-relaxed">
                         {item.description}
                       </p>
                     )}
                   </div>
 
-                  {/* Dedicated 1-Click Top 4K Spotlight Hero Button for Videos */}
+                  {/* 1-Click Top 4K Spotlight Hero Selector for Videos */}
                   {item.type === 'video' && (
                     <div className="pt-1">
                       {isTopSpotlight ? (
-                        <div className="w-full py-1.5 px-2.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-bold flex items-center justify-between">
-                          <span className="flex items-center gap-1">
-                            <Crown className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
-                            Primary 4K Hero in Gallery
+                        <div className="w-full py-2 px-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold flex items-center justify-between shadow-2xs">
+                          <span className="flex items-center gap-1.5">
+                            <Crown className="w-3.5 h-3.5 text-amber-600 fill-amber-500 shrink-0" />
+                            <span>Active Top 4K Hero</span>
                           </span>
-                          <span className="text-[10px] text-amber-700 font-mono">Order 0</span>
+                          <span className="text-[10px] bg-amber-200/90 text-amber-950 px-2 py-0.5 rounded-full font-mono font-bold">
+                            #1 in Gallery
+                          </span>
                         </div>
                       ) : (
                         <button
                           type="button"
                           onClick={() => handleSetTop4kVideo(item._id, item.title)}
-                          className="w-full py-1.5 px-2.5 rounded-lg bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 border border-stone-200 hover:border-amber-300 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                          title="Click to place this video as the large 4K featured hero at the top of the Gallery"
+                          className="w-full py-2 px-3 rounded-xl bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-950 border border-stone-200 hover:border-amber-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer group/btn"
+                          title="Click to place this video as the 100% wide 4K hero at the top of the Gallery"
                         >
-                          <Crown className="w-3.5 h-3.5 text-amber-600" />
-                          <span>Set as Top 4K Spotlight</span>
+                          <Crown className="w-3.5 h-3.5 text-stone-400 group-hover/btn:text-amber-600 group-hover/btn:fill-amber-500 transition-colors" />
+                          <span>Set as Top 4K Hero</span>
                         </button>
                       )}
                     </div>
                   )}
 
                   <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-[11px] text-stone-500">
-                    <span>Order: {item.displayOrder || 0}</span>
+                    <span className="font-mono">Order: {item.displayOrder || 0}</span>
                     <button
                       type="button"
                       onClick={() => handleToggleStatus(item._id)}
-                      className={'px-2 py-0.5 rounded font-semibold cursor-pointer ' + (
+                      className={'px-2 py-0.5 rounded-md font-semibold cursor-pointer ' + (
                         item.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-stone-100 text-stone-500'
                       )}
                     >
@@ -547,7 +619,7 @@ export default function AdminGallery() {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 p-12 text-center max-w-md mx-auto space-y-3">
+        <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center max-w-md mx-auto space-y-3">
           <Layers className="w-10 h-10 text-stone-400 mx-auto" />
           <h3 className="font-serif font-bold text-stone-900 text-base">No Media Assets Found</h3>
           <p className="text-xs text-stone-500">No media matches the selected filters.</p>
@@ -576,7 +648,7 @@ export default function AdminGallery() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, type: 'photo', category: 'Salon Interior' })}
-                    className={'py-2 rounded-lg border font-semibold flex items-center justify-center gap-1.5 cursor-pointer ' + (
+                    className={'py-2 rounded-xl border font-semibold flex items-center justify-center gap-1.5 cursor-pointer ' + (
                       formData.type === 'photo'
                         ? 'bg-stone-900 text-white border-stone-900'
                         : 'border-stone-200 text-stone-600 hover:bg-stone-50'
@@ -587,7 +659,7 @@ export default function AdminGallery() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, type: 'video', category: 'Salon Tour' })}
-                    className={'py-2 rounded-lg border font-semibold flex items-center justify-center gap-1.5 cursor-pointer ' + (
+                    className={'py-2 rounded-xl border font-semibold flex items-center justify-center gap-1.5 cursor-pointer ' + (
                       formData.type === 'video'
                         ? 'bg-stone-900 text-white border-stone-900'
                         : 'border-stone-200 text-stone-600 hover:bg-stone-50'
@@ -607,7 +679,7 @@ export default function AdminGallery() {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Royal Rajasthani Bridal Makeover"
-                  className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-stone-300 text-xs"
                 />
               </div>
 
@@ -617,7 +689,7 @@ export default function AdminGallery() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 text-xs bg-white cursor-pointer"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-xs bg-white cursor-pointer"
                 >
                   {(formData.type === 'photo' ? photoCategories : videoCategories).map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -627,7 +699,7 @@ export default function AdminGallery() {
 
               {/* Upload Section */}
               {formData.category === 'Before & After' ? (
-                <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-4">
+                <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-4">
                   <span className="font-bold text-stone-800 uppercase tracking-wide block text-[11px]">
                     Before / After Transformation Photos
                   </span>
@@ -665,7 +737,7 @@ export default function AdminGallery() {
                   </div>
                 </div>
               ) : formData.type === 'video' ? (
-                <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-4">
+                <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-4">
                   <span className="font-bold text-stone-800 uppercase tracking-wide block text-[11px]">
                     Video Reel & Custom Thumbnail Cover
                   </span>
@@ -712,13 +784,13 @@ export default function AdminGallery() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Short caption or stylist notes..."
-                  className="w-full p-2.5 rounded-lg border border-stone-300 text-xs"
+                  className="w-full p-2.5 rounded-xl border border-stone-300 text-xs"
                 />
               </div>
 
               {/* Top 4K Spotlight & Featured Toggles for Video */}
               {formData.type === 'video' && (
-                <div className="p-3.5 bg-amber-50/80 rounded-xl border border-amber-200 space-y-2">
+                <div className="p-3.5 bg-amber-50/80 rounded-2xl border border-amber-200 space-y-2">
                   <label className="flex items-center space-x-2.5 cursor-pointer">
                     <input
                       type="checkbox"
@@ -734,12 +806,12 @@ export default function AdminGallery() {
                       className="rounded border-amber-300 text-amber-600 focus:ring-amber-500 w-4 h-4"
                     />
                     <span className="font-bold text-amber-900 flex items-center gap-1.5">
-                      <Crown className="w-3.5 h-3.5 text-amber-600" />
+                      <Crown className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
                       Set as Primary Top 4K Spotlight Video in Gallery
                     </span>
                   </label>
                   <p className="text-[11px] text-amber-800/80 pl-6">
-                    This video will appear as the large, primary 16:9 cinematic feature on the top of the Portfolio page.
+                    This video will appear as the 100% wide 4K cinematic hero at the top of the Portfolio page.
                   </p>
                 </div>
               )}
@@ -754,7 +826,7 @@ export default function AdminGallery() {
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                       placeholder="45"
-                      className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                      className="w-full px-3 py-2 rounded-xl border border-stone-300 text-xs"
                     />
                   </div>
                 )}
@@ -764,7 +836,7 @@ export default function AdminGallery() {
                     type="number"
                     value={formData.displayOrder}
                     onChange={(e) => setFormData({ ...formData, displayOrder: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-stone-300 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-stone-300 text-xs"
                   />
                 </div>
               </div>
@@ -797,14 +869,14 @@ export default function AdminGallery() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-6 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
                 >
                   {isSaving ? (
                     <span className="flex items-center gap-2">

@@ -86,6 +86,10 @@ export const mediaService = {
    * Admin: Delete media asset
    * @param {string} id
    */
+  setTop4kVideo: async (id) => {
+    return await api.put(`/media/${id}/top-4k`);
+  },
+
   deleteMedia: async (id) => {
     return await api.delete(`/media/${id}`);
   },

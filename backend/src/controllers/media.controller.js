@@ -609,3 +609,33 @@ export const seedDefaultMedia = asyncHandler(async (req, res) => {
     new ApiResponse(201, { count: created.length }, 'Default gallery media successfully seeded')
   );
 });
+
+
+/**
+ * @desc    Admin: Set a video as the unique Top 4K Spotlight Hero
+ * @route   PUT /api/v1/media/:id/top-4k
+ * @access  Private / Admin
+ */
+export const setTop4kVideo = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const targetMedia = await Media.findById(id);
+  if (!targetMedia) {
+    throw new ApiError(404, 'Media item not found');
+  }
+
+  // Demote all other videos by incrementing their displayOrder so target is strictly #0
+  await Media.updateMany(
+    { _id: { $ne: id }, type: 'video' },
+    { $inc: { displayOrder: 1 } }
+  );
+
+  targetMedia.isFeatured = true;
+  targetMedia.displayOrder = 0;
+  targetMedia.isActive = true;
+  await targetMedia.save();
+
+  return res.status(200).json(
+    new ApiResponse(200, targetMedia, 'Video successfully designated as the Top 4K Spotlight Hero')
+  );
+});

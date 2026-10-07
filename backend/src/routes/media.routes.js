@@ -10,7 +10,8 @@ import {
   toggleMediaStatus,
   deleteMedia,
   uploadSingleFile,
-  seedDefaultMedia
+  seedDefaultMedia,
+  setTop4kVideo
 } from '../controllers/media.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { authorizeRoles } from '../middlewares/role.middleware.js';
@@ -30,6 +31,7 @@ router.post('/seed', verifyJWT, authorizeRoles('admin'), seedDefaultMedia);
 router.get('/admin/all', verifyJWT, authorizeRoles('admin'), adminGetAllMedia);
 router.post('/upload', verifyJWT, authorizeRoles('admin'), uploadMedia.single('file'), uploadSingleFile);
 router.post('/', verifyJWT, authorizeRoles('admin'), uploadMedia.single('mediaFile'), createMedia);
+router.put('/:id/top-4k', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), setTop4kVideo);
 router.put('/:id', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), uploadMedia.single('mediaFile'), updateMedia);
 router.put('/:id/status', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), toggleMediaStatus);
 router.delete('/:id', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), deleteMedia);
