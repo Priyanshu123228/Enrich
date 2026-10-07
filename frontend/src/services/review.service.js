@@ -1,6 +1,13 @@
 import api from './api';
 
 export const reviewService = {
+  /**
+   * Fetch verified Google Business Profile reviews from backend proxy
+   * @param {Object} params - { forceRefresh: boolean }
+   */
+  getGoogleReviews: async (params = {}) => {
+    return await api.get('/google-reviews', { params });
+  },
   getPublicReviews: async (params) => {
     return await api.get('/reviews', { params });
   },
@@ -23,4 +30,3 @@ export const reviewService = {
     return await api.delete(`/reviews/${id}`);
   }
 };
-

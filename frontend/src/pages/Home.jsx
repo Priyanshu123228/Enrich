@@ -11,6 +11,7 @@ import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import VideoModal from '../components/gallery/VideoModal';
 import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
 import SocialMediaSection from '../components/SocialMediaSection';
+import GoogleReviews from '../components/GoogleReviews';
 import { CardSkeleton } from '../components/common/SkeletonLoader';
 import {
   Calendar,
@@ -1034,6 +1035,11 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SocialMediaSection />
       </section>
+
+      {/* =========================================================================
+          SECTION: GOOGLE BUSINESS REVIEWS & RATINGS (GENUINE GOOGLE PLACES API)
+          ========================================================================= */}
+      <GoogleReviews className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" />
 
       {/* =========================================================================
           SECTION 9: CLIENT REVIEWS & EXPERIENCES

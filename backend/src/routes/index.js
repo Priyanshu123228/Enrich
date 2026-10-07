@@ -15,6 +15,7 @@ import mediaRoutes from './media.routes.js';
 import socialRoutes from './social.routes.js';
 import inquiryRoutes from './inquiry.routes.js';
 import productRoutes from './product.routes.js';
+import googleReviewsRoutes from './googleReviews.routes.js';
 
 const router = Router();
 
@@ -38,5 +39,6 @@ router.use('/inquiries', inquiryRoutes);
 router.use('/contact', inquiryRoutes); // Convenient alias
 router.use('/products', productRoutes);
 router.use('/cosmetics', productRoutes); // Convenient alias
+router.use('/google-reviews', googleReviewsRoutes);
 
 export default router;

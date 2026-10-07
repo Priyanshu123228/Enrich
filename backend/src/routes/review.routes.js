@@ -1,3 +1,4 @@
+import { getGoogleReviews } from '../controllers/googleReviews.controller.js';
 import { Router } from 'express';
 import {
   getPublicReviews,
@@ -14,6 +15,7 @@ import { validateObjectId } from '../middlewares/validateObjectId.middleware.js'
 
 const router = Router();
 
+router.get('/google', getGoogleReviews);
 router.get('/', getPublicReviews);
 router.get('/my', verifyJWT, getMyReviews);
 router.get('/pending', verifyJWT, getPendingReviewAppointments);
