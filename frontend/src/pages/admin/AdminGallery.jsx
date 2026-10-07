@@ -151,7 +151,9 @@ export default function AdminGallery() {
         type: formData.type,
         category: formData.category,
         url: effectiveUrl,
-        thumbnail: (formData.type === "photo" ? effectiveUrl : (formData.thumbnail || effectiveUrl)),
+        thumbnail: formData.type === 'video'
+        ? (formData.thumbnail && !formData.thumbnail.includes('.mp4') ? formData.thumbnail : effectiveUrl)
+        : effectiveUrl,
         duration: formData.duration ? Number(formData.duration) : 0,
         displayOrder: Number(formData.displayOrder) || 0,
         isFeatured: formData.isFeatured,
@@ -548,7 +550,7 @@ export default function AdminGallery() {
                 </select>
               </div>
 
-              {/* Direct File / Video Upload or Before & After Pair */}
+              {/* Direct File / Video Upload / Custom Thumbnail */}
               {formData.category === 'Before & After' ? (
                 <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-4">
                   <span className="font-bold text-stone-800 uppercase tracking-wide block text-[11px]">
@@ -587,20 +589,42 @@ export default function AdminGallery() {
                     />
                   </div>
                 </div>
+              ) : formData.type === 'video' ? (
+                <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-4">
+                  <span className="font-bold text-stone-800 uppercase tracking-wide block text-[11px]">
+                    Video Reel & Custom Thumbnail Cover
+                  </span>
+
+                  <ImageUpload
+                    value={formData.url}
+                    onChange={(url) => setFormData((prev) => ({ ...prev, url }))}
+                    label="1. Video File (MP4 / WEBM)"
+                    type="video"
+                    accept="video/*"
+                    aspectRatio="aspect-video"
+                    helpText="Upload MP4/WEBM reel or paste local path (e.g. /images/videos/...)"
+                  />
+
+                  <ImageUpload
+                    value={formData.thumbnail && !formData.thumbnail.includes('.mp4') && !formData.thumbnail.includes('.webm') ? formData.thumbnail : ''}
+                    onChange={(url) => setFormData((prev) => ({ ...prev, thumbnail: url }))}
+                    label="2. Custom Video Thumbnail / Cover Poster Photo (Optional)"
+                    type="image"
+                    accept="image/*"
+                    aspectRatio="aspect-video"
+                    helpText="Choose a custom cover photo or leave empty to auto-use video's first frame"
+                  />
+                </div>
               ) : (
                 <div>
                   <ImageUpload
                     value={formData.url}
-                    onChange={(url) => setFormData((prev) => ({ ...prev, url }))}
-                    label={formData.type === 'video' ? 'Upload Video File' : 'Upload Showcase Photo'}
-                    type={formData.type}
-                    accept={formData.type === 'video' ? 'video/*' : 'image/*'}
+                    onChange={(url) => setFormData((prev) => ({ ...prev, url, thumbnail: url }))}
+                    label="Upload Showcase Photo"
+                    type="image"
+                    accept="image/*"
                     aspectRatio="aspect-video"
-                    helpText={
-                      formData.type === 'video'
-                        ? 'Upload MP4, WEBM, MOV video (up to 100MB)'
-                        : 'Upload PNG, JPG, WEBP photo (up to 25MB)'
-                    }
+                    helpText="Upload PNG, JPG, WEBP photo (up to 25MB) or paste path (e.g. /images/bridal/...)"
                   />
                 </div>
               )}
