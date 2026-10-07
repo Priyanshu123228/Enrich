@@ -34,7 +34,7 @@ function formatVideoDuration(seconds) {
 }
 
 /**
- * Featured Hero Video Card (Cinematic Split Showcase)
+ * 100% Full-Width Cinematic Featured Hero Card (Overlay Layout)
  */
 export function FeaturedHeroCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -60,13 +60,13 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
 
   return (
     <div
-      className="relative w-full rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-xl group cursor-pointer transition-all duration-300 hover:shadow-2xl hover:border-rose-800/60"
+      className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-950 border border-stone-800 shadow-2xl group cursor-pointer transition-all duration-300 hover:border-rose-700/60 aspect-[16/10] sm:aspect-[16/8] lg:aspect-[16/7] min-h-[360px] sm:min-h-[420px] lg:min-h-[480px] flex flex-col justify-between"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelectVideo(video)}
       tabIndex={0}
       role="button"
-      aria-label={'Watch featured video: ' + (video.title || 'Studio Video')}
+      aria-label={'Watch cinematic experience: ' + (video.title || 'Studio Video')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -74,96 +74,100 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
         }
       }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[320px] sm:min-h-[380px] lg:min-h-[420px]">
-        {/* Left/Main Cinematic Media Viewport */}
-        <div className="relative lg:col-span-8 overflow-hidden bg-stone-900 aspect-video lg:aspect-auto min-h-[220px] sm:min-h-[300px]">
-          {/* Static High-Res Poster Thumbnail */}
-          {isImageThumb ? (
-            <img
-              src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
-              alt={video.title || 'Featured Salon Video'}
-              className={'absolute inset-0 w-full h-full object-cover transition-transform duration-700 ' + (isHovered ? 'scale-105 opacity-20' : 'scale-100 opacity-90')}
-              loading="lazy"
-              onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
-            />
-          ) : null}
+      {/* 100% FULL-WIDTH BACKGROUND MEDIA */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
+        {/* High-Res Static Poster Thumbnail */}
+        {isImageThumb ? (
+          <img
+            src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
+            alt={video.title || 'Featured Salon Video'}
+            className={'absolute inset-0 w-full h-full object-cover transition-transform duration-700 ' + (
+              isHovered ? 'scale-105 opacity-20' : 'scale-100 opacity-90'
+            )}
+            loading="lazy"
+            onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+          />
+        ) : null}
 
-          {/* Smooth Desktop Muted Preview Video */}
-          {hasVideoUrl && (
-            <video
-              ref={videoPreviewRef}
-              src={videoSrc}
-              muted
-              playsInline
-              loop
-              preload="metadata"
-              className={'absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ' + (isHovered || !isImageThumb ? 'opacity-95' : 'opacity-0')}
-            />
-          )}
+        {/* Smooth Muted Hover Preview Video */}
+        {hasVideoUrl && (
+          <video
+            ref={videoPreviewRef}
+            src={videoSrc}
+            muted
+            playsInline
+            loop
+            preload="metadata"
+            className={'absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ' + (
+              isHovered || !isImageThumb ? 'opacity-95' : 'opacity-0'
+            )}
+          />
+        )}
 
-          {/* Luxury Ambient Overlay Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/30 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-stone-950/20 lg:to-stone-950/90 pointer-events-none" />
+        {/* Multi-tier Cinematic Dark Gradient Overlays for crystal clear text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/95 via-stone-950/40 to-stone-950/30 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-stone-950/70 via-transparent to-stone-950/40 pointer-events-none" />
+      </div>
 
-          {/* Top Hero Badges */}
-          <div className="absolute top-4 left-4 flex items-center space-x-2 z-10">
-            <span className="px-3 py-1 rounded-full bg-rose-700 text-white text-[10px] sm:text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-lg">
-              <Sparkles className="w-3.5 h-3.5" />
-              Studio Spotlight
-            </span>
-            <span className="px-3 py-1 rounded-full bg-stone-900/80 backdrop-blur-xs border border-stone-700 text-stone-200 text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase">
-              {video.category || 'Featured'}
-            </span>
+      {/* TOP OVERLAY ROW: BADGES & DURATION */}
+      <div className="relative p-4 sm:p-6 lg:p-8 flex items-start justify-between z-10 w-full">
+        {/* Top-Left Badges */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="px-3.5 py-1.5 rounded-full bg-rose-700 text-white text-[10px] sm:text-xs font-bold tracking-widest uppercase flex items-center gap-1.5 shadow-lg border border-rose-500/50 backdrop-blur-xs">
+            <Sparkles className="w-3.5 h-3.5" />
+            STUDIO SPOTLIGHT
+          </span>
+          <span className="px-3 py-1.5 rounded-full bg-stone-950/80 backdrop-blur-md border border-stone-700/80 text-stone-200 text-[10px] sm:text-xs font-semibold tracking-wider uppercase shadow-md">
+            {video.category || 'SALON TOUR'}
+          </span>
+        </div>
+
+        {/* Top-Right Duration */}
+        {video.duration > 0 && (
+          <div className="px-3 py-1.5 rounded-full bg-stone-950/85 backdrop-blur-md text-white text-[11px] sm:text-xs font-mono flex items-center border border-stone-700/80 shadow-md">
+            <Clock className="w-3.5 h-3.5 mr-1.5 text-rose-400" />
+            {formatVideoDuration(video.duration)}
+          </div>
+        )}
+      </div>
+
+      {/* CENTER OVERLAY: LARGE ELEGANT PLAY BUTTON */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-white/95 text-stone-950 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-700 group-hover:text-white border-2 border-white/50 backdrop-blur-xs">
+          <Play className="w-7 h-7 sm:w-9 sm:h-9 lg:w-10 lg:h-10 fill-current ml-1 sm:ml-1.5" />
+        </div>
+      </div>
+
+      {/* BOTTOM OVERLAY ROW: EDITORIAL TITLE, DESCRIPTION, CREATOR & WATCH CTA */}
+      <div className="relative p-4 sm:p-6 lg:p-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-8 z-10 w-full">
+        {/* Bottom-Left Information */}
+        <div className="space-y-1.5 sm:space-y-2 max-w-2xl text-white">
+          <div className="flex items-center gap-2 text-rose-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+            <Sparkle className="w-3.5 h-3.5" />
+            <span>CINEMATIC EXPERIENCE</span>
           </div>
 
-          {/* Duration Badge */}
-          {video.duration > 0 && (
-            <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-full bg-stone-900/85 backdrop-blur-xs text-white text-[10px] sm:text-[11px] font-mono flex items-center border border-stone-800">
-              <Clock className="w-3 h-3 mr-1.5 text-rose-400" />
-              {formatVideoDuration(video.duration)}
-            </div>
+          <h3 className="text-xl sm:text-3xl lg:text-4xl font-serif font-bold text-white leading-tight tracking-tight group-hover:text-rose-200 transition-colors drop-shadow-md">
+            {video.title}
+          </h3>
+
+          {video.description && (
+            <p className="text-stone-300 text-xs sm:text-sm font-light leading-relaxed line-clamp-2 sm:line-clamp-3 max-w-xl drop-shadow-xs">
+              {video.description}
+            </p>
           )}
 
-          {/* Center Pulsing Play Icon */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/95 text-stone-950 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-700 group-hover:text-white border-2 border-white/40">
-              <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-current ml-1" />
-            </div>
+          <div className="pt-0.5 flex items-center gap-2 text-[10px] sm:text-xs text-stone-400 font-medium">
+            <Film className="w-3.5 h-3.5 text-rose-500" />
+            <span>Crafted by Enrich Master Stylists • Studio Portfolio</span>
           </div>
         </div>
 
-        {/* Right Editorial Info Column */}
-        <div className="relative lg:col-span-4 p-5 sm:p-7 flex flex-col justify-between bg-stone-950/95 lg:border-l border-stone-800/80">
-          <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center gap-2 text-rose-400 text-xs font-semibold uppercase tracking-widest">
-              <Sparkle className="w-3.5 h-3.5" />
-              <span>CINEMATIC EXPERIENCE</span>
-            </div>
-
-            <h3 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white leading-tight group-hover:text-rose-200 transition-colors">
-              {video.title}
-            </h3>
-
-            {video.description && (
-              <p className="text-stone-300 text-xs sm:text-sm leading-relaxed line-clamp-3 sm:line-clamp-4 font-light">
-                {video.description}
-              </p>
-            )}
-
-            <p className="text-[11px] text-stone-400 font-medium">
-              Crafted by Enrich Master Stylists
-            </p>
-          </div>
-
-          <div className="pt-4 border-t border-stone-800/60 mt-4 sm:mt-6 flex items-center justify-between">
-            <div className="flex items-center text-xs text-stone-400">
-              <Film className="w-4 h-4 mr-1.5 text-rose-500" />
-              <span>Studio Portfolio</span>
-            </div>
-
-            <span className="inline-flex items-center px-4 py-2 rounded-lg bg-rose-700 group-hover:bg-rose-600 text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-md">
-              <Play className="w-3.5 h-3.5 fill-current mr-1.5" />
-              Watch Experience
-            </span>
+        {/* Bottom-Right CTA */}
+        <div className="shrink-0 w-full sm:w-auto pt-2 sm:pt-0">
+          <div className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-rose-700 group-hover:bg-rose-600 text-white text-xs font-bold tracking-widest uppercase transition-all shadow-xl group-hover:scale-105 active:scale-95 border border-rose-500/50 w-full sm:w-auto">
+            <span>WATCH EXPERIENCE</span>
+            <ArrowRight className="w-4 h-4" />
           </div>
         </div>
       </div>
@@ -321,10 +325,14 @@ export default function VideoReelsGallery({
     );
   }, [videos, selectedCategory]);
 
-  // Featured video selection: pick first item with isFeatured or default to 1st video
+  // Featured video selection: pick first item with isFeatured or lowest displayOrder
   const featuredVideo = useMemo(() => {
-    if (filteredVideos.length === 0) return null;
-    return filteredVideos.find((v) => v?.isFeatured || v?.featured) || filteredVideos[0];
+    if (!Array.isArray(filteredVideos) || filteredVideos.length === 0) return null;
+    const featuredList = filteredVideos.filter((v) => v?.isFeatured || v?.featured);
+    if (featuredList.length > 0) {
+      return [...featuredList].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))[0];
+    }
+    return [...filteredVideos].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))[0];
   }, [filteredVideos]);
 
   // Secondary reels list (excluding the featured one)
@@ -387,7 +395,7 @@ export default function VideoReelsGallery({
       {/* MAIN VIDEO LAYOUT */}
       {filteredVideos.length > 0 ? (
         <div className="space-y-8">
-          {/* A. FEATURED HERO VIDEO SHOWCASE */}
+          {/* A. 100% FULL-WIDTH FEATURED HERO VIDEO SHOWCASE */}
           {featuredVideo && (
             <FeaturedHeroCard
               video={featuredVideo}
