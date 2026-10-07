@@ -38,32 +38,47 @@ export default function Gallery() {
     setErrorMsg('');
     try {
       // 1. Fetch categories
-      const catRes = await mediaService.getCategories();
-      if (catRes?.data) {
-        setCategories(catRes.data);
+      try {
+        const catRes = await mediaService.getCategories();
+        if (catRes?.data) {
+          const rawCats = Array.isArray(catRes.data) ? catRes.data : catRes.data?.categories || [];
+          setCategories(rawCats.map((c) => (typeof c === 'string' ? c : c?.name)).filter(Boolean));
+        }
+      } catch (catErr) {
+        console.warn('Could not load categories:', catErr);
       }
 
       // 2. Fetch media with current filters
       const params = {};
-      if (selectedType !== 'all') {
-        if (selectedType === 'before-after') {
-          params.type = 'photo';
-          params.category = 'Before & After';
-        } else {
-          params.type = selectedType;
-        }
+      if (selectedType === 'photo' || selectedType === 'video') {
+        params.type = selectedType;
       }
-      if (selectedCategory !== 'all' && selectedType !== 'before-after') {
+      if (selectedType === 'before-after') {
+        params.category = 'Before & After';
+      } else if (selectedCategory !== 'all') {
         params.category = selectedCategory;
       }
 
-      const mediaRes = await mediaService.getAll(params);
-      if (mediaRes?.data) {
-        setMediaList(mediaRes.data);
+      let res = await mediaService.getGalleryMedia(params);
+
+      // Auto-seed default sample media if gallery is empty on initial load
+      if (!res?.data?.media || res.data.media.length === 0) {
+        try {
+          await mediaService.seedDefaultMedia();
+          res = await mediaService.getGalleryMedia(params);
+        } catch (_) {}
+      }
+
+      if (res?.data?.media && Array.isArray(res.data.media)) {
+        setMediaList(res.data.media);
+      } else if (Array.isArray(res?.data)) {
+        setMediaList(res.data);
+      } else {
+        setMediaList([]);
       }
     } catch (err) {
       console.error('Error fetching gallery:', err);
-      setErrorMsg('Unable to load gallery items. Please check your connection.');
+      setErrorMsg(err.message || 'Unable to load gallery items. Please check your connection.');
     } finally {
       setIsLoading(false);
     }
@@ -73,9 +88,9 @@ export default function Gallery() {
     fetchData();
   }, [selectedType, selectedCategory]);
 
-  // Separate list of photos for lightbox navigation
-  const photoList = mediaList.filter((m) => m.type === 'photo');
-  const videoList = mediaList.filter((m) => m.type === 'video');
+  const safeMediaList = Array.isArray(mediaList) ? mediaList : [];
+  const photoList = safeMediaList.filter((m) => m?.type === 'photo');
+  const videoList = safeMediaList.filter((m) => m?.type === 'video');
 
   const openPhotoLightbox = (item) => {
     const idx = photoList.findIndex((p) => p._id === item._id);
@@ -226,7 +241,7 @@ export default function Gallery() {
           onCategoryChange={(cat) => setVideoCategoryFilter(cat)}
           onSelectVideo={(v) => setActiveVideo(v)}
         />
-      ) : mediaList.length > 0 ? (
+      ) : safeMediaList.length > 0 ? (
         /* MIXED / PHOTO / BEFORE-AFTER GALLERY GRID */
         <div className="space-y-12">
           {/* If viewing 'all', show featured video reels showcase first if videos exist */}
@@ -253,11 +268,13 @@ export default function Gallery() {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {(selectedType === 'all' ? photoList : mediaList).map((item) => {
+              {(selectedType === 'all' ? photoList : safeMediaList).map((item) => {
+                if (!item) return null;
+
                 // Case 1: Before & After Card
                 if (item.category === 'Before & After' && item.beforeAfter?.beforeUrl && item.beforeAfter?.afterUrl) {
                   return (
-                    <div key={item._id} className="sm:col-span-2">
+                    <div key={item._id || item.title} className="sm:col-span-2">
                       <BeforeAfterSlider
                         beforeImage={item.beforeAfter.beforeUrl}
                         afterImage={item.beforeAfter.afterUrl}
@@ -271,13 +288,13 @@ export default function Gallery() {
                 // Case 2: Standard Photo Card
                 return (
                   <div
-                    key={item._id}
+                    key={item._id || item.title}
                     onClick={() => openPhotoLightbox(item)}
                     className="group relative h-72 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shadow-xs hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-end"
                   >
                     <img
                       src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
-                      alt={item.title}
+                      alt={item.title || 'Salon Gallery Photo'}
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                       onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
@@ -287,7 +304,7 @@ export default function Gallery() {
                     {/* Top Category Badge */}
                     <div className="absolute top-3 left-3">
                       <span className="px-2.5 py-0.5 rounded-md bg-stone-900/80 text-stone-200 font-semibold text-[10px] uppercase tracking-wider">
-                        {item.category}
+                        {item.category || 'Portfolio'}
                       </span>
                     </div>
 
