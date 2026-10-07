@@ -4,6 +4,7 @@ import AppRoutes from './routes/AppRoutes';
 import ScrollToTop from './components/common/ScrollToTop';
 import CookieConsent from './components/common/CookieConsent';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import WhatsAppWidget from './components/common/WhatsAppWidget';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <AuthProvider>
           <AppRoutes />
           <CookieConsent />
+          <WhatsAppWidget />
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
