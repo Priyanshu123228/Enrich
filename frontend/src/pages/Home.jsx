@@ -87,13 +87,12 @@ export default function Home() {
           servicesRes,
           staffRes,
           offersRes,
-          reviewsRes,
           mediaRes
         ] = await Promise.allSettled([
           serviceService.getAllServices({ limit: 50 }),
           staffService.getStaff({ limit: 12 }),
           offerService.getActiveOffers(),
-                    mediaService.getFeaturedMedia()
+          mediaService.getGalleryMedia({ limit: 12 })
         ]);
 
         if (!isMounted) return;
@@ -969,17 +968,22 @@ export default function Home() {
           {filteredGalleryMedia.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
               {filteredGalleryMedia.slice(0, 6).map((item, idx) => {
-                const isVideo = item.mediaType === 'video' || !!item.videoUrl;
-                const isTransformation = item.mediaType === 'before_after' || (!!item.beforeImage && !!item.afterImage);
-                const thumbUrl = item.thumbnail || item.url || item.afterImage || item.beforeImage || 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80';
+                const isVideo = item.type === 'video' || item.mediaType === 'video' || item.duration > 0 || !!item.videoUrl;
+                const isTransformation = item.category === 'Before & After' || item.type === 'before_after' || (item.beforeAfter?.beforeUrl && item.beforeAfter?.afterUrl);
+                const thumbUrl = resolveImageUrl(
+                  item.type === 'photo'
+                    ? (item.url || item.thumbnail)
+                    : (item.thumbnail || item.url || item.beforeAfter?.beforeUrl || item.beforeImage),
+                  DEFAULT_SALON_PLACEHOLDER
+                );
 
                 // Transformation component handling
                 if (isTransformation) {
                   return (
                     <div key={item._id || idx} className="rounded-3xl overflow-hidden shadow-md border border-stone-200 bg-white">
                       <BeforeAfterSlider
-                        beforeImage={item.beforeImage}
-                        afterImage={item.afterImage}
+                        beforeImage={resolveImageUrl(item.beforeAfter?.beforeUrl || item.beforeImage, DEFAULT_SALON_PLACEHOLDER)}
+                        afterImage={resolveImageUrl(item.beforeAfter?.afterUrl || item.afterImage, DEFAULT_SALON_PLACEHOLDER)}
                         title={item.title || 'Salon Transformation'}
                         category={item.category || 'Before & After'}
                       />
