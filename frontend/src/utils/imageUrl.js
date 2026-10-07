@@ -1,17 +1,32 @@
-﻿export const DEFAULT_COSMETIC_PLACEHOLDER = 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80';
+export const DEFAULT_COSMETIC_PLACEHOLDER = 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80';
 export const DEFAULT_SALON_PLACEHOLDER = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
 export const DEFAULT_AVATAR_PLACEHOLDER = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
 
 /**
  * Universal Image & Video URL resolver
- * Handles Cloudinary, local disk uploads (/uploads/), local public assets (/images/),
- * blob/data URLs, and ensures fallback on invalid/missing paths.
+ * Handles Objects ({ url }), Strings, Cloudinary, local disk uploads (/uploads/),
+ * local public assets (/images/), blob/data URLs, and ensures robust fallback.
  */
-export const resolveImageUrl = (url, fallback = DEFAULT_SALON_PLACEHOLDER) => {
-  if (!url || typeof url !== 'string' || !url.trim()) return fallback;
+export const resolveImageUrl = (input, fallback = DEFAULT_SALON_PLACEHOLDER) => {
+  if (!input) return fallback;
+
+  let url = input;
+  // If an object with .url or .secure_url was passed
+  if (typeof input === 'object') {
+    if (input.url) url = input.url;
+    else if (input.secure_url) url = input.secure_url;
+    else if (input.thumbnail) url = input.thumbnail;
+    else if (Array.isArray(input) && input.length > 0) {
+      return resolveImageUrl(input[0], fallback);
+    } else {
+      return fallback;
+    }
+  }
+
+  if (typeof url !== 'string' || !url.trim()) return fallback;
   const cleanUrl = url.trim();
 
-  // 1. Data URLs and Blob Object URLs (used for instant preview during upload)
+  // 1. Data URLs and Blob Object URLs (instant upload previews)
   if (cleanUrl.startsWith('blob:') || cleanUrl.startsWith('data:')) return cleanUrl;
 
   // 2. Local public static assets (/images/..., /favicon..., /hero...)
@@ -25,7 +40,6 @@ export const resolveImageUrl = (url, fallback = DEFAULT_SALON_PLACEHOLDER) => {
 
   // 4. Full HTTP / HTTPS URLs
   if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
-    // If backend is running on a different domain or port, dynamically replace localhost:5000
     if (cleanUrl.includes('localhost:5000') && serverHost && !serverHost.includes('localhost:5000')) {
       return cleanUrl.replace('http://localhost:5000', serverHost);
     }
@@ -38,7 +52,7 @@ export const resolveImageUrl = (url, fallback = DEFAULT_SALON_PLACEHOLDER) => {
     return serverHost + cleanPath;
   }
 
-  // 6. Return as is or prefix if relative
+  // 6. If it's a relative path starting with /
   if (cleanUrl.startsWith('/')) {
     return cleanUrl;
   }

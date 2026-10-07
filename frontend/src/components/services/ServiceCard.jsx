@@ -28,9 +28,13 @@ export default function ServiceCard({ service, onBook }) {
     }
   };
 
-  const imageUrl =
+  const rawImage =
     service.images?.[0]?.url ||
-    'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
+    (typeof service.images?.[0] === 'string' ? service.images[0] : '') ||
+    service.image ||
+    service.imageUrl ||
+    '';
+  const imageUrl = resolveImageUrl(rawImage, DEFAULT_SALON_PLACEHOLDER);
 
   return (
     <div className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between group">

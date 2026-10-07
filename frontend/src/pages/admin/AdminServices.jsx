@@ -87,7 +87,7 @@ export default function AdminServices() {
       duration: service.duration || '',
       description: service.description || '',
       featuresText: service.features?.join('\n') || '',
-      imageUrl: service.images?.[0]?.url || '',
+      imageUrl: service.images?.[0]?.url || (typeof service.images?.[0] === 'string' ? service.images[0] : '') || service.image || '',
       isActive: service.isActive !== undefined ? service.isActive : true
     });
     setFormErrors([]);

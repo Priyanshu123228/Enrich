@@ -113,7 +113,7 @@ export default function AdminStaff() {
       name: staff.name || '',
       email: staff.email || '',
       phone: staff.phone || '',
-      avatarUrl: staff.avatar?.url || '',
+      avatarUrl: staff.avatar?.url || (typeof staff.avatar === 'string' ? staff.avatar : '') || '',
       bio: staff.bio || '',
       experience: staff.experience?.toString() || '0',
       status: staff.status || 'active',
