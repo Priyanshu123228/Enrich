@@ -645,7 +645,14 @@ export default function AdminGallery() {
                   disabled={isSaving}
                   className="px-6 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                  {isSaving ? 'Uploading...' : editingMedia ? 'Save Changes' : 'Upload Asset'}
+                  {isSaving ? (
+      <span className="flex items-center gap-2">
+        <Loader2 className="w-4 h-4 animate-spin text-rose-300" />
+        Saving & Updating...
+      </span>
+    ) : (
+      editingMedia ? 'Save Changes' : 'Upload Asset'
+    )}
                 </button>
               </div>
 
