@@ -57,11 +57,7 @@ export default function Home() {
   const [services, setServices] = useState([]);
   const [staffList, setStaffList] = useState([]);
   const [offers, setOffers] = useState([]);
-    const [mediaItems, setMediaItems] = useState(() => {
-    const def = SALON_CONFIG.defaultMedia || {};
-    const defAll = [...(def.photos || []), ...(def.videos || []), ...(def.transformations || [])];
-    return { photos: def.photos || [], videos: def.videos || [], transformations: def.transformations || [], all: defAll };
-  });
+    const [mediaItems, setMediaItems] = useState({ photos: [], videos: [], transformations: [], all: [] });
 
   // ---------------------------------------------------------------------------
   // UI & Filter States
@@ -92,7 +88,7 @@ export default function Home() {
           serviceService.getAllServices({ limit: 50 }),
           staffService.getStaff({ limit: 12 }),
           offerService.getActiveOffers(),
-          mediaService.getGalleryMedia({ limit: 12 })
+          mediaService.getFeaturedMedia()
         ]);
 
         if (!isMounted) return;

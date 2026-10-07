@@ -177,6 +177,19 @@ export default function AdminGallery() {
     }
   };
 
+  const handleToggleFeatured = async (id, currentVal) => {
+    try {
+      const newVal = !currentVal;
+      await mediaService.updateMedia(id, { isFeatured: newVal });
+      setMediaList((prev) =>
+        prev.map((item) => (item._id === id ? { ...item, isFeatured: newVal } : item))
+      );
+      setFeedback({ type: 'success', message: newVal ? 'Added to Homepage Featured Showcase.' : 'Removed from Homepage (still in Gallery).' });
+    } catch (err) {
+      setFeedback({ type: 'error', message: err.message || 'Failed to update featured status' });
+    }
+  };
+
   const handleToggleStatus = async (id) => {
     try {
       await mediaService.toggleMediaStatus(id);
@@ -386,11 +399,21 @@ export default function AdminGallery() {
                   </span>
                 </div>
 
-                {item.isFeatured && (
-                  <div className="absolute top-2.5 right-2.5 p-1 rounded bg-stone-900 text-white shadow-xs">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  </div>
-                )}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleFeatured(item._id, item.isFeatured);
+                  }}
+                  className={`absolute top-2.5 right-2.5 p-1.5 rounded-lg transition-all cursor-pointer shadow-xs ${
+                    item.isFeatured
+                      ? 'bg-amber-500 text-white hover:bg-amber-600 ring-2 ring-white'
+                      : 'bg-stone-900/60 text-stone-300 hover:bg-stone-900 hover:text-white'
+                  }`}
+                  title={item.isFeatured ? "Featured on Homepage (Click to turn off)" : "Not on Homepage (Click to feature)"}
+                >
+                  <Star className={`w-3.5 h-3.5 ${item.isFeatured ? 'fill-current text-white' : ''}`} />
+                </button>
               </div>
 
               {/* Card Body */}
