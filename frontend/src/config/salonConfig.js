@@ -36,7 +36,7 @@ export const SALON_CONFIG = {
     address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
     addressShort: 'First Floor, Sharda Heights, Chandpol, Sikar',
     directionsHint: 'Near Ramlila Maidan and Parshuram Park, Chandpol. Dedicated parking and easy premises access.',
-    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=First+Floor+Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
+    googleMapsUrl: 'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk',
     mapEmbedUrl: 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed',
   },
 
@@ -53,7 +53,7 @@ export const SALON_CONFIG = {
     address: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar, Rajasthan 332001',
     transitHint: 'Conveniently accessible near Ramlila Maidan / Parshuram Park, Chandpol, Sikar.',
     parkingHint: 'Dedicated customer parking spaces available in front of the premises.',
-    googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=First+Floor+Sharda+Heights+near+Ramlila+Maidan+Parshuram+Park+Chandpol+Sikar+Rajasthan+332001',
+    googleMapsUrl: 'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk',
     mapEmbedUrl: 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed',
   },
 
