@@ -168,7 +168,19 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-stone-200/80 text-center text-xs text-stone-500 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} {SALON_CONFIG.business.name}. All rights reserved.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <p>© {new Date().getFullYear()} {SALON_CONFIG.business.name}. All rights reserved.</p>
+            <span className="hidden sm:inline text-stone-300">•</span>
+            <div className="flex items-center gap-3 text-[11px]">
+              <Link to="/privacy-policy" className="text-stone-500 hover:text-rose-700 transition-colors">
+                Privacy Policy
+              </Link>
+              <span>•</span>
+              <Link to="/terms-and-conditions" className="text-stone-500 hover:text-rose-700 transition-colors">
+                Terms & Conditions
+              </Link>
+            </div>
+          </div>
           <p className="flex items-center gap-1.5 text-stone-600">
             <span>Appointments & Walk-ins Welcome</span>
             <span>•</span>

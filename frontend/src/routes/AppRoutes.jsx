@@ -20,6 +20,8 @@ import VerifyEmail from '../pages/VerifyEmail';
 import VerifyPhone from '../pages/VerifyPhone';
 import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
+import TermsAndConditions from '../pages/TermsAndConditions';
 import NotFound from '../pages/NotFound';
 
 // Customer Pages
@@ -114,6 +116,13 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+        
+        {/* Legal & Compliance Routes */}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
