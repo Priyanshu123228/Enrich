@@ -38,7 +38,7 @@ export default function VideoModal({ video, onClose }) {
     if (!seconds || isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
   };
 
   // Auto-hide controls after inactivity
@@ -108,7 +108,7 @@ export default function VideoModal({ video, onClose }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        onClose();
+        onClose?.();
       } else if (e.code === 'Space') {
         e.preventDefault();
         togglePlay();
@@ -135,7 +135,7 @@ export default function VideoModal({ video, onClose }) {
     <div
       className="fixed inset-0 z-50 bg-stone-950/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 select-none animate-in fade-in duration-200"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) onClose?.();
       }}
       role="dialog"
       aria-modal="true"
@@ -202,7 +202,7 @@ export default function VideoModal({ video, onClose }) {
           {(!isPlaying || isEnded) && (
             <button
               onClick={togglePlay}
-              aria-label={isEnded ? 'Replay' : 'Play'}
+              aria-label={isEnded ? 'Replay video' : 'Play video'}
               className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-rose-700/90 hover:bg-rose-600 text-white flex items-center justify-center shadow-2xl cursor-pointer transition-transform duration-200 hover:scale-110 active:scale-95 border-2 border-white/20 backdrop-blur-xs z-20"
             >
               {isEnded ? (
@@ -226,6 +226,7 @@ export default function VideoModal({ video, onClose }) {
               aria-valuenow={currentTime}
               aria-valuemin="0"
               aria-valuemax={duration}
+              aria-label="Video playback progress"
             >
               <div
                 className="absolute top-0 left-0 h-full bg-gradient-to-r from-rose-500 to-rose-400 rounded-full transition-all duration-75"
@@ -241,7 +242,7 @@ export default function VideoModal({ video, onClose }) {
                 {/* Play/Pause */}
                 <button
                   onClick={togglePlay}
-                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                  aria-label={isPlaying ? 'Pause video' : 'Play video'}
                   className="p-1.5 sm:p-2 rounded-lg hover:bg-white/10 text-white transition-colors cursor-pointer"
                 >
                   {isPlaying ? (
@@ -255,7 +256,7 @@ export default function VideoModal({ video, onClose }) {
                 <div className="flex items-center space-x-1.5 group/volume">
                   <button
                     onClick={toggleMute}
-                    aria-label={isMuted ? 'Unmute' : 'Mute'}
+                    aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                     className="p-1.5 rounded-lg hover:bg-white/10 text-white transition-colors cursor-pointer"
                   >
                     {isMuted || volume === 0 ? (
@@ -304,11 +305,9 @@ export default function VideoModal({ video, onClose }) {
         {/* Video Title, Description & Action Drawer */}
         <div className="w-full bg-stone-900 border-t border-stone-800/80 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1 max-w-xl">
-            <div className="flex items-center gap-2">
-              <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
-                {video.title}
-              </h3>
-            </div>
+            <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
+              {video.title}
+            </h3>
             {video.description && (
               <p className="text-xs sm:text-sm text-stone-300 leading-relaxed line-clamp-2">
                 {video.description}

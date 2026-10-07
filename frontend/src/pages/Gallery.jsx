@@ -6,15 +6,14 @@ import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import VideoModal from '../components/gallery/VideoModal';
 import VideoReelsGallery from '../components/gallery/VideoReelsGallery';
 import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
+import EmptyState from '../components/common/EmptyState';
+import ErrorState from '../components/common/ErrorState';
+import { CardSkeleton } from '../components/common/SkeletonLoader';
 import {
   Camera,
   Video,
-  Play,
   Layers,
-  Loader2,
-  AlertCircle,
   Eye,
-  Clock,
   Sparkle,
   Image as ImageIcon
 } from 'lucide-react';
@@ -114,7 +113,7 @@ export default function Gallery() {
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
           Artistry & Transformations
         </h1>
-        <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
+        <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-light">
           Step inside Enrich Beauty. Explore real client results, creative hairstyles, glowing skincare, and behind-the-scenes studio moments.
         </p>
       </div>
@@ -190,9 +189,9 @@ export default function Gallery() {
           <div className="flex items-center space-x-2 overflow-x-auto max-w-full pb-2 md:pb-0 scrollbar-none">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={'px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
+              className={'px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
                 selectedCategory === 'all'
-                  ? 'bg-stone-900 text-white'
+                  ? 'bg-stone-900 text-white shadow-xs'
                   : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               )}
             >
@@ -202,9 +201,9 @@ export default function Gallery() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={'px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
+                className={'px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
                   selectedCategory === cat
-                    ? 'bg-stone-900 text-white'
+                    ? 'bg-stone-900 text-white shadow-xs'
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                 )}
               >
@@ -217,22 +216,15 @@ export default function Gallery() {
 
       {/* CONTENT AREA */}
       {isLoading ? (
-        <div className="py-20 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 text-stone-700 animate-spin" />
-          <p className="text-xs text-stone-500">Loading visual studio gallery...</p>
+        <div className="py-8">
+          <CardSkeleton count={6} />
         </div>
       ) : errorMsg ? (
-        <div className="p-10 text-center bg-rose-50 rounded-xl border border-rose-200 max-w-lg mx-auto space-y-3">
-          <AlertCircle className="w-8 h-8 text-rose-700 mx-auto" />
-          <h3 className="font-bold text-stone-900 text-sm">Failed to Load Gallery</h3>
-          <p className="text-xs text-stone-600">{errorMsg}</p>
-          <button
-            onClick={fetchData}
-            className="px-4 py-2 rounded-lg bg-stone-900 text-white text-xs font-semibold cursor-pointer"
-          >
-            Retry Loading
-          </button>
-        </div>
+        <ErrorState
+          title="Failed to Load Gallery"
+          message={errorMsg}
+          onRetry={fetchData}
+        />
       ) : selectedType === 'video' ? (
         /* DEDICATED LUXURY VIDEO REELS GALLERY EXPERIENCE */
         <VideoReelsGallery
@@ -261,8 +253,8 @@ export default function Gallery() {
                 <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
                   Photo Stories & Transformations
                 </h3>
-                <span className="text-xs text-stone-500">
-                  {photoList.length} photos
+                <span className="text-xs text-stone-500 font-mono">
+                  {photoList.length} photographs
                 </span>
               </div>
             )}
@@ -290,7 +282,16 @@ export default function Gallery() {
                   <div
                     key={item._id || item.title}
                     onClick={() => openPhotoLightbox(item)}
-                    className="group relative h-72 rounded-xl overflow-hidden bg-stone-100 border border-stone-200 shadow-xs hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-end"
+                    tabIndex={0}
+                    role="button"
+                    aria-label={'View photo: ' + (item.title || 'Portfolio Image')}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openPhotoLightbox(item);
+                      }
+                    }}
+                    className="group relative h-72 rounded-2xl overflow-hidden bg-stone-100 border border-stone-200 shadow-xs hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-end"
                   >
                     <img
                       src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
@@ -303,7 +304,7 @@ export default function Gallery() {
 
                     {/* Top Category Badge */}
                     <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-0.5 rounded-md bg-stone-900/80 text-stone-200 font-semibold text-[10px] uppercase tracking-wider">
+                      <span className="px-2.5 py-0.5 rounded-full bg-stone-900/80 text-stone-200 font-semibold text-[10px] uppercase tracking-wider">
                         {item.category || 'Portfolio'}
                       </span>
                     </div>
@@ -314,7 +315,7 @@ export default function Gallery() {
                         {item.title}
                       </h3>
                       {item.description && (
-                        <p className="text-[11px] text-stone-300 line-clamp-2">
+                        <p className="text-[11px] text-stone-300 line-clamp-2 font-light">
                           {item.description}
                         </p>
                       )}
@@ -330,24 +331,16 @@ export default function Gallery() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 p-12 text-center space-y-3 max-w-lg mx-auto">
-          <div className="w-12 h-12 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center mx-auto">
-            <ImageIcon className="w-6 h-6" />
-          </div>
-          <h3 className="text-lg font-serif font-bold text-stone-900">No Media Found</h3>
-          <p className="text-xs text-stone-500">
-            No photos or videos match this filter combination. Try selecting "All Portfolio".
-          </p>
-          <button
-            onClick={() => {
-              setSelectedType('all');
-              setSelectedCategory('all');
-            }}
-            className="px-4 py-2 rounded-lg bg-stone-900 text-white font-semibold text-xs cursor-pointer"
-          >
-            Reset Filters
-          </button>
-        </div>
+        <EmptyState
+          icon={ImageIcon}
+          title="No Media Found"
+          description="No photos or videos match this filter combination. Try selecting All Portfolio to view all available moments."
+          actionText="Reset Filters"
+          onAction={() => {
+            setSelectedType('all');
+            setSelectedCategory('all');
+          }}
+        />
       )}
 
       {/* PHOTO LIGHTBOX MODAL */}

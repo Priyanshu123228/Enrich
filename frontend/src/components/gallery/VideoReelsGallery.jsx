@@ -4,9 +4,7 @@ import {
   Clock,
   Sparkles,
   ChevronDown,
-  Layers,
   Sparkle,
-  SlidersHorizontal,
   Film
 } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
@@ -35,7 +33,7 @@ function formatVideoDuration(seconds) {
 }
 
 /**
- * Featured Hero Video Card (16:9 cinematic showcase)
+ * Featured Hero Video Card (Cinematic Showcase)
  */
 function FeaturedHeroCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -65,7 +63,7 @@ function FeaturedHeroCard({ video, onSelectVideo }) {
       onClick={() => onSelectVideo(video)}
       tabIndex={0}
       role="button"
-      aria-label={'Watch featured video: ' + video.title}
+      aria-label={'Watch featured video: ' + (video.title || 'Studio Video')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -73,14 +71,14 @@ function FeaturedHeroCard({ video, onSelectVideo }) {
         }
       }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[360px] sm:min-h-[420px] lg:min-h-[460px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[340px] sm:min-h-[400px] lg:min-h-[440px]">
         {/* Left/Main Cinematic Media Viewport */}
-        <div className="relative lg:col-span-8 overflow-hidden bg-stone-900 aspect-video lg:aspect-auto min-h-[260px] sm:min-h-[340px]">
+        <div className="relative lg:col-span-8 overflow-hidden bg-stone-900 aspect-video lg:aspect-auto min-h-[240px] sm:min-h-[320px]">
           {/* Static High-Res Poster Thumbnail */}
           {isImageThumb ? (
             <img
               src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
-              alt={video.title}
+              alt={video.title || 'Featured Salon Video'}
               className={'absolute inset-0 w-full h-full object-cover transition-transform duration-700 ' + (isHovered ? 'scale-105 opacity-20' : 'scale-100 opacity-90')}
               loading="lazy"
               onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
@@ -124,15 +122,15 @@ function FeaturedHeroCard({ video, onSelectVideo }) {
 
           {/* Center Pulsing Play Icon */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 text-stone-950 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-700 group-hover:text-white border-2 border-white/40">
-              <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
+            <div className="w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-white/95 text-stone-950 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-700 group-hover:text-white border-2 border-white/40">
+              <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-current ml-1" />
             </div>
           </div>
         </div>
 
         {/* Right Editorial Info Column */}
-        <div className="relative lg:col-span-4 p-6 sm:p-8 flex flex-col justify-between bg-stone-950/90 lg:border-l border-stone-800/80">
-          <div className="space-y-4">
+        <div className="relative lg:col-span-4 p-5 sm:p-7 flex flex-col justify-between bg-stone-950/95 lg:border-l border-stone-800/80">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center gap-2 text-rose-400 text-xs font-semibold uppercase tracking-widest">
               <Sparkle className="w-3.5 h-3.5" />
               <span>Cinematic Experience</span>
@@ -143,16 +141,16 @@ function FeaturedHeroCard({ video, onSelectVideo }) {
             </h3>
 
             {video.description && (
-              <p className="text-stone-300 text-xs sm:text-sm leading-relaxed line-clamp-4 font-light">
+              <p className="text-stone-300 text-xs sm:text-sm leading-relaxed line-clamp-3 sm:line-clamp-4 font-light">
                 {video.description}
               </p>
             )}
           </div>
 
-          <div className="pt-6 border-t border-stone-800/60 mt-6 flex items-center justify-between">
+          <div className="pt-5 border-t border-stone-800/60 mt-4 sm:mt-6 flex items-center justify-between">
             <div className="flex items-center text-xs text-stone-400">
               <Film className="w-4 h-4 mr-1.5 text-rose-500" />
-              <span>4K Salon Portfolio</span>
+              <span>Studio Portfolio</span>
             </div>
 
             <span className="inline-flex items-center px-4 py-2 rounded-lg bg-rose-700 group-hover:bg-rose-600 text-white text-xs font-semibold tracking-wider uppercase transition-all shadow-md">
@@ -219,7 +217,7 @@ function VideoReelCard({ video, onSelectVideo }) {
       onClick={() => onSelectVideo(video)}
       tabIndex={0}
       role="button"
-      aria-label={'Play ' + video.title}
+      aria-label={'Play ' + (video.title || 'video reel')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -232,7 +230,7 @@ function VideoReelCard({ video, onSelectVideo }) {
       {isImageThumb ? (
         <img
           src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
-          alt={video.title}
+          alt={video.title || 'Studio Reel'}
           className={'absolute inset-0 w-full h-full object-cover transition-transform duration-500 ' + (isHovered ? 'scale-105 opacity-20' : 'scale-100 opacity-90')}
           loading="lazy"
           onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
@@ -309,23 +307,23 @@ export default function VideoReelsGallery({
 
   // Filter videos based on category
   const filteredVideos = useMemo(() => {
-    if (!videos || videos.length === 0) return [];
+    if (!Array.isArray(videos) || videos.length === 0) return [];
     if (!selectedCategory || selectedCategory === 'All') return videos;
     return videos.filter(
-      (v) => v.category?.toLowerCase() === selectedCategory.toLowerCase()
+      (v) => v?.category?.toLowerCase() === selectedCategory.toLowerCase()
     );
   }, [videos, selectedCategory]);
 
   // Featured video selection: pick first item with isFeatured or default to 1st video
   const featuredVideo = useMemo(() => {
     if (filteredVideos.length === 0) return null;
-    return filteredVideos.find((v) => v.isFeatured || v.featured) || filteredVideos[0];
+    return filteredVideos.find((v) => v?.isFeatured || v?.featured) || filteredVideos[0];
   }, [filteredVideos]);
 
   // Secondary reels list (excluding the featured one)
   const secondaryVideos = useMemo(() => {
     if (!featuredVideo) return [];
-    return filteredVideos.filter((v) => (v._id || v.id) !== (featuredVideo._id || featuredVideo.id));
+    return filteredVideos.filter((v) => (v?._id || v?.id) !== (featuredVideo?._id || featuredVideo?.id));
   }, [filteredVideos, featuredVideo]);
 
   const visibleSecondary = secondaryVideos.slice(0, displayLimit - 1);
