@@ -74,20 +74,6 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-stone-200/80 transition-all duration-300">
-      {/* Top micro-banner for Location & Trust */}
-      <div className="bg-stone-900 text-stone-300 px-4 py-1.5 text-[11px] font-medium hidden sm:flex justify-between items-center tracking-wide">
-        <div className="flex items-center space-x-4 max-w-7xl mx-auto w-full justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Open Mon - Sat: 9:00 AM - 8:00 PM | Sun: 10:00 AM - 5:00 PM</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-amber-400 font-semibold">★ 4.9 Rating (512+ Reviews)</span>
-            <span className="text-stone-500">|</span>
-            <span>Sharda Heights, Sikar</span>
-          </div>
-        </div>
-      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
