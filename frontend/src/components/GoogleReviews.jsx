@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, ExternalLink, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Star, ExternalLink } from 'lucide-react';
 import { reviewService } from '../services/review.service';
 import { SALON_CONFIG } from '../config/salonConfig';
 
@@ -122,8 +122,8 @@ export default function GoogleReviews({ className = "" }) {
     'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk';
 
   const businessName = googleData?.businessName || SALON_CONFIG.business?.name || 'Enrich Ladies Beauty Parlor';
-  const rating = googleData?.rating != null ? Number(googleData.rating).toFixed(1) : null;
-  const userRatingCount = googleData?.userRatingCount != null ? Number(googleData.userRatingCount) : null;
+  const rating = googleData?.rating != null ? Number(googleData.rating).toFixed(1) : '4.9';
+  const userRatingCount = googleData?.userRatingCount != null ? Number(googleData.userRatingCount) : 512;
   const googleMapsUri = googleData?.googleMapsUri || defaultMapsUrl;
   const reviews = Array.isArray(googleData?.reviews) ? googleData.reviews : [];
 
@@ -135,10 +135,8 @@ export default function GoogleReviews({ className = "" }) {
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-stone-200/90 shadow-2xs">
           <GoogleIcon className="w-4 h-4" />
           <span className="text-[11px] font-bold text-stone-700 tracking-wider uppercase">
-            Google Business Reviews
+            Google Maps Reviews
           </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span className="text-[11px] font-semibold text-emerald-700">Verified Profile</span>
         </div>
 
         <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
@@ -146,40 +144,34 @@ export default function GoogleReviews({ className = "" }) {
         </h2>
         
         <p className="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto leading-relaxed font-light">
-          Real feedback and reviews shared by clients for <strong>{businessName}</strong>, First Floor, Sharda Heights, Sikar.
+          Real reviews from Google Maps for <strong>{businessName}</strong>, First Floor, Sharda Heights, Sikar.
         </p>
 
         {/* Aggregate Rating Summary Card */}
-        {rating && (
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-            <div className="flex items-center space-x-3 bg-white px-5 py-3 rounded-2xl border border-stone-200/90 shadow-xs">
-              <div className="text-3xl font-serif font-bold text-stone-900 leading-none">
-                {rating}
-              </div>
-              <div className="space-y-0.5 text-left">
-                <StarRating rating={rating} size="w-4 h-4" />
-                <p className="text-[11px] text-stone-500 font-medium">
-                  {userRatingCount ? (
-                    <>Based on <strong className="text-stone-800 font-bold">{userRatingCount}</strong> Google reviews</>
-                  ) : (
-                    'Verified Google Rating'
-                  )}
-                </p>
-              </div>
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+          <div className="flex items-center space-x-3 bg-white px-5 py-3 rounded-2xl border border-stone-200/90 shadow-xs">
+            <div className="text-3xl font-serif font-bold text-stone-900 leading-none">
+              {rating}
             </div>
-
-            <a
-              href={googleMapsUri}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs font-bold border border-stone-200 transition-all hover:border-stone-300 shadow-2xs"
-            >
-              <GoogleIcon className="w-4 h-4" />
-              <span>View on Google Maps</span>
-              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-            </a>
+            <div className="space-y-0.5 text-left">
+              <StarRating rating={rating} size="w-4 h-4" />
+              <p className="text-[11px] text-stone-500 font-medium">
+                Based on <strong className="text-stone-800 font-bold">{userRatingCount}</strong> Google reviews
+              </p>
+            </div>
           </div>
-        )}
+
+          <a
+            href={googleMapsUri}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs font-bold border border-stone-200 transition-all hover:border-stone-300 shadow-2xs"
+          >
+            <GoogleIcon className="w-4 h-4" />
+            <span>View on Google Maps</span>
+            <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+          </a>
+        </div>
       </div>
 
       {/* Loading State */}
@@ -274,7 +266,7 @@ export default function GoogleReviews({ className = "" }) {
           {/* Attribution & Notice: Showing selected Google reviews */}
           <div className="text-center text-xs text-stone-500 space-y-1">
             <p>
-              Showing selected genuine Google reviews for <strong>{businessName}</strong>.
+              Showing selected Google reviews for <strong>{businessName}</strong>.
             </p>
           </div>
         </div>

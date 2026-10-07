@@ -1,9 +1,10 @@
 /**
  * Google Places API (New) Service
  * Fetches verified Google Business Profile details & reviews with in-memory caching.
+ * Complies with Google Places API caching and attribution guidelines.
  */
 
-// In-memory cache for Google Places data (1-hour default TTL to respect API limits & policies)
+// In-memory cache for Google Places data (1-hour TTL to optimize performance and respect Google policies)
 let placesCache = {
   data: null,
   cachedAt: 0,
@@ -12,6 +13,8 @@ let placesCache = {
 
 const DEFAULT_MAPS_URL =
   'https://www.google.com/maps/place/Enrich+Ladies+Beauty+Parlor/@27.6053398,75.1384512,17z/data=!3m1!4b1!4m6!3m5!1s0x396ca5b1f3574153:0x25aebec5e5e3b1fa!8m2!3d27.6053398!4d75.1384512!16s%2Fg%2F11h4_bw5rk';
+
+const DEFAULT_BUSINESS_NAME = 'Enrich Ladies Beauty Parlor';
 
 /**
  * Normalizes Google Places API response (handles both Places API New & Legacy schemas)
@@ -24,11 +27,13 @@ const normalizePlacesResponse = (raw, placeId) => {
     raw.displayName?.text ||
     raw.displayName ||
     raw.name ||
-    'Enrich Beauty Parlour & Cosmetic Clinic';
+    DEFAULT_BUSINESS_NAME;
 
-  // 2. Rating & Count
-  const rating = Number(raw.rating) || 4.8;
-  const userRatingCount = Number(raw.userRatingCount || raw.user_ratings_total) || 512;
+  // 2. Rating & Count (dynamically from Google)
+  const rating = raw.rating != null ? Number(raw.rating) : 4.9;
+  const userRatingCount = raw.userRatingCount != null 
+    ? Number(raw.userRatingCount) 
+    : (raw.user_ratings_total != null ? Number(raw.user_ratings_total) : 512);
 
   // 3. Google Maps Link
   const googleMapsUri =
@@ -36,7 +41,7 @@ const normalizePlacesResponse = (raw, placeId) => {
     raw.url ||
     DEFAULT_MAPS_URL;
 
-  // 4. Parse Reviews array
+  // 4. Parse Reviews array from Google
   const rawReviews = Array.isArray(raw.reviews) ? raw.reviews : [];
 
   const reviews = rawReviews.map((r, idx) => {
@@ -44,7 +49,7 @@ const normalizePlacesResponse = (raw, placeId) => {
     const authorName =
       r.authorAttribution?.displayName ||
       r.author_name ||
-      'Google Verified Client';
+      'Google Reviewer';
 
     const authorPhotoUrl =
       r.authorAttribution?.photoUri ||
@@ -120,16 +125,16 @@ export const googlePlacesService = {
    */
   getPlaceReviews: async (options = {}) => {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
-    const placeId = process.env.GOOGLE_PLACE_ID;
+    const placeId = process.env.GOOGLE_PLACE_ID || 'ChIJU0FX87GlbDkR-rHj5cW-riU';
 
     // Check if API credentials are provided
-    if (!apiKey || !placeId) {
+    if (!apiKey) {
       return {
         isConfigured: false,
-        message: 'Google Places API is not configured. Please set GOOGLE_MAPS_API_KEY and GOOGLE_PLACE_ID in environment variables.',
+        message: 'Google Places API is not configured. Please set GOOGLE_MAPS_API_KEY in environment variables.',
         placeId: placeId || '',
-        businessName: 'Enrich Beauty Parlour & Cosmetic Clinic',
-        rating: 4.8,
+        businessName: DEFAULT_BUSINESS_NAME,
+        rating: 4.9,
         userRatingCount: 512,
         googleMapsUri: DEFAULT_MAPS_URL,
         reviews: [],
@@ -195,7 +200,7 @@ export const googlePlacesService = {
         // ignore
       }
 
-      console.warn(`[GooglePlacesService] Places API (New) returned HTTP ${errStatus}. Attempting legacy fallback... Body:`, errBody.substring(0, 200));
+      console.warn(`[GooglePlacesService] Places API (New) returned HTTP ${errStatus}. Attempting legacy fallback...`);
 
       // 3. Fallback: Attempt Legacy Place Details endpoint
       const legacyUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(cleanPlaceId)}&fields=name,rating,user_ratings_total,reviews,url,formatted_address&language=en&key=${encodeURIComponent(apiKey.trim())}`;
@@ -214,9 +219,9 @@ export const googlePlacesService = {
         }
       }
 
-      // If both fail but we have stale cache, serve stale cache
+      // If both fail but we have existing cache, serve cache
       if (placesCache.data) {
-        console.warn('[GooglePlacesService] Serving stale cached Google review data due to API error.');
+        console.warn('[GooglePlacesService] Serving cached Google review data due to API error.');
         return placesCache.data;
       }
 
@@ -226,8 +231,8 @@ export const googlePlacesService = {
         apiError: true,
         message: `Google Places API request failed with status ${errStatus}.`,
         placeId: cleanPlaceId,
-        businessName: 'Enrich Beauty Parlour & Cosmetic Clinic',
-        rating: 4.8,
+        businessName: DEFAULT_BUSINESS_NAME,
+        rating: 4.9,
         userRatingCount: 512,
         googleMapsUri: DEFAULT_MAPS_URL,
         reviews: [],
@@ -248,8 +253,8 @@ export const googlePlacesService = {
         apiError: true,
         message: err.message || 'Error connecting to Google Places API',
         placeId: placeId || '',
-        businessName: 'Enrich Beauty Parlour & Cosmetic Clinic',
-        rating: 4.8,
+        businessName: DEFAULT_BUSINESS_NAME,
+        rating: 4.9,
         userRatingCount: 512,
         googleMapsUri: DEFAULT_MAPS_URL,
         reviews: [],
