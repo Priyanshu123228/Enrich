@@ -382,12 +382,23 @@ export default function AdminGallery() {
               className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs hover:border-stone-300 transition-colors flex flex-col justify-between"
             >
               {/* Thumbnail Container */}
-              <div className="relative h-48 w-full bg-stone-100 overflow-hidden">
-                <img
-                  src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative h-48 w-full bg-stone-900 overflow-hidden flex items-center justify-center">
+                {item.type === 'video' && (!item.thumbnail || item.thumbnail.includes('.mp4') || item.thumbnail.includes('.webm') || item.thumbnail === item.url) ? (
+                  <video
+                    src={resolveImageUrl(item.url)}
+                    preload="metadata"
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover pointer-events-none"
+                  />
+                ) : (
+                  <img
+                    src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+                  />
+                )}
 
                 {/* Top Badges */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">

@@ -222,18 +222,31 @@ export default function Gallery() {
 
             // Case 2: Video Card with Play Overlay
             if (item.type === 'video') {
+              const isImageThumb = item.thumbnail && !item.thumbnail.includes('.mp4') && !item.thumbnail.includes('.webm') && item.thumbnail !== item.url;
+
               return (
                 <div
                   key={item._id}
                   onClick={() => setActiveVideo(item)}
                   className="group relative h-72 rounded-xl overflow-hidden bg-stone-900 border border-stone-200 shadow-xs hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-end"
                 >
-                  <img
-                    src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-95"
-                    loading="lazy"
-                  />
+                  {isImageThumb ? (
+                    <img
+                      src={resolveImageUrl(item.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-95"
+                      loading="lazy"
+                      onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+                    />
+                  ) : (
+                    <video
+                      src={resolveImageUrl(item.url)}
+                      preload="metadata"
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-95 pointer-events-none"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-stone-950/60" />
 
                   {/* Play Button */}

@@ -1001,16 +1001,24 @@ export default function Home() {
                     }}
                   >
                     {/* Media Thumbnail Container */}
-                    <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-stone-100">
-                      <img
-                        src={thumbUrl}
-                        alt={item.title || 'Parlour gallery photo'}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80';
-                        }}
-                      />
+                    <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-stone-900">
+                      {isVideo && (!item.thumbnail || item.thumbnail.includes('.mp4') || item.thumbnail.includes('.webm') || item.thumbnail === item.url) ? (
+                        <video
+                          src={resolveImageUrl(item.url || item.videoUrl)}
+                          preload="metadata"
+                          muted
+                          playsInline
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                        />
+                      ) : (
+                        <img
+                          src={thumbUrl}
+                          alt={item.title || 'Parlour gallery photo'}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+                        />
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       {/* Top Badges */}
