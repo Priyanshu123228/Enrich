@@ -117,7 +117,8 @@ export default function Contact() {
 
       const res = await inquiryService.createInquiry(payload);
 
-      if (res && (res.success || res.statusCode === 201 || res.statusCode === 200)) {
+      // If backend responded without throwing an error, inquiry is successfully created
+      if (res && (res.success !== false)) {
         setSubmittedData({ ...formData });
         setFormSubmitted(true);
       } else {
