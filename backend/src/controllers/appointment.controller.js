@@ -7,6 +7,7 @@ import { ApiError } from '../utils/apiError.js';
 import { ApiResponse } from '../utils/apiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import {
+  getSalonNow,
   checkSlotCollision,
   calculateEndTime,
   getAvailableSlots,
@@ -47,27 +48,19 @@ export const createAppointment = asyncHandler(async (req, res) => {
     );
   }
 
-  // 1. Validate Date (Prevent past bookings)
-  const bookingDate = new Date(`${date}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    // 1. Validate Date & Time (Prevent past bookings in Salon Timezone)
+  const { todayStr, minutesFromMidnight } = getSalonNow();
 
-  if (bookingDate < today) {
+  if (date < todayStr) {
     throw new ApiError(400, 'Cannot book appointments for past dates');
   }
 
-  const isToday =
-    today.getFullYear() === bookingDate.getFullYear() &&
-    today.getMonth() === bookingDate.getMonth() &&
-    today.getDate() === bookingDate.getDate();
-
-  if (isToday) {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  if (date === todayStr) {
     const slotMinutes = timeToMinutes(startTime);
-    if (slotMinutes <= currentMinutes) {
-      throw new ApiError(400, 'Cannot book a time slot in the past');
+    if (slotMinutes <= minutesFromMidnight + 10) {
+      throw new ApiError(400, 'Cannot book a time slot that has already passed today');
     }
+  }
   }
 
   // 2. Fetch Service
@@ -332,27 +325,19 @@ export const rescheduleAppointment = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'Unauthorized to reschedule this appointment');
   }
 
-  // Validate Reschedule Date (Cannot reschedule to past date)
-  const bookingDate = new Date(`${newDate}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    // Validate Reschedule Date & Time (Cannot reschedule to past time)
+  const { todayStr, minutesFromMidnight } = getSalonNow();
 
-  if (bookingDate < today) {
+  if (newDate < todayStr) {
     throw new ApiError(400, 'Cannot reschedule appointments to past dates');
   }
 
-  const isToday =
-    today.getFullYear() === bookingDate.getFullYear() &&
-    today.getMonth() === bookingDate.getMonth() &&
-    today.getDate() === bookingDate.getDate();
-
-  if (isToday) {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  if (newDate === todayStr) {
     const slotMinutes = timeToMinutes(newStartTime);
-    if (slotMinutes <= currentMinutes) {
-      throw new ApiError(400, 'Cannot reschedule to a time slot in the past');
+    if (slotMinutes <= minutesFromMidnight + 10) {
+      throw new ApiError(400, 'Cannot reschedule to a time slot that has already passed today');
     }
+  }
   }
 
   // Verify staff availability on new date

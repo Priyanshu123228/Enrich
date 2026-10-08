@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
+import { getTodayDateString, isSlotPassed } from '../../utils/dateUtils';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { serviceService } from '../../services/service.service';
 import { staffService } from '../../services/staff.service';
@@ -48,10 +49,7 @@ export default function BookingWizard() {
   // Selection states
   const [selectedService, setSelectedService] = useState(null);
   const [selectedStaff, setSelectedStaff] = useState('any'); // 'any' or staff object
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  });
+  const [selectedDate, setSelectedDate] = useState(() => getTodayDateString());
   const [selectedSlot, setSelectedSlot] = useState('');
   const [notes, setNotes] = useState('');
 
@@ -70,6 +68,13 @@ export default function BookingWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmedBooking, setConfirmedBooking] = useState(null);
+
+  // Clear selected slot if it has passed
+  useEffect(() => {
+    if (selectedSlot && isSlotPassed(selectedDate, selectedSlot)) {
+      setSelectedSlot('');
+    }
+  }, [selectedDate, selectedSlot]);
 
   // Initial fetch of services & staff
   useEffect(() => {
@@ -582,7 +587,7 @@ export default function BookingWizard() {
             </label>
             <input
               type="date"
-              min={new Date().toISOString().split('T')[0]}
+              min={getTodayDateString()}
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               className="w-full px-4 py-2 rounded-lg border border-stone-300 bg-white text-sm font-medium focus:outline-stone-500 cursor-pointer"

@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentService } from '../../services/appointment.service';
 import { slotService } from '../../services/slot.service';
+import { getTodayDateString, isSlotPassed } from '../../utils/dateUtils';
 import { customerService } from '../../services/customer.service';
 import { paymentService } from '../../services/payment.service';
 import { loadRazorpayScript } from '../../utils/loadRazorpay';
@@ -1073,7 +1074,7 @@ export default function CustomerDashboard() {
                 <label className="block font-semibold uppercase text-stone-700 mb-1">Pick New Date</label>
                 <input
                   type="date"
-                  min={new Date().toISOString().split('T')[0]}
+                  min={getTodayDateString()}
                   value={rescheduleDate}
                   onChange={(e) => {
                     setRescheduleDate(e.target.value);
@@ -1089,20 +1090,30 @@ export default function CustomerDashboard() {
                   <div className="p-4 text-center text-stone-400">Calculating open slots...</div>
                 ) : rescheduleSlots.length > 0 ? (
                   <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto p-1">
-                    {rescheduleSlots.map((s) => (
-                      <button
-                        key={s.time}
-                        type="button"
-                        onClick={() => setSelectedRescheduleSlot(s.time)}
-                        className={`py-2 px-1 rounded-lg text-center border transition-all cursor-pointer ${
-                          selectedRescheduleSlot === s.time
-                            ? 'bg-stone-900 text-white font-bold'
-                            : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
-                        }`}
-                      >
-                        {s.time}
-                      </button>
-                    ))}
+                    {rescheduleSlots.map((s) => {
+                      const isPassed = isSlotPassed(rescheduleDate, s.time);
+                      const isSelected = selectedRescheduleSlot === s.time;
+                      return (
+                        <button
+                          key={s.time}
+                          type="button"
+                          disabled={isPassed}
+                          onClick={() => {
+                            if (!isPassed) setSelectedRescheduleSlot(s.time);
+                          }}
+                          title={isPassed ? 'This time slot has already passed' : ('Select ' + s.time)}
+                          className={'py-2 px-1 rounded-lg text-center border transition-all ' + (
+                            isPassed
+                              ? 'bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed opacity-50 line-through'
+                              : isSelected
+                              ? 'bg-stone-900 text-white font-bold cursor-pointer ring-1 ring-stone-900'
+                              : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 cursor-pointer'
+                          )}
+                        >
+                          {s.time} {isPassed ? '(Passed)' : ''}
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-stone-400 italic">No slots open on this date.</p>

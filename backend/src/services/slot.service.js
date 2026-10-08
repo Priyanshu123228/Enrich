@@ -39,6 +39,53 @@ export const isIntervalOverlap = (start1, end1, start2, end2) => {
 };
 
 /**
+ * Get current date, time, and minutes in Salon Timezone (Asia/Kolkata, UTC+5:30)
+ */
+export const getSalonNow = () => {
+  const now = new Date();
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+    const parts = formatter.formatToParts(now);
+    const map = {};
+    parts.forEach((p) => (map[p.type] = p.value));
+    const year = parseInt(map.year, 10);
+    const month = parseInt(map.month, 10) - 1;
+    const day = parseInt(map.day, 10);
+    const hours = parseInt(map.hour, 10);
+    const minutes = parseInt(map.minute, 10);
+    const seconds = parseInt(map.second, 10);
+    const todayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+    return {
+      now: new Date(year, month, day, hours, minutes, seconds),
+      todayStr,
+      hours,
+      minutes,
+      minutesFromMidnight: hours * 60 + minutes
+    };
+  } catch {
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    return {
+      now,
+      todayStr: now.toISOString().split('T')[0],
+      hours,
+      minutes,
+      minutesFromMidnight: hours * 60 + minutes
+    };
+  }
+};
+
+/**
  * Generate available time slots for a given service, staff member, and date
  * 
  * @param {Object} params
@@ -51,12 +98,10 @@ export const getAvailableSlots = async ({ serviceId, staffId, date }) => {
     throw new ApiError(400, 'Service ID and Date are required to query slots');
   }
 
-  // 1. Validate Date (Prevent querying past dates)
-  const selectedDate = new Date(`${date}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const { todayStr, minutesFromMidnight } = getSalonNow();
 
-  if (selectedDate < today) {
+  // 1. Validate Date (Prevent querying past dates)
+  if (date < todayStr) {
     return {
       date,
       dayName: '',
@@ -97,26 +142,20 @@ export const getAvailableSlots = async ({ serviceId, staffId, date }) => {
     }
   }
 
+  const selectedDate = new Date(`${date}T00:00:00`);
   const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const dayName = days[dayOfWeek];
 
-  // Current time reference for today's past slot filtering
-  const now = new Date();
-  const isSelectedDateToday =
-    today.getFullYear() === selectedDate.getFullYear() &&
-    today.getMonth() === selectedDate.getMonth() &&
-    today.getDate() === selectedDate.getDate();
-
-  const currentMinutesFromMidnight = now.getHours() * 60 + now.getMinutes();
-  const MINIMUM_NOTICE_MINUTES = 20; // 20-min buffer for immediate walk-in/online bookings
+  const isSelectedDateToday = date === todayStr;
+  const MINIMUM_NOTICE_MINUTES = 15; // 15-minute advance window
 
   const slotMap = new Map(); // Key: "09:30" -> Value: { time, availableStaff: [] }
 
   // 4. Compute slots for each eligible staff member
   for (const staffMember of staffList) {
     // Check schedule for day of week
-    const shift = staffMember.schedule.find((s) => s.dayOfWeek === dayOfWeek);
+    const shift = staffMember.schedule?.find((s) => s.dayOfWeek === dayOfWeek);
 
     if (!shift || !shift.isWorking) {
       continue; // Staff is off today
@@ -171,7 +210,7 @@ export const getAvailableSlots = async ({ serviceId, staffId, date }) => {
 
       // Rule D: If booking for Today, exclude slots that have already passed
       if (isSelectedDateToday) {
-        if (slotStart <= currentMinutesFromMidnight + MINIMUM_NOTICE_MINUTES) {
+        if (slotStart <= minutesFromMidnight + MINIMUM_NOTICE_MINUTES) {
           continue;
         }
       }

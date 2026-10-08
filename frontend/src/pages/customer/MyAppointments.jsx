@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { appointmentService } from '../../services/appointment.service';
 import { slotService } from '../../services/slot.service';
+import { getTodayDateString, isSlotPassed } from '../../utils/dateUtils';
 import {
   Calendar,
   Clock,
@@ -327,7 +328,7 @@ export default function MyAppointments() {
                 </label>
                 <input
                   type="date"
-                  min={new Date().toISOString().split('T')[0]}
+                  min={getTodayDateString()}
                   value={newDate}
                   onChange={(e) => {
                     setNewDate(e.target.value);
@@ -348,20 +349,30 @@ export default function MyAppointments() {
                   </div>
                 ) : rescheduleSlots.length > 0 ? (
                   <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
-                    {rescheduleSlots.map((s) => (
-                      <button
-                        key={s.time}
-                        type="button"
-                        onClick={() => setSelectedRescheduleSlot(s.time)}
-                        className={`py-2 px-1 rounded-lg text-center border transition-all cursor-pointer ${
-                          selectedRescheduleSlot === s.time
-                            ? 'bg-stone-900 text-white font-bold'
-                            : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
-                        }`}
-                      >
-                        {s.time}
-                      </button>
-                    ))}
+                    {rescheduleSlots.map((s) => {
+                      const isPassed = isSlotPassed(rescheduleDate, s.time);
+                      const isSelected = selectedRescheduleSlot === s.time;
+                      return (
+                        <button
+                          key={s.time}
+                          type="button"
+                          disabled={isPassed}
+                          onClick={() => {
+                            if (!isPassed) setSelectedRescheduleSlot(s.time);
+                          }}
+                          title={isPassed ? 'This time slot has already passed' : ('Select ' + s.time)}
+                          className={'py-2 px-1 rounded-lg text-center border transition-all ' + (
+                            isPassed
+                              ? 'bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed opacity-50 line-through'
+                              : isSelected
+                              ? 'bg-stone-900 text-white font-bold cursor-pointer ring-1 ring-stone-900'
+                              : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 cursor-pointer'
+                          )}
+                        >
+                          {s.time} {isPassed ? '(Passed)' : ''}
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-stone-400 italic">No slots open on this date. Pick another date.</p>
