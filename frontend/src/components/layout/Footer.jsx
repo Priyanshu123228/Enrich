@@ -49,7 +49,7 @@ export default function Footer() {
             {/* Dynamic Active Social Icons */}
             {socialLinks && socialLinks.length > 0 && (
               <div className="pt-2 space-y-2">
-                <p className="text-xs font-bold uppercase tracking-widest text-stone-500">
+                <p className="text-xs font-bold tracking-wide text-stone-500">
                   Connect Online
                 </p>
                 <div className="flex flex-wrap gap-2.5">
@@ -118,7 +118,7 @@ export default function Footer() {
 
           {/* Opening Hours */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold text-stone-900 uppercase tracking-widest flex items-center">
+            <h3 className="text-xs font-bold text-stone-900 tracking-wide flex items-center">
               <Clock className="w-4 h-4 mr-2 text-rose-600" />
               Salon Hours
             </h3>
@@ -140,7 +140,7 @@ export default function Footer() {
 
           {/* Contact Details */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold text-stone-900 uppercase tracking-widest">
+            <h3 className="text-xs font-bold text-stone-900 tracking-wide">
               Salon Location
             </h3>
             <ul className="space-y-3 text-xs sm:text-sm text-stone-600 font-light">

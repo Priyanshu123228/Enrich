@@ -88,7 +88,7 @@ export default function Navbar() {
                 <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-stone-900 group-hover:text-rose-800 transition-colors">
                   Enrich
                 </span>
-                <span className="text-xs uppercase tracking-widest text-stone-500 font-medium -mt-0.5">
+                <span className="text-xs tracking-wide text-stone-500 font-medium -mt-0.5">
                   Beauty & Clinic · Sikar
                 </span>
               </div>

@@ -92,7 +92,7 @@ export default function SocialMediaSection() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-56 bg-white/80 rounded-3xl animate-pulse border border-stone-200 shadow-xs" />
+              <div key={i} className="h-56 bg-white/80 rounded-2xl animate-pulse border border-stone-200 shadow-xs" />
             ))}
           </div>
         </div>
@@ -148,15 +148,15 @@ export default function SocialMediaSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={`Open ${link.displayName} (${link.url})`}
-                className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-3xl bg-white/95 border border-stone-200/90 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-stone-200/80 cursor-pointer overflow-hidden ${style.borderHover}`}
+                className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-2xl bg-white/95 border border-stone-200/90 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-stone-200/80 cursor-pointer overflow-hidden ${style.borderHover}`}
               >
                 {/* Subtle Ambient Hover Glow */}
-                <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${style.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${style.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
 
                 <div className="relative space-y-4 w-full">
                   {/* Card Header Strip: Badge + Arrow */}
                   <div className="flex items-center justify-between gap-2 border-b border-stone-100 pb-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-stone-100 text-stone-700 border border-stone-200/80 truncate max-w-[200px]">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-stone-100 text-stone-700 border border-stone-200/80 truncate max-w-[200px]">
                       {style.badge}
                     </span>
                     <span className="w-6 h-6 rounded-full bg-stone-50 group-hover:bg-rose-50 text-stone-400 group-hover:text-rose-600 flex items-center justify-center transition-all shrink-0">
@@ -211,7 +211,7 @@ export default function SocialMediaSection() {
         {/* Primary Call To Action (CTA) */}
         {primaryPlatform && (
           <div className="pt-2 text-center">
-            <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-3 sm:p-3.5 rounded-3xl bg-white/95 border border-stone-200/90 shadow-lg shadow-stone-200/50 backdrop-blur-sm">
+            <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-3 sm:p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-lg shadow-stone-200/50 backdrop-blur-sm">
               <span className="text-xs text-stone-700 px-3 flex items-center gap-2 font-medium">
                 <CheckCircle2 className="w-4 h-4 text-rose-600 shrink-0" />
                 <span>Daily updates & location directions published across our official channels</span>

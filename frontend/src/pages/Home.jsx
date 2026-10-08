@@ -369,24 +369,27 @@ export default function Home() {
                     <span className="text-stone-500 text-xs">{SALON_CONFIG.hours.weekday}</span>
                   </div>
                 </div>
-                <div className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-stone-200/80 shadow-xs">
-                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                <a
+                  href={SALON_CONFIG.contact.phoneTel}
+                  className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white/90 hover:bg-white p-3 rounded-xl border border-stone-200/80 hover:border-rose-300 shadow-xs transition-colors group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 group-hover:bg-rose-100 flex items-center justify-center shrink-0 transition-colors">
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="font-bold text-stone-900 block">Direct Concierge</span>
-                    <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-600 hover:text-rose-700 font-medium text-xs transition-colors">
+                    <span className="font-bold text-stone-900 block group-hover:text-rose-700 transition-colors">Call Direct Concierge</span>
+                    <span className="text-stone-600 font-medium text-xs">
                       {SALON_CONFIG.contact.phone}
-                    </a>
+                    </span>
                   </div>
-                </div>
+                </a>
               </div>
 
             </div>
 
             {/* Right Card: Featured Salon Menu */}
             <div className="lg:col-span-5 w-full">
-              <div className="rounded-3xl border border-stone-200/90 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-2xl shadow-stone-300/30 space-y-5 relative overflow-hidden">
+              <div className="rounded-2xl border border-stone-200/90 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-2xl shadow-stone-300/30 space-y-5 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-rose-100/50 via-rose-50/20 to-transparent rounded-bl-full pointer-events-none" />
                 
                 <div className="flex items-center justify-between border-b border-stone-100 pb-4 relative z-10">
@@ -420,9 +423,9 @@ export default function Home() {
                             {service.duration || 45} mins
                           </span>
                         </div>
-                        <h4 className="text-xs sm:text-sm font-bold text-stone-900 truncate group-hover:text-rose-700 transition-colors mt-1.5">
+                        <h3 className="text-xs sm:text-sm font-bold text-stone-900 truncate group-hover:text-rose-700 transition-colors mt-1">
                           {service.name}
-                        </h4>
+                        </h3>
                         <p className="text-xs text-stone-500 line-clamp-1 mt-0.5 font-light">
                           {service.description || 'Specialized clinical and aesthetic service.'}
                         </p>
@@ -472,9 +475,9 @@ export default function Home() {
           SECTION 2: POPULAR SERVICES & CATEGORY FILTERING
           ========================================================================= */}
       <section id="services" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-10">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200 pb-5">
+        <div className="border-b border-stone-200 pb-5">
           <div className="space-y-1">
-            <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+            <span className="text-xs font-bold tracking-wide text-rose-700 uppercase">
               Treatment Catalog
             </span>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
@@ -484,18 +487,11 @@ export default function Home() {
               Filter by category to explore precision haircuts, bridal makeovers, clinical skincare, and luxury nail styling.
             </p>
           </div>
-
-          <Link
-            to="/services"
-            className="inline-flex items-center text-xs sm:text-sm font-semibold text-rose-700 hover:text-rose-800 shrink-0 group"
-          >
-            Explore All Services
-            <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
-          </Link>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+        {/* Category Tabs & Explore All Link Unified Row (Issue #10) */}
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pb-2">
+          <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
           {serviceCategories.map((cat) => {
             const isActive = activeServiceCategory.toLowerCase() === cat.toLowerCase();
             return (
@@ -513,6 +509,15 @@ export default function Home() {
               </button>
             );
           })}
+          </div>
+
+          <Link
+            to="/services"
+            className="inline-flex items-center text-xs sm:text-sm font-semibold text-rose-700 hover:text-rose-800 shrink-0 group whitespace-nowrap pl-2"
+          >
+            <span>Explore All Services</span>
+            <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-0.5 transition-transform" />
+          </Link>
         </div>
 
         {/* Service Cards Grid */}
@@ -881,7 +886,7 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => handleCopyCode(offer.code)}
-                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors cursor-pointer"
+                        className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-lg text-xs font-semibold text-rose-800 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 border border-rose-200 transition-all shadow-2xs active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600"
                       >
                         {isCopied ? (
                           <>
@@ -976,7 +981,7 @@ export default function Home() {
                 // Transformation component handling
                 if (isTransformation) {
                   return (
-                    <div key={item._id || idx} className="rounded-3xl overflow-hidden shadow-md border border-stone-200 bg-white">
+                    <div key={item._id || idx} className="rounded-2xl overflow-hidden shadow-md border border-stone-200 bg-white">
                       <BeforeAfterSlider
                         beforeImage={resolveImageUrl(item.beforeAfter?.beforeUrl || item.beforeImage, DEFAULT_SALON_PLACEHOLDER)}
                         afterImage={resolveImageUrl(item.beforeAfter?.afterUrl || item.afterImage, DEFAULT_SALON_PLACEHOLDER)}
@@ -990,7 +995,7 @@ export default function Home() {
                 return (
                   <div
                     key={item._id || idx}
-                    className="group relative bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                    className="group relative bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer"
                     onClick={() => {
                       if (isVideo) {
                         setActiveVideo(item);
@@ -1050,12 +1055,12 @@ export default function Home() {
                     </div>
 
                     {/* Text Details */}
-                    <div className="p-6 sm:p-7 bg-white border-t border-stone-100/90 space-y-1.5">
-                      <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-2">
+                    <div className="p-5 bg-white border-t border-stone-100/90 space-y-1 min-h-[72px] flex flex-col justify-center">
+                      <h3 className="font-serif font-bold text-sm sm:text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-1">
                         {item.title || 'Studio Showcase'}
                       </h3>
                       {item.description && (
-                        <p className="text-xs text-stone-500 line-clamp-2 mt-1 font-light leading-relaxed">
+                        <p className="text-xs text-stone-500 line-clamp-1 font-light leading-relaxed">
                           {item.description}
                         </p>
                       )}
@@ -1065,7 +1070,7 @@ export default function Home() {
               })}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl border border-stone-200 p-12 text-center max-w-md mx-auto space-y-4 shadow-xs my-6">
+            <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center max-w-md mx-auto space-y-4 shadow-xs my-6">
               <Camera className="w-9 h-9 text-stone-400 mx-auto" />
               <p className="text-xs text-stone-500">
                 No gallery media found for "{activeGalleryCategory}".
@@ -1092,7 +1097,7 @@ export default function Home() {
             SECTION 10: LOCATION & VISIT INFORMATION
             ========================================================================= */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs">
+          <div className="bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               
               {/* Location Text Information */}
@@ -1210,7 +1215,7 @@ export default function Home() {
           SECTION 11: APPOINTMENT CTA (ROYAL BERRY LUXURY BANNER)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-gradient-to-br from-[#2E1822] via-[#481E2C] to-[#1C0E15] text-white p-8 sm:p-14 text-center space-y-6 border border-rose-900/40 shadow-2xl shadow-rose-950/20 relative overflow-hidden">
+        <div className="rounded-2xl bg-gradient-to-br from-[#2E1822] via-[#481E2C] to-[#1C0E15] text-white p-8 sm:p-14 text-center space-y-6 border border-rose-900/40 shadow-2xl shadow-rose-950/20 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-80 h-80 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
           

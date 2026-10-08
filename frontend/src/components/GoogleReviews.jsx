@@ -153,7 +153,7 @@ export default function GoogleReviews({ className = "" }) {
 
         {/* Aggregate Rating Summary & Action Buttons */}
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-          <div className="flex items-center space-x-3 bg-white px-5 py-2.5 rounded-xl border border-stone-200/90 shadow-xs">
+          <div className="flex items-center space-x-3 bg-white px-5 py-2.5 rounded-2xl border border-stone-200/90 shadow-xs">
             <div className="text-3xl font-serif font-bold text-stone-900 leading-none">
               {rating}
             </div>
@@ -170,7 +170,7 @@ export default function GoogleReviews({ className = "" }) {
             href={defaultWriteReviewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-700 to-rose-600 hover:from-rose-600 hover:to-rose-500 text-white text-xs font-bold transition-all shadow-xs active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-700 to-rose-600 hover:from-rose-600 hover:to-rose-500 text-white text-xs font-bold transition-all shadow-xs active:scale-95"
           >
             <PenLine className="w-3.5 h-3.5" />
             <span>Write a Google Review</span>
@@ -180,7 +180,7 @@ export default function GoogleReviews({ className = "" }) {
             href={googleMapsUri}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs font-bold border border-stone-200 transition-all hover:border-stone-300 shadow-2xs"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs font-bold border border-stone-200 transition-all hover:border-stone-300 shadow-2xs"
           >
             <GoogleIcon className="w-4 h-4" />
             <span>View on Google Maps</span>
@@ -195,7 +195,7 @@ export default function GoogleReviews({ className = "" }) {
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="bg-white rounded-xl border border-stone-200/90 p-6 space-y-4 shadow-xs animate-pulse"
+              className="bg-white rounded-2xl border border-stone-200/90 p-6 space-y-4 shadow-xs animate-pulse"
             >
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-stone-200" />
@@ -222,7 +222,7 @@ export default function GoogleReviews({ className = "" }) {
             {reviews.map((item, idx) => (
               <div
                 key={item.id || idx}
-                className="bg-white rounded-xl border border-stone-200/90 p-6 space-y-4 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                className="bg-white rounded-2xl border border-stone-200/90 p-6 space-y-4 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
               >
                 <div className="space-y-3">
                   {/* Top Row: Author & Rating */}
@@ -233,9 +233,9 @@ export default function GoogleReviews({ className = "" }) {
                         authorPhotoUrl={item.authorPhotoUrl}
                       />
                       <div className="min-w-0">
-                        <h4 className="font-serif font-bold text-sm text-stone-900 truncate">
+                        <h3 className="font-serif font-bold text-sm text-stone-900 truncate">
                           {item.authorName}
-                        </h4>
+                        </h3>
                         {item.relativePublishTimeDescription && (
                           <p className="text-xs text-stone-400">
                             {item.relativePublishTimeDescription}
@@ -259,20 +259,11 @@ export default function GoogleReviews({ className = "" }) {
 
                 {/* Bottom Row: Google Attribution & Direct Review Link */}
                 <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-500">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-stone-600">
                     <GoogleIcon className="w-3.5 h-3.5 shrink-0" />
-                    Google Review
+                    <span>Verified Google Review</span>
                   </span>
-
-                  <a
-                    href={item.googleReviewUri || googleMapsUri}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-semibold text-rose-700 underline underline-offset-4 hover:text-rose-800 transition-colors"
-                  >
-                    View on Google
-                    <ExternalLink className="w-3 h-3 ml-0.5" />
-                  </a>
+                  <span className="text-xs text-stone-400 font-medium">5.0 ★</span>
                 </div>
               </div>
             ))}
@@ -294,7 +285,7 @@ export default function GoogleReviews({ className = "" }) {
             href={defaultWriteReviewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-rose-700 via-rose-600 to-rose-700 hover:from-rose-600 hover:to-rose-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-rose-900/15 transition-all active:scale-95"
+            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-rose-700 hover:bg-rose-800 text-white text-xs sm:text-sm font-semibold shadow-xs transition-all active:scale-95"
           >
             <PenLine className="w-4 h-4" />
             <span>Leave a Review on Google</span>
@@ -304,7 +295,7 @@ export default function GoogleReviews({ className = "" }) {
             href={googleMapsUri}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-white hover:bg-stone-50 text-stone-800 text-xs sm:text-sm font-bold border border-stone-200 shadow-xs transition-all hover:border-stone-300"
+            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white hover:bg-stone-50 text-stone-800 text-xs sm:text-sm font-bold border border-stone-200 shadow-xs transition-all hover:border-stone-300"
           >
             <GoogleIcon className="w-4 h-4" />
             <span>
