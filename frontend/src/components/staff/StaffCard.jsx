@@ -21,7 +21,7 @@ export default function StaffCard({ staff }) {
           <img
             src={avatarUrl}
             alt={staff.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
             onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
           />
           <div className="absolute inset-0 bg-stone-900/40" />

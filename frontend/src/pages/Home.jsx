@@ -542,7 +542,7 @@ export default function Home() {
                         src={imageUrl}
                         alt={service.name}
                         loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           e.target.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
                         }}
@@ -1001,21 +1001,21 @@ export default function Home() {
                     }}
                   >
                     {/* Media Thumbnail Container */}
-                    <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-stone-900">
+                    <div className="relative aspect-[4/4.5] sm:aspect-[4/4.8] sm:h-80 md:h-88 lg:h-96 w-full overflow-hidden bg-stone-900">
                       {isVideo && (!item.thumbnail || item.thumbnail.includes('.mp4') || item.thumbnail.includes('.webm') || item.thumbnail === item.url) ? (
                         <video
                           src={resolveImageUrl(item.url || item.videoUrl)}
                           preload="metadata"
                           muted
                           playsInline
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 pointer-events-none"
                         />
                       ) : (
                         <img
                           src={thumbUrl}
                           alt={item.title || 'Parlour gallery photo'}
                           loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                           onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                         />
                       )}

@@ -343,7 +343,7 @@ export default function Gallery() {
               </div>
 
               {/* Luxury Editorial Masonry Layout */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6 auto-rows-[220px] sm:auto-rows-[240px]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6 auto-rows-[280px] sm:auto-rows-[320px] lg:auto-rows-[360px]">
                 {photoList.map((item, idx) => {
                   const pattern = idx % 6;
                   let colSpan = 'lg:col-span-4';
@@ -384,7 +384,7 @@ export default function Gallery() {
                       <img
                         src={resolveImageUrl(item.url || item.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
                         alt={item.title || 'Salon Gallery Photo'}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                        className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                         loading="lazy"
                         onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                       />

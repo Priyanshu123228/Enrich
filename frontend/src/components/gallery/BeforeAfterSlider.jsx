@@ -63,7 +63,7 @@ export default function BeforeAfterSlider({
         <img
           src={afterSrc}
           alt={'After result for ' + title}
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
           loading="lazy"
           onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
         />
@@ -79,7 +79,7 @@ export default function BeforeAfterSlider({
           <img
             src={beforeSrc}
             alt={'Before result for ' + title}
-            className="absolute inset-0 w-full h-full object-cover max-w-none"
+            className="absolute inset-0 w-full h-full object-cover object-top max-w-none"
             style={{ width: containerRef.current ? containerRef.current.clientWidth + 'px' : '100%' }}
             loading="lazy"
             onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}

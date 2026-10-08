@@ -85,7 +85,7 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
           <img
             src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
             alt={video.title || 'Featured Salon Video'}
-            className={'absolute inset-0 w-full h-full object-cover transition-transform duration-700 ' + (
+            className={'absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ' + (
               isHovered ? 'scale-105 opacity-20' : 'scale-100 opacity-90'
             )}
             onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
@@ -101,7 +101,7 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
             playsInline
             loop
             preload="metadata"
-            className={'absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ' + (
+            className={'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 ' + (
               isHovered || !isImageThumb ? 'opacity-90' : 'opacity-0'
             )}
           />
@@ -226,7 +226,7 @@ export function VideoReelCard({ video, onSelectVideo }) {
           <img
             src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
             alt={video.title || 'Salon Reel'}
-            className={'w-full h-full object-cover transition-transform duration-700 ' + (
+            className={'w-full h-full object-cover object-top transition-transform duration-700 ' + (
               isHovered ? 'scale-110 opacity-30' : 'scale-100 opacity-90'
             )}
             onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
@@ -241,7 +241,7 @@ export function VideoReelCard({ video, onSelectVideo }) {
             playsInline
             loop
             preload="metadata"
-            className={'absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ' + (
+            className={'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 ' + (
               isHovered || !isImageThumb ? 'opacity-90' : 'opacity-0'
             )}
           />

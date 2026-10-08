@@ -498,13 +498,13 @@ export default function AdminGallery() {
                       preload="metadata"
                       muted
                       playsInline
-                      className="w-full h-full object-cover pointer-events-none"
+                      className="w-full h-full object-cover object-top pointer-events-none"
                     />
                   ) : (
                     <img
                       src={resolveImageUrl(item.type === "photo" ? (item.url || item.thumbnail) : (item.thumbnail || item.url), DEFAULT_SALON_PLACEHOLDER)}
                       alt={item.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                     />
                   )}
