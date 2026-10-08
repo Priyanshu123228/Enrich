@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { mediaService } from '../services/media.service';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import VideoModal from '../components/gallery/VideoModal';
-import { FeaturedHeroCard, VideoReelCard } from '../components/gallery/VideoReelsGallery';
+import { FeaturedHeroCard, VideoReelCard, ReelsCarousel } from '../components/gallery/VideoReelsGallery';
 import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
 import EmptyState from '../components/common/EmptyState';
 import ErrorState from '../components/common/ErrorState';
@@ -295,10 +295,10 @@ export default function Gallery() {
           )}
 
           {/* ========================================================================= */}
-          {/* 3. REELS & HIGHLIGHTS (4 CARDS HORIZONTAL DESKTOP / SWIPE ON MOBILE) */}
+          {/* 3. REELS & HIGHLIGHTS (NEXT / PREV CONTROLS & AUTO-NEXT SLIDER) */}
           {/* ========================================================================= */}
           {secondaryReels.length > 0 && selectedType !== 'photo' && (
-            <section className="space-y-5">
+            <section className="space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-stone-200">
                 <div className="space-y-0.5">
                   <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
@@ -313,16 +313,12 @@ export default function Gallery() {
                 </span>
               </div>
 
-              {/* 4 Cards Grid Desktop / Horizontal Swipeable Carousel Mobile */}
-              <div className="flex overflow-x-auto snap-x scrollbar-none pb-4 md:grid md:grid-cols-4 gap-4 sm:gap-6">
-                {secondaryReels.map((video) => (
-                  <VideoReelCard
-                    key={video._id || video.id || video.title}
-                    video={video}
-                    onSelectVideo={(v) => setActiveVideo(v)}
-                  />
-                ))}
-              </div>
+              {/* Reels Carousel with Next button & Auto-Next timer */}
+              <ReelsCarousel
+                videos={secondaryReels}
+                onSelectVideo={(v) => setActiveVideo(v)}
+                autoPlayInterval={4500}
+              />
             </section>
           )}
 
