@@ -79,7 +79,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold text-stone-900 uppercase tracking-widest">
+            <h3 className="text-xs font-bold text-stone-900 tracking-wide">
               Quick Navigation
             </h3>
             <ul className="space-y-2.5 text-xs sm:text-sm font-medium">
