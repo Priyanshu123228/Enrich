@@ -1,10 +1,26 @@
-﻿import api from './api';
+import api from './api';
 
 export const inquiryService = {
   /**
    * Submit a new customer inquiry / contact form (Public)
    */
+  createInquiry: async (data) => {
+    const res = await api.post('/inquiries', data);
+    return res?.data || res;
+  },
+
+  /**
+   * Alias: Submit inquiry
+   */
   submitInquiry: async (data) => {
+    const res = await api.post('/inquiries', data);
+    return res?.data || res;
+  },
+
+  /**
+   * Alias: Send inquiry
+   */
+  sendInquiry: async (data) => {
     const res = await api.post('/inquiries', data);
     return res?.data || res;
   },
