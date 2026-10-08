@@ -323,7 +323,7 @@ export default function Gallery() {
           )}
 
           {/* ========================================================================= */}
-          {/* 4. PHOTO STORIES & TRANSFORMATIONS (EDITORIAL MASONRY GALLERY) */}
+          {/* 4. PHOTO STORIES & TRANSFORMATIONS (HIGH-DEFINITION EDITORIAL MASONRY) */}
           {/* ========================================================================= */}
           {photoList.length > 0 && selectedType !== 'video' && (
             <section className="space-y-6">
@@ -337,34 +337,26 @@ export default function Gallery() {
                     Photo Stories & Transformations
                   </h3>
                 </div>
-                <span className="text-xs font-mono text-stone-500">
-                  {photoList.length} photographs
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-stone-500 bg-stone-100 px-3 py-1 rounded-full">
+                    {photoList.length} photographs
+                  </span>
+                </div>
               </div>
 
-              {/* Luxury Editorial Masonry Layout */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6 auto-rows-[280px] sm:auto-rows-[320px] lg:auto-rows-[360px]">
+              {/* Luxury Multi-Column Editorial Masonry Layout (Flattering 3:4 & 4:5 ratios, Zero Head-Cropping) */}
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 sm:gap-6 [column-fill:_balance]">
                 {photoList.map((item, idx) => {
-                  const pattern = idx % 6;
-                  let colSpan = 'lg:col-span-4';
-                  let rowSpan = 'row-span-1';
-
-                  if (pattern === 0) {
-                    colSpan = 'sm:col-span-2 lg:col-span-8';
-                    rowSpan = 'row-span-2';
-                  } else if (pattern === 1) {
-                    colSpan = 'sm:col-span-1 lg:col-span-4';
-                    rowSpan = 'row-span-2';
-                  } else if (pattern === 2 || pattern === 3) {
-                    colSpan = 'sm:col-span-1 lg:col-span-6';
-                    rowSpan = 'row-span-1';
-                  } else if (pattern === 4) {
-                    colSpan = 'sm:col-span-2 lg:col-span-8';
-                    rowSpan = 'row-span-1';
-                  } else if (pattern === 5) {
-                    colSpan = 'sm:col-span-1 lg:col-span-4';
-                    rowSpan = 'row-span-1';
-                  }
+                  // Carefully balanced portrait & square ratios so every photo, face, and dress is 100% visible
+                  const ratioPattern = [
+                    'aspect-[3/4]',    // Classic portrait (perfect for bridal/hair)
+                    'aspect-[4/5]',    // Fashion look
+                    'aspect-[3/3.8]',  // Balanced portrait
+                    'aspect-[4/5]',    // Editorial look
+                    'aspect-[1/1]',    // High-impact square
+                    'aspect-[3/4.2]'   // Tall bridal showcase
+                  ];
+                  const cardAspect = ratioPattern[idx % ratioPattern.length];
 
                   return (
                     <div
@@ -379,36 +371,39 @@ export default function Gallery() {
                           openPhotoLightbox(item);
                         }
                       }}
-                      className={'group relative rounded-2xl overflow-hidden bg-stone-950 border border-stone-200/80 shadow-xs hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-end ' + colSpan + ' ' + rowSpan}
+                      className={'group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-950 border border-stone-200/90 shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col justify-end break-inside-avoid mb-5 sm:mb-6 ' + cardAspect}
                     >
                       <img
                         src={resolveImageUrl(item.url || item.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
                         alt={item.title || 'Salon Gallery Photo'}
-                        className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                        className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
                         loading="lazy"
                         onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                       />
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/20 to-transparent opacity-60 group-hover:opacity-85 transition-opacity duration-300" />
+                      {/* Multi-tier dark gradient overlay for text readability without obscuring photo */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/20 to-transparent opacity-60 group-hover:opacity-85 transition-opacity duration-300 pointer-events-none" />
 
-                      <div className="absolute top-3 left-3 z-10">
-                        <span className="px-2.5 py-1 rounded-full bg-stone-900/80 backdrop-blur-xs text-stone-200 text-[10px] font-semibold uppercase tracking-wider border border-stone-700/80">
+                      {/* Top Category Badge */}
+                      <div className="absolute top-3.5 left-3.5 z-10">
+                        <span className="px-3 py-1 rounded-full bg-stone-900/85 backdrop-blur-md text-stone-200 text-[10px] font-bold uppercase tracking-wider border border-stone-700/80 shadow-md">
                           {item.category || 'Artistry'}
                         </span>
                       </div>
 
-                      <div className="relative p-4 sm:p-5 space-y-1 text-white z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
-                        <h4 className="font-serif font-bold text-sm sm:text-base leading-snug line-clamp-1 group-hover:text-rose-200 transition-colors">
+                      {/* Bottom Editorial Caption */}
+                      <div className="relative p-4 sm:p-5 space-y-1 text-white z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                        <h4 className="font-serif font-bold text-sm sm:text-base leading-snug line-clamp-2 group-hover:text-rose-200 transition-colors drop-shadow-md">
                           {item.title}
                         </h4>
                         {item.description && (
-                          <p className="text-[11px] sm:text-xs text-stone-300 line-clamp-1 font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <p className="text-[11px] sm:text-xs text-stone-300 line-clamp-2 font-light drop-shadow-sm leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity duration-300">
                             {item.description}
                           </p>
                         )}
-                        <div className="pt-0.5 flex items-center text-[10px] text-rose-300 font-semibold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Eye className="w-3 h-3 mr-1" />
-                          <span>View Full Photograph</span>
+                        <div className="pt-1 flex items-center text-[10px] text-rose-300 font-semibold tracking-wide opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <Eye className="w-3.5 h-3.5 mr-1 text-rose-400" />
+                          <span>View Full Photograph &rarr;</span>
                         </div>
                       </div>
                     </div>
