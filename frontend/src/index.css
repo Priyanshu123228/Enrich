@@ -24,15 +24,19 @@
 /* Custom Utilities for Luxury Consistency */
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-white bg-stone-900 hover:bg-stone-800 active:bg-stone-950 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer;
+    @apply inline-flex items-center justify-center px-5 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold text-white bg-rose-700 hover:bg-rose-800 active:bg-rose-900 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-stone-800 bg-white hover:bg-stone-100 active:bg-stone-200 border border-stone-300 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer;
+    @apply inline-flex items-center justify-center px-5 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold text-stone-900 bg-white hover:bg-stone-50 active:bg-stone-100 border border-stone-300 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold text-stone-700 hover:bg-stone-100 active:bg-stone-200 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer;
   }
 
   .btn-rose {
-    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-white bg-rose-700 hover:bg-rose-800 active:bg-rose-900 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer;
+    @apply inline-flex items-center justify-center px-5 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold text-white bg-rose-700 hover:bg-rose-800 active:bg-rose-900 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer;
   }
 
   .input-luxury {
@@ -44,7 +48,7 @@
   }
 
   .badge-tag {
-    @apply inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium tracking-wide uppercase;
+    @apply inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium tracking-wide;
   }
 }
 

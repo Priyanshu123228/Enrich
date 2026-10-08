@@ -49,7 +49,7 @@ export default function Footer() {
             {/* Dynamic Active Social Icons */}
             {socialLinks && socialLinks.length > 0 && (
               <div className="pt-2 space-y-2">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-stone-500">
+                <p className="text-xs font-bold uppercase tracking-widest text-stone-500">
                   Connect Online
                 </p>
                 <div className="flex flex-wrap gap-2.5">
@@ -70,7 +70,7 @@ export default function Footer() {
             )}
 
             <div className="flex items-center space-x-3 pt-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider bg-white text-stone-700 px-3 py-1.5 rounded-full border border-stone-200/90 shadow-2xs flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider bg-white text-stone-700 px-3 py-1.5 rounded-full border border-stone-200/90 shadow-2xs flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-rose-600" />
                 Verified Salon & Aesthetic Clinic
               </span>
@@ -171,7 +171,7 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <p>© {new Date().getFullYear()} {SALON_CONFIG.business.name}. All rights reserved.</p>
             <span className="hidden sm:inline text-stone-300">•</span>
-            <div className="flex items-center gap-3 text-[11px]">
+            <div className="flex items-center gap-3 text-xs">
               <Link to="/privacy-policy" className="text-stone-500 hover:text-rose-700 transition-colors">
                 Privacy Policy
               </Link>

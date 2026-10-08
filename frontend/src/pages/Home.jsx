@@ -351,7 +351,7 @@ export default function Home() {
                 <a
                   href="#services"
                   id="hero-services-cta"
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 rounded-2xl text-sm font-bold text-stone-800 bg-white/95 hover:bg-white border border-stone-300/80 transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer active:scale-95"
+                  className="btn-secondary w-full sm:w-auto px-7 py-3.5 text-sm"
                 >
                   View Services
                   <ArrowRight className="w-4 h-4 ml-2 text-stone-600" />
@@ -366,7 +366,7 @@ export default function Home() {
                   </div>
                   <div>
                     <span className="font-bold text-stone-900 block">Salon Opening Hours</span>
-                    <span className="text-stone-500 text-[11px]">{SALON_CONFIG.hours.weekday}</span>
+                    <span className="text-stone-500 text-xs">{SALON_CONFIG.hours.weekday}</span>
                   </div>
                 </div>
                 <div className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-stone-200/80 shadow-xs">
@@ -375,7 +375,7 @@ export default function Home() {
                   </div>
                   <div>
                     <span className="font-bold text-stone-900 block">Direct Concierge</span>
-                    <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-600 hover:text-rose-700 font-medium text-[11px] transition-colors">
+                    <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-600 hover:text-rose-700 font-medium text-xs transition-colors">
                       {SALON_CONFIG.contact.phone}
                     </a>
                   </div>
@@ -391,12 +391,12 @@ export default function Home() {
                 
                 <div className="flex items-center justify-between border-b border-stone-100 pb-4 relative z-10">
                   <div>
-                    <span className="text-[11px] font-bold tracking-widest text-rose-700 uppercase">
+                    <span className="text-xs font-bold tracking-wider text-rose-700">
                       Featured Salon Menu
                     </span>
-                    <h3 className="text-lg font-serif font-bold text-stone-900 mt-0.5">
+                    <h2 className="text-lg font-serif font-bold text-stone-900 mt-0.5">
                       Curated Signature Treatments
-                    </h3>
+                    </h2>
                   </div>
                   <div className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shadow-2xs">
                     <Sparkles className="w-4 h-4" />
@@ -412,7 +412,7 @@ export default function Home() {
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center space-x-2">
-                          <span className="text-[10px] font-bold text-rose-800 px-2.5 py-0.5 rounded-full bg-rose-100 border border-rose-200 uppercase tracking-wide">
+                          <span className="text-xs font-bold text-rose-800 px-2.5 py-0.5 rounded-full bg-rose-100 border border-rose-200 uppercase tracking-wide">
                             {service.category || 'Special'}
                           </span>
                           <span className="text-xs text-stone-500 flex items-center">
@@ -423,7 +423,7 @@ export default function Home() {
                         <h4 className="text-xs sm:text-sm font-bold text-stone-900 truncate group-hover:text-rose-700 transition-colors mt-1.5">
                           {service.name}
                         </h4>
-                        <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5 font-light">
+                        <p className="text-xs text-stone-500 line-clamp-1 mt-0.5 font-light">
                           {service.description || 'Specialized clinical and aesthetic service.'}
                         </p>
                       </div>
@@ -436,7 +436,7 @@ export default function Home() {
                         ) : (
                           <Link
                             to="/login?redirect=/#services"
-                            className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-full border border-rose-200/80 transition-colors whitespace-nowrap"
+                            className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-full border border-rose-200/80 transition-colors whitespace-nowrap"
                           >
                             <Lock className="w-2.5 h-2.5" />
                             <span>Sign in</span>
@@ -444,7 +444,7 @@ export default function Home() {
                         )}
                         <Link
                           to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
-                          className="text-[11px] font-bold text-rose-600 hover:text-rose-700 mt-1 inline-flex items-center group-hover:translate-x-0.5 transition-all"
+                          className="btn-primary px-3 py-1 text-xs rounded-md mt-1"
                         >
                           Book
                           <ArrowRight className="w-3 h-3 ml-0.5" />
@@ -455,7 +455,7 @@ export default function Home() {
                 </div>
 
                 <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500 relative z-10">
-                  <span className="text-[11px]">Custom consultations available</span>
+                  <span className="text-xs">Custom consultations available</span>
                   <Link to="/services" className="text-rose-700 font-bold hover:text-rose-800 flex items-center gap-1 transition-colors">
                     Full Price List
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -548,7 +548,7 @@ export default function Home() {
                         }}
                       />
                       <div className="absolute top-3 left-3">
-                        <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/95 text-stone-900 shadow-xs border border-stone-200/60 backdrop-blur-xs">
+                        <span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-white/95 text-stone-900 shadow-xs border border-stone-200/60 backdrop-blur-xs">
                           {service.category || 'Specialty'}
                         </span>
                       </div>
@@ -568,7 +568,7 @@ export default function Home() {
                         ) : (
                           <Link
                             to="/login?redirect=/#services"
-                            className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2 py-0.5 rounded-full border border-rose-200/80 transition-colors"
+                            className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2 py-0.5 rounded-full border border-rose-200/80 transition-colors"
                           >
                             <Lock className="w-2.5 h-2.5" />
                             <span>Sign in for price</span>
@@ -590,7 +590,7 @@ export default function Home() {
                   <div className="p-5 pt-0 border-t border-stone-100 mt-2">
                     <Link
                       to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
-                      className="w-full py-2.5 px-3 rounded-lg bg-stone-50 hover:bg-stone-900 text-stone-800 hover:text-white border border-stone-200 hover:border-stone-900 text-xs font-semibold flex items-center justify-center transition-colors shadow-2xs mt-3 cursor-pointer"
+                      className="btn-primary w-full py-2.5 px-3 text-xs mt-3"
                     >
                       <Calendar className="w-3.5 h-3.5 mr-1.5" />
                       Book Appointment
@@ -650,7 +650,7 @@ export default function Home() {
                   <span className="text-xs font-semibold text-stone-800 block">
                     {stat.label}
                   </span>
-                  <span className="text-[11px] text-stone-400 block">
+                  <span className="text-xs text-stone-400 block">
                     {stat.description}
                   </span>
                 </div>
@@ -759,7 +759,7 @@ export default function Home() {
                     />
                     <div className="absolute inset-0 bg-stone-900/30" />
                     <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/95 text-stone-900 border border-stone-200/60 backdrop-blur-xs">
+                      <span className="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-white/95 text-stone-900 border border-stone-200/60 backdrop-blur-xs">
                         {specializations[0]}
                       </span>
                     </div>
@@ -772,7 +772,7 @@ export default function Home() {
                         {staff.name}
                       </h3>
                       {staff.experience && (
-                        <span className="text-[11px] font-mono text-stone-500 bg-stone-100 px-2 py-0.5 rounded">
+                        <span className="text-xs font-mono text-stone-500 bg-stone-100 px-2 py-0.5 rounded">
                           {staff.experience} yrs
                         </span>
                       )}
@@ -787,7 +787,7 @@ export default function Home() {
                       {specializations.slice(0, 3).map((tag, tIdx) => (
                         <span
                           key={tIdx}
-                          className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-600 font-medium"
+                          className="text-xs px-2 py-0.5 rounded bg-stone-100 text-stone-600 font-medium"
                         >
                           {tag}
                         </span>
@@ -800,7 +800,7 @@ export default function Home() {
                 <div className="p-5 pt-0 border-t border-stone-100 mt-2">
                   <Link
                     to={`/book?staff=${staff._id || encodeURIComponent(staff.name)}`}
-                    className="w-full py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center justify-center transition-colors shadow-xs mt-3 cursor-pointer"
+                    className="btn-primary w-full py-2 px-3 text-xs mt-3"
                   >
                     <Calendar className="w-3.5 h-3.5 mr-1.5 text-rose-400" />
                     Book with {staff.name.split(' ')[0]}
@@ -851,13 +851,13 @@ export default function Home() {
                   
                   <div className="relative z-10 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200">
                         {offer.discountType === 'percentage'
                           ? `${offer.discountValue || 15}% OFF`
                           : `${SALON_CONFIG.currency.symbol}${offer.discountValue || 200} OFF`}
                       </span>
                       {offer.validUntil && (
-                        <span className="text-[11px] text-stone-400 font-mono flex items-center">
+                        <span className="text-xs text-stone-400 font-mono flex items-center">
                           <Clock className="w-3 h-3 mr-1 text-stone-400" />
                           Exp: {new Date(offer.validUntil).toLocaleDateString()}
                         </span>
@@ -881,7 +881,7 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => handleCopyCode(offer.code)}
-                        className="inline-flex items-center px-2 py-1 rounded text-[11px] font-semibold text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold text-rose-700 hover:bg-rose-50 border border-rose-200 transition-colors cursor-pointer"
                       >
                         {isCopied ? (
                           <>
@@ -899,7 +899,7 @@ export default function Home() {
 
                     <Link
                       to={`/book?promoCode=${offer.code}`}
-                      className="w-full py-2.5 px-3 rounded-lg bg-rose-700 hover:bg-rose-800 text-white text-xs font-semibold flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                      className="btn-primary w-full py-2.5 px-3 text-xs"
                     >
                       <Calendar className="w-3.5 h-3.5 mr-1.5" />
                       Book with Promo Code
@@ -1023,12 +1023,12 @@ export default function Home() {
 
                       {/* Top Badges */}
                       <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-                        <span className="px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/95 border border-stone-200 text-stone-800 backdrop-blur-xs shadow-xs">
+                        <span className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white/95 border border-stone-200 text-stone-800 backdrop-blur-xs shadow-xs">
                           {item.category || 'Studio'}
                         </span>
                         
                         {isVideo && (
-                          <span className="px-3.5 py-1.5 rounded-full text-[10px] font-bold bg-rose-600 text-white flex items-center shadow-xs">
+                          <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-600 text-white flex items-center shadow-xs">
                             <Video className="w-3 h-3 mr-1.5" />
                             {item.duration ? `${item.duration}s` : 'Video'}
                           </span>
@@ -1051,9 +1051,9 @@ export default function Home() {
 
                     {/* Text Details */}
                     <div className="p-6 sm:p-7 bg-white border-t border-stone-100/90 space-y-1.5">
-                      <h4 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors truncate">
+                      <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-2">
                         {item.title || 'Studio Showcase'}
-                      </h4>
+                      </h3>
                       {item.description && (
                         <p className="text-xs text-stone-500 line-clamp-2 mt-1 font-light leading-relaxed">
                           {item.description}
@@ -1194,7 +1194,7 @@ export default function Home() {
                     href={SALON_CONFIG.location.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-[11px] font-bold transition-all shadow-xs inline-flex items-center shrink-0"
+                    className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs inline-flex items-center shrink-0"
                   >
                     Get Directions
                     <ArrowRight className="w-3 h-3 ml-1" />

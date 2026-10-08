@@ -148,10 +148,10 @@ export default function Offers() {
 
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-rose-700 text-white">
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-rose-700 text-white">
                       {offer.badgeText || 'Special Offer'}
                     </span>
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-stone-900/80 text-stone-200">
+                    <span className="px-2 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-stone-900/80 text-stone-200">
                       {offer.offerType}
                     </span>
                   </div>
@@ -195,14 +195,14 @@ export default function Offers() {
 
                     {offer.applicableServices && offer.applicableServices.length > 0 && !offer.isAllServices && (
                       <div className="pt-1 border-t border-stone-200/60">
-                        <span className="text-[10px] uppercase font-semibold text-stone-500 block mb-1">
+                        <span className="text-xs uppercase font-semibold text-stone-500 block mb-1">
                           Applicable Treatments:
                         </span>
                         <div className="flex flex-wrap gap-1">
                           {offer.applicableServices.map((s) => (
                             <span
                               key={s._id}
-                              className="px-2 py-0.5 rounded bg-white border border-stone-200 text-[10px] text-stone-700"
+                              className="px-2 py-0.5 rounded bg-white border border-stone-200 text-xs text-stone-700"
                             >
                               {s.name}
                             </span>
@@ -215,7 +215,7 @@ export default function Offers() {
                   {/* Promo Code Copy Strip */}
                   <div className="flex items-center justify-between p-2 bg-stone-100 rounded-lg border border-stone-200">
                     <div className="space-y-0.5">
-                      <span className="text-[9px] uppercase tracking-wider font-semibold text-stone-500 block">
+                      <span className="text-xs uppercase tracking-wider font-semibold text-stone-500 block">
                         Promo Code
                       </span>
                       <span className="font-mono font-bold text-xs text-stone-900 tracking-wider">

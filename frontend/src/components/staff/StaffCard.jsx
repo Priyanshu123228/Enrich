@@ -29,7 +29,7 @@ export default function StaffCard({ staff }) {
           {/* Status Badge */}
           <div className="absolute top-3 left-3">
             <span
-              className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider border backdrop-blur-xs ${
+              className={`px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wider border backdrop-blur-xs ${
                 statusColors[staff.status] || statusColors.active
               }`}
             >
@@ -39,7 +39,7 @@ export default function StaffCard({ staff }) {
 
           {/* Experience Badge */}
           {staff.experience > 0 && (
-            <div className="absolute bottom-3 left-3 flex items-center bg-stone-900/80 backdrop-blur-xs text-stone-200 px-2.5 py-0.5 rounded-md text-[11px] font-medium">
+            <div className="absolute bottom-3 left-3 flex items-center bg-stone-900/80 backdrop-blur-xs text-stone-200 px-2.5 py-0.5 rounded-md text-xs font-medium">
               <Award className="w-3 h-3 mr-1 text-rose-300" />
               <span>{staff.experience} Years Exp</span>
             </div>
@@ -47,7 +47,7 @@ export default function StaffCard({ staff }) {
 
           {/* Rating (only if real ratings exist) */}
           {staff.ratingCount > 0 && (
-            <div className="absolute bottom-3 right-3 flex items-center bg-stone-900/80 backdrop-blur-xs text-stone-200 px-2 py-0.5 rounded-md text-[11px] font-semibold">
+            <div className="absolute bottom-3 right-3 flex items-center bg-stone-900/80 backdrop-blur-xs text-stone-200 px-2 py-0.5 rounded-md text-xs font-semibold">
               <Star className="w-3 h-3 text-amber-400 fill-amber-400 mr-1" />
               <span>{staff.ratingAverage?.toFixed(1)} ({staff.ratingCount})</span>
             </div>
@@ -75,7 +75,7 @@ export default function StaffCard({ staff }) {
               {staff.specialization.slice(0, 3).map((spec, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center text-[10px] font-medium text-stone-700 bg-stone-100 px-2 py-0.5 rounded"
+                  className="inline-flex items-center text-xs font-medium text-stone-700 bg-stone-100 px-2 py-0.5 rounded"
                 >
                   {spec}
                 </span>
@@ -105,7 +105,7 @@ export default function StaffCard({ staff }) {
           </Link>
           <Link
             to={`/staff/${staff._id}`}
-            className="inline-flex items-center px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-stone-900 hover:bg-stone-800 transition-colors cursor-pointer shadow-xs"
+            className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold"
           >
             <Calendar className="w-3.5 h-3.5 mr-1.5 text-rose-300" />
             Book
