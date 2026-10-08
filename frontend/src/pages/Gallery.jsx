@@ -543,6 +543,8 @@ export default function Gallery() {
       {activeVideo && (
         <VideoModal
           video={activeVideo}
+          videos={videoList}
+          onSelectVideo={(v) => setActiveVideo(v)}
           onClose={() => setActiveVideo(null)}
         />
       )}

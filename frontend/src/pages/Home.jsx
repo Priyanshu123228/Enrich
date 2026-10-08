@@ -1260,6 +1260,8 @@ export default function Home() {
       {activeVideo && (
         <VideoModal
           video={activeVideo}
+          videos={mediaItems.videos || []}
+          onSelectVideo={(v) => setActiveVideo(v)}
           onClose={() => setActiveVideo(null)}
         />
       )}
