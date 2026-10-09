@@ -17,10 +17,10 @@ export function getTodayDateString() {
  * Check if a time slot has already passed for a given date.
  * @param {string} dateStr - 'YYYY-MM-DD'
  * @param {string} slotTimeStr - 'HH:MM' (24-hour format e.g. '14:30')
- * @param {number} bufferMinutes - Minimum advance notice required (default: 15 mins)
+ * @param {number} bufferMinutes - Minimum advance notice required in minutes (default: 10 mins)
  * @returns {boolean} true if the slot is in the past
  */
-export function isSlotPassed(dateStr, slotTimeStr, bufferMinutes = 15) {
+export function isSlotPassed(dateStr, slotTimeStr, bufferMinutes = 10) {
   if (!dateStr || !slotTimeStr) return false;
 
   const todayStr = getTodayDateString();
@@ -31,7 +31,7 @@ export function isSlotPassed(dateStr, slotTimeStr, bufferMinutes = 15) {
   // If the booking date is strictly in the future, slots are not passed
   if (dateStr > todayStr) return false;
 
-  // It is today: check hours and minutes against current time + buffer
+  // It is today: compare slot start time with current local time + buffer
   const now = new Date();
   const [slotHrs, slotMins] = slotTimeStr.split(':').map(Number);
   const slotMinutes = (slotHrs || 0) * 60 + (slotMins || 0);

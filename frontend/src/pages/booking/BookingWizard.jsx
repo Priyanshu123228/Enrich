@@ -598,7 +598,7 @@ export default function BookingWizard() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-bold uppercase tracking-wider text-stone-800">
-                Available Openings ({availableSlots.length})
+                Available Openings ({availableSlots.filter(s => !isSlotPassed(selectedDate, s.time) && !s.isPassed).length})
               </h4>
               <span className="text-xs text-stone-500 flex items-center">
                 <Clock className="w-3.5 h-3.5 mr-1" />
@@ -614,21 +614,31 @@ export default function BookingWizard() {
             ) : availableSlots.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
                 {availableSlots.map((slot) => {
+                  const isPassed = isSlotPassed(selectedDate, slot.time) || slot.isPassed;
                   const isSelected = selectedSlot === slot.time;
                   return (
                     <button
                       key={slot.time}
                       type="button"
-                      onClick={() => setSelectedSlot(slot.time)}
-                      className={`py-2.5 px-2 rounded-lg text-center border transition-all cursor-pointer ${
-                        isSelected
-                          ? 'bg-stone-900 text-white border-stone-900 shadow-xs font-bold'
-                          : 'bg-white text-stone-800 border-stone-200 hover:border-stone-400 hover:bg-stone-50 font-medium'
+                      disabled={isPassed}
+                      onClick={() => {
+                        if (!isPassed) setSelectedSlot(slot.time);
+                      }}
+                      aria-disabled={isPassed}
+                      title={isPassed ? 'This time slot has already passed' : `Select ${slot.time}`}
+                      className={`py-2.5 px-2 rounded-lg text-center border transition-all ${
+                        isPassed
+                          ? 'opacity-35 bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed select-none line-through'
+                          : isSelected
+                          ? 'bg-stone-900 text-white border-stone-900 shadow-xs font-bold cursor-pointer ring-2 ring-stone-900 ring-offset-1'
+                          : 'bg-white text-stone-800 border-stone-200 hover:border-stone-400 hover:bg-stone-50 font-medium cursor-pointer'
                       }`}
                     >
-                      <div className="text-sm font-mono">{slot.time}</div>
-                      <div className={`text-[10px] ${isSelected ? 'text-stone-300' : 'text-stone-400'}`}>
-                        to {slot.endTime}
+                      <div className={`text-sm font-mono ${isPassed ? 'line-through text-stone-400' : ''}`}>
+                        {slot.time}
+                      </div>
+                      <div className={`text-xs ${isPassed ? 'text-stone-400 font-normal' : isSelected ? 'text-stone-300' : 'text-stone-400'}`}>
+                        {isPassed ? 'Passed' : `to ${slot.endTime}`}
                       </div>
                     </button>
                   );

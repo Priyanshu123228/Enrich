@@ -208,12 +208,8 @@ export const getAvailableSlots = async ({ serviceId, staffId, date }) => {
         continue;
       }
 
-      // Rule D: If booking for Today, exclude slots that have already passed
-      if (isSelectedDateToday) {
-        if (slotStart <= minutesFromMidnight + MINIMUM_NOTICE_MINUTES) {
-          continue;
-        }
-      }
+      // Rule D: Check if slot has already passed for Today
+      const isPassedSlot = isSelectedDateToday && (slotStart <= minutesFromMidnight + MINIMUM_NOTICE_MINUTES);
 
       const timeString = minutesToTime(slotStart);
       const endTimeString = minutesToTime(slotEnd);
@@ -222,15 +218,19 @@ export const getAvailableSlots = async ({ serviceId, staffId, date }) => {
         slotMap.set(timeString, {
           time: timeString,
           endTime: endTimeString,
+          isPassed: isPassedSlot,
           availableStaff: []
         });
       }
 
-      slotMap.get(timeString).availableStaff.push({
-        _id: staffMember._id,
-        name: staffMember.name,
-        avatar: staffMember.avatar?.url
-      });
+      // If slot is valid, open, and not in the past, add available staff
+      if (!isPassedSlot && !hasConflict) {
+        slotMap.get(timeString).availableStaff.push({
+          _id: staffMember._id,
+          name: staffMember.name,
+          avatar: staffMember.avatar?.url
+        });
+      }
     }
   }
 
