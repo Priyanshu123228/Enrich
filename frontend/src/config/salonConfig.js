@@ -41,12 +41,14 @@ export const SALON_CONFIG = {
     mapEmbedUrl: 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed',
   },
 
-  // Operating Hours
+    // Operating Hours
   hours: {
-    weekday: 'Mon - Sat: 9:00 AM - 8:00 PM',
-    weekdays: 'Mon - Sat: 9:00 AM - 8:00 PM',
-    sunday: 'Sun: 10:00 AM - 5:00 PM',
-    summary: 'Mon - Sat: 9:00 AM - 8:00 PM | Sun: 10:00 AM - 5:00 PM',
+    monSat: '9:00 AM – 8:00 PM',
+    weekday: '9:00 AM – 8:00 PM',
+    weekdays: '9:00 AM – 8:00 PM',
+    saturday: '9:00 AM – 8:00 PM',
+    sunday: '10:00 AM – 5:00 PM',
+    summary: 'Mon – Sat: 9:00 AM – 8:00 PM | Sun: 10:00 AM – 5:00 PM',
   },
 
   // Transit & Parking / Location Details
