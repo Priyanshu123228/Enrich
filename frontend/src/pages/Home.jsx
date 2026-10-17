@@ -311,23 +311,23 @@ export default function Home() {
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Location Badge (Clickable link to Google Maps) */}
+              {/* Location Masthead Kicker */}
               <a
                 href={SALON_CONFIG.contact.googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 title="View Enrich Salon location on Google Maps"
-                className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-white/95 hover:bg-rose-50/80 backdrop-blur-md border border-stone-200/90 hover:border-rose-300 text-stone-700 hover:text-rose-800 text-xs font-semibold tracking-wide shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer group max-w-full"
+                className="inline-flex items-center space-x-2 py-1 text-stone-600 hover:text-stone-900 text-xs font-semibold tracking-wider uppercase transition-colors cursor-pointer group max-w-full"
               >
-                <MapPin className="w-3.5 h-3.5 text-rose-600 shrink-0 group-hover:scale-110 transition-transform" />
+                <MapPin className="w-3.5 h-3.5 text-rose-800 shrink-0" />
                 <span className="truncate max-w-xs sm:max-w-md md:max-w-lg">{SALON_CONFIG.business.badge}</span>
-                <ArrowRight className="w-3 h-3 text-stone-400 group-hover:text-rose-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+                <ArrowRight className="w-3 h-3 text-stone-400 group-hover:text-stone-900 group-hover:translate-x-0.5 transition-all shrink-0" />
               </a>
 
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-stone-900 leading-[1.08]">
                 Precision Hair, Skin &{' '}
-                <span className="italic font-normal font-serif bg-gradient-to-r from-rose-600 via-rose-700 to-amber-700 bg-clip-text text-transparent">
+                <span className="font-normal font-serif text-rose-900">
                   Clinical Beauty
                 </span>
               </h1>
@@ -342,7 +342,7 @@ export default function Home() {
                 <Link
                   to="/book"
                   id="hero-book-cta"
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-rose-600 via-rose-700 to-rose-800 hover:from-rose-700 hover:to-rose-900 transition-all duration-300 shadow-lg shadow-rose-900/15 hover:shadow-xl hover:shadow-rose-900/25 cursor-pointer active:scale-95"
+                  className="btn-rose w-full sm:w-auto px-8 py-3.5 text-sm font-bold"
                 >
                   <Calendar className="w-4 h-4 mr-2 text-rose-200" />
                   Book Appointment
@@ -360,7 +360,7 @@ export default function Home() {
 
               {/* Salon Hours & Concierge Info Badge */}
               <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left border-t border-stone-200/80 max-w-xl mx-auto lg:mx-0">
-                <div className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white/80 backdrop-blur-xs p-3 rounded-2xl border border-stone-200/80 shadow-xs">
+                <div className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
                   <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
@@ -389,8 +389,7 @@ export default function Home() {
 
             {/* Right Card: Featured Salon Menu */}
             <div className="lg:col-span-5 w-full">
-              <div className="rounded-2xl border border-stone-200/90 bg-white/95 backdrop-blur-md p-6 sm:p-8 shadow-2xl shadow-stone-300/30 space-y-5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-rose-100/50 via-rose-50/20 to-transparent rounded-bl-full pointer-events-none" />
+              <div className="rounded-xl border border-stone-200 bg-white p-6 sm:p-8 shadow-xs space-y-5 relative">
                 
                 <div className="flex items-center justify-between border-b border-stone-100 pb-4 relative z-10">
                   <div>
@@ -1164,7 +1163,7 @@ export default function Home() {
                     href={SALON_CONFIG.location.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-5 py-3 bg-gradient-to-r from-rose-700 to-rose-800 hover:from-rose-800 hover:to-rose-900 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-900/15 cursor-pointer active:scale-95"
+                    className="inline-flex items-center px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer"
                   >
                     <Compass className="w-4 h-4 mr-1.5" />
                     Open in Google Maps

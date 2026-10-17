@@ -135,10 +135,9 @@ export default function Gallery() {
       {/* 1. HERO / INTRO SECTION */}
       {/* ========================================================================= */}
       <section className="text-center max-w-3xl mx-auto space-y-4 pt-2">
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold uppercase tracking-wider">
-          <Sparkle className="w-3.5 h-3.5 fill-rose-700" />
-          <span>Curated Salon Showcase</span>
-        </div>
+        <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
+          Curated Salon Portfolio
+        </p>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
           Artistry & Transformations
         </h1>
@@ -441,7 +440,7 @@ export default function Gallery() {
           {/* 6. CLIENT LOVE / GOOGLE REVIEWS SECTION */}
           {/* ========================================================================= */}
           <section className="bg-stone-950 text-white rounded-3xl p-8 sm:p-12 border border-stone-800 shadow-xl overflow-hidden relative">
-            <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-rose-900/20 blur-3xl pointer-events-none" />
+            
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-xl">
                 <div className="flex items-center gap-2 text-rose-400 text-xs font-bold tracking-widest uppercase">
@@ -472,7 +471,7 @@ export default function Gallery() {
                   href="https://maps.google.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white text-stone-950 font-bold text-xs uppercase tracking-wider hover:bg-rose-50 transition-all shadow-lg hover:scale-105 active:scale-95 w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white hover:bg-stone-100 text-stone-900 font-semibold text-xs uppercase tracking-wider transition-colors w-full sm:w-auto"
                 >
                   <span>View Google Reviews</span>
                   <ExternalLink className="w-3.5 h-3.5 text-stone-700" />
@@ -497,7 +496,7 @@ export default function Gallery() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
               <Link
                 to="/booking"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold tracking-widest uppercase transition-all shadow-md hover:scale-105 active:scale-95"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold tracking-wider uppercase transition-colors shadow-xs"
               >
                 <Calendar className="w-4 h-4 mr-2" />
                 <span>BOOK AN APPOINTMENT</span>
@@ -505,7 +504,7 @@ export default function Gallery() {
 
               <button
                 onClick={handleWhatsAppChat}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold tracking-widest uppercase transition-all shadow-md hover:scale-105 active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold tracking-wider uppercase transition-colors cursor-pointer shadow-xs"
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 <span>CHAT ON WHATSAPP</span>
