@@ -86,6 +86,7 @@ export const createAppointment = asyncHandler(async (req, res) => {
   }
 
   // 4. Verify Staff Working Schedule on this Day of Week
+  const bookingDate = new Date(date + "T00:00:00");
   const dayOfWeek = bookingDate.getDay();
   const shift = staff.schedule?.find((s) => s.dayOfWeek === dayOfWeek);
   if (!shift || !shift.isWorking) {
@@ -344,6 +345,7 @@ export const rescheduleAppointment = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Assigned stylist is currently unavailable');
   }
 
+  const bookingDate = new Date(newDate + "T00:00:00");
   const dayOfWeek = bookingDate.getDay();
   const shift = staff.schedule?.find((s) => s.dayOfWeek === dayOfWeek);
   if (!shift || !shift.isWorking) {
