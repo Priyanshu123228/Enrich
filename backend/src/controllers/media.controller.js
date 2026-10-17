@@ -602,7 +602,12 @@ export const seedDefaultMedia = asyncHandler(async (req, res) => {
     }
   ];
 
-  await Media.deleteMany({});
+  const existingCount = await Media.countDocuments();
+  if (existingCount > 0) {
+    return res.status(200).json(
+      new ApiResponse(200, { count: existingCount }, 'Gallery already contains media assets. Seeding skipped to protect custom uploads.')
+    );
+  }
   const created = await Media.insertMany(defaultItems);
 
   return res.status(201).json(

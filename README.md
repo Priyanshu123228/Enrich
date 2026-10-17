@@ -265,6 +265,8 @@ The frontend will launch on `http://localhost:5173`.
 * **Cookie Consent Banner**: Luxury glassmorphism banner allowing clients to accept or set essential-only cookie preferences.
 * **Legal Agreements**: Dedicated Privacy Policy (`/privacy-policy`) and Terms & Conditions (`/terms-and-conditions`) pages.
 * **Frontend Error Boundary**: Graceful React crash recovery with one-click page reload and homepage fallback.
+* **Real-Time Booking Slot Fading**: Automatically disables and fades out time slots that have already passed today to prevent outdated bookings.
+* **Accessible Salon Schedule System**: Centralized operating hours across footer, contact desk, and hero concierge with standardized semantic typography.
 
 ---
 

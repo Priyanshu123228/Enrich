@@ -67,14 +67,6 @@ export default function Gallery() {
 
       let res = await mediaService.getGalleryMedia(params);
 
-      // Auto-seed default sample media if gallery is empty on initial load
-      if (!res?.data?.media || res.data.media.length === 0) {
-        try {
-          await mediaService.seedDefaultMedia();
-          res = await mediaService.getGalleryMedia(params);
-        } catch (_) {}
-      }
-
       if (res?.data?.media && Array.isArray(res.data.media)) {
         setMediaList(res.data.media);
       } else if (Array.isArray(res?.data)) {

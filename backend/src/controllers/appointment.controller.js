@@ -61,7 +61,6 @@ export const createAppointment = asyncHandler(async (req, res) => {
       throw new ApiError(400, 'Cannot book a time slot that has already passed today');
     }
   }
-  }
 
   // 2. Fetch Service
   const service = await Service.findById(serviceId);
@@ -337,7 +336,6 @@ export const rescheduleAppointment = asyncHandler(async (req, res) => {
     if (slotMinutes <= minutesFromMidnight + 10) {
       throw new ApiError(400, 'Cannot reschedule to a time slot that has already passed today');
     }
-  }
   }
 
   // Verify staff availability on new date
