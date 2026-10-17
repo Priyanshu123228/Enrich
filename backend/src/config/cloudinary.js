@@ -37,7 +37,7 @@ export const uploadToCloudinary = async (buffer, options = {}) => {
     try {
       const result = await new Promise((resolve, reject) => {
         const defaultOptions = {
-          folder: options.folder || 'luxeparlour/gallery',
+          folder: options.folder || 'enrich/gallery',
           resource_type: options.resource_type || 'auto',
           quality: 'auto:good',
           fetch_format: 'auto'

@@ -218,7 +218,7 @@ export const uploadSingleFile = asyncHandler(async (req, res) => {
   try {
     const uploadResult = await uploadToCloudinary(req.file.buffer, {
       resource_type,
-      folder: 'luxeparlour/direct_uploads',
+      folder: 'enrich/direct_uploads',
       originalname: req.file.originalname,
       mimetype: req.file.mimetype
     });
@@ -276,7 +276,7 @@ export const createMedia = asyncHandler(async (req, res) => {
     try {
       const uploadResult = await uploadToCloudinary(req.file.buffer, {
         resource_type,
-        folder: `luxeparlour/${type}s`
+        folder: `enrich/${type}s`
       });
 
       mediaUrl = uploadResult.secure_url;
@@ -354,7 +354,7 @@ export const updateMedia = asyncHandler(async (req, res) => {
     const resource_type = (type || media.type) === 'video' ? 'video' : 'image';
     const uploadResult = await uploadToCloudinary(req.file.buffer, {
       resource_type,
-      folder: `luxeparlour/${resource_type}s`
+      folder: `enrich/${resource_type}s`
     });
 
     // Delete old asset if existing

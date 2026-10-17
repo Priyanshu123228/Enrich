@@ -437,7 +437,7 @@ export const uploadProductImage = asyncHandler(async (req, res) => {
   try {
     const reqBaseUrl = req.protocol + '://' + req.get('host');
     const uploadResult = await uploadToCloudinary(file.buffer, {
-      folder: 'luxeparlour/products',
+      folder: 'enrich/products',
       originalname: file.originalname,
       mimetype: file.mimetype,
       reqBaseUrl
