@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MessageCircle, X, Send, Sparkles, Calendar, HeartHandshake, PhoneCall } from 'lucide-react';
 import { SALON_CONFIG } from '../../config/salonConfig';
+import { trackContactAction } from '../../utils/analytics';
 
 function WhatsAppIcon({ className = "w-6 h-6" }) {
   return (
@@ -36,6 +37,7 @@ export default function WhatsAppWidget() {
   ];
 
   const handleSend = (customText) => {
+    trackContactAction('whatsapp');
     const message = encodeURIComponent(customText || 'Hi Enrich Beauty Parlour, I would like to inquire about your salon services.');
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');

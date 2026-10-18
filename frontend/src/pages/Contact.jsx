@@ -4,10 +4,13 @@ import { MapPin, Phone, Mail, Clock, Send, CheckCircle2, AlertCircle, Loader2, M
 import { inquiryService } from '../services/inquiry.service';
 import { SALON_CONFIG } from '../config/salonConfig';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { trackContactAction } from '../utils/analytics';
 import SEO from '../components/common/SEO';
 
 export default function Contact() {
   const { user, isAuthenticated } = useAuth();
+  const toast = useToast();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -121,13 +124,17 @@ export default function Contact() {
       if (res && (res.success !== false)) {
         setSubmittedData({ ...formData });
         setFormSubmitted(true);
+        toast.success('Your message has been sent to Enrich Salon! We will respond shortly.');
+        trackContactAction('contact_form_success');
       } else {
-        setErrorMessage(res?.message || 'Unable to submit inquiry. Please try again.');
+        const err = res?.message || 'Unable to submit inquiry. Please try again.';
+        setErrorMessage(err);
+        toast.error(err);
       }
     } catch (err) {
-      setErrorMessage(
-        err?.response?.data?.message || err?.message || 'Failed to submit inquiry. Please call our salon directly.'
-      );
+      const errTxt = err?.response?.data?.message || err?.message || 'Failed to submit inquiry. Please call our salon directly.';
+      setErrorMessage(errTxt);
+      toast.error(errTxt);
     } finally {
       setIsSubmitting(false);
     }
