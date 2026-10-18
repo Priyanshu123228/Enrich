@@ -90,6 +90,21 @@ export const mediaService = {
     return await api.put(`/media/${id}/top-4k`);
   },
 
+  /**
+   * Admin: Designate a photo as the Homepage Hero Cover Photo
+   * @param {string} id
+   */
+  setHeroPhoto: async (id) => {
+    return await api.put(`/media/${id}/hero-photo`);
+  },
+
+  /**
+   * Public: Get current Homepage Hero Cover Photo
+   */
+  getHeroPhoto: async () => {
+    return await api.get('/media/hero-photo');
+  },
+
   deleteMedia: async (id) => {
     return await api.delete(`/media/${id}`);
   },

@@ -298,6 +298,11 @@ export const createMedia = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Either upload a media file or provide a valid media URL');
   }
 
+  const isHeroVal = isHero === 'true' || isHero === true;
+  if (isHeroVal) {
+    await Media.updateMany({}, { $set: { isHero: false } });
+  }
+
   const media = await Media.create({
     title,
     description,
@@ -309,6 +314,7 @@ export const createMedia = asyncHandler(async (req, res) => {
     duration: duration ? Number(duration) : 0,
     displayOrder: displayOrder !== undefined ? Number(displayOrder) : 0,
     isFeatured: isFeatured === 'true' || isFeatured === true,
+    isHero: isHeroVal,
     isActive: isActive !== 'false' && isActive !== false,
     beforeAfter: {
       beforeUrl: beforeUrl || '',
@@ -383,6 +389,13 @@ export const updateMedia = asyncHandler(async (req, res) => {
   }
   if (duration !== undefined) media.duration = Number(duration);
   if (displayOrder !== undefined) media.displayOrder = Number(displayOrder);
+  if (req.body.isHero !== undefined) {
+    const isHeroVal = req.body.isHero === 'true' || req.body.isHero === true;
+    if (isHeroVal) {
+      await Media.updateMany({ _id: { $ne: id } }, { $set: { isHero: false } });
+    }
+    media.isHero = isHeroVal;
+  }
   if (isFeatured !== undefined) media.isFeatured = isFeatured === 'true' || isFeatured === true;
   if (isActive !== undefined) media.isActive = isActive === 'true' || isActive === true;
 
@@ -642,5 +655,46 @@ export const setTop4kVideo = asyncHandler(async (req, res) => {
 
   return res.status(200).json(
     new ApiResponse(200, targetMedia, 'Video successfully designated as the Top 4K Spotlight Hero')
+  );
+});
+
+
+/**
+ * @desc    Admin: Designate a photo as the Homepage Hero Cover Photo
+ * @route   PUT /api/v1/media/:id/hero-photo
+ * @access  Private / Admin
+ */
+export const setHeroPhoto = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const targetMedia = await Media.findById(id);
+  if (!targetMedia) {
+    throw new ApiError(404, 'Media photo not found');
+  }
+
+  // Clear isHero on all other media items
+  await Media.updateMany(
+    { _id: { $ne: id } },
+    { $set: { isHero: false } }
+  );
+
+  targetMedia.isHero = true;
+  targetMedia.isActive = true;
+  await targetMedia.save();
+
+  return res.status(200).json(
+    new ApiResponse(200, targetMedia, 'Photo successfully designated as the Homepage Hero Cover')
+  );
+});
+
+/**
+ * @desc    Public: Get current Homepage Hero Cover Photo
+ * @route   GET /api/v1/media/hero-photo
+ * @access  Public
+ */
+export const getHeroPhoto = asyncHandler(async (req, res) => {
+  const heroPhoto = await Media.findOne({ isHero: true, isActive: true }).lean();
+  return res.status(200).json(
+    new ApiResponse(200, heroPhoto || null, 'Current Homepage Hero Photo retrieved')
   );
 });

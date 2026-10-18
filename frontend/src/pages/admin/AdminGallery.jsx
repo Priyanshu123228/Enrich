@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
+import { SALON_CONFIG } from '../../config/salonConfig';
 
 export default function AdminGallery() {
   const [mediaList, setMediaList] = useState([]);
@@ -47,11 +48,13 @@ export default function AdminGallery() {
     displayOrder: 0,
     isFeatured: false,
     isTop4kSpotlight: false,
+    isHeroPhoto: false,
     isActive: true,
     beforeUrl: '',
     afterUrl: ''
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isHeroUploading, setIsHeroUploading] = useState(false);
 
   const photoCategories = [
     'Salon Interior',
@@ -138,6 +141,7 @@ export default function AdminGallery() {
         displayOrder: media.displayOrder || 0,
         isFeatured: media.isFeatured || false,
         isTop4kSpotlight: Boolean(isTop),
+        isHeroPhoto: Boolean(media.isHero),
         isActive: media.isActive !== false,
         beforeUrl: media.beforeAfter?.beforeUrl || '',
         afterUrl: media.beforeAfter?.afterUrl || ''
@@ -155,6 +159,7 @@ export default function AdminGallery() {
         displayOrder: 0,
         isFeatured: false,
         isTop4kSpotlight: false,
+        isHeroPhoto: false,
         isActive: true,
         beforeUrl: '',
         afterUrl: ''
@@ -171,7 +176,7 @@ export default function AdminGallery() {
     try {
       const effectiveUrl = formData.url || formData.beforeUrl || formData.afterUrl;
       const displayOrderNum = formData.isTop4kSpotlight ? 0 : Number(formData.displayOrder) || 0;
-      const featuredVal = formData.isTop4kSpotlight ? true : formData.isFeatured;
+      const featuredVal = (formData.isTop4kSpotlight || formData.isHeroPhoto) ? true : formData.isFeatured;
 
       const payload = {
         title: formData.title,
@@ -185,6 +190,7 @@ export default function AdminGallery() {
         duration: formData.duration ? Number(formData.duration) : 0,
         displayOrder: displayOrderNum,
         isFeatured: featuredVal,
+        isHero: formData.isHeroPhoto,
         isActive: formData.isActive,
         beforeUrl: formData.beforeUrl,
         afterUrl: formData.afterUrl
@@ -197,6 +203,11 @@ export default function AdminGallery() {
             await mediaService.setTop4kVideo(editingMedia._id);
           } catch (_) {}
         }
+        if (formData.isHeroPhoto) {
+          try {
+            await mediaService.setHeroPhoto(editingMedia._id);
+          } catch (_) {}
+        }
         setFeedback({ type: 'success', message: 'Media asset updated successfully.' });
       } else {
         const createRes = await mediaService.createMedia(payload);
@@ -204,6 +215,11 @@ export default function AdminGallery() {
         if (formData.isTop4kSpotlight && newId) {
           try {
             await mediaService.setTop4kVideo(newId);
+          } catch (_) {}
+        }
+        if (formData.isHeroPhoto && newId) {
+          try {
+            await mediaService.setHeroPhoto(newId);
           } catch (_) {}
         }
         setFeedback({ type: 'success', message: 'New media asset uploaded successfully.' });
@@ -364,6 +380,65 @@ export default function AdminGallery() {
             <Star className="w-3.5 h-3.5 mr-1 fill-amber-500 text-amber-500" /> Featured Work
           </span>
           <p className="text-2xl font-serif font-bold text-stone-900">{totalFeatured}</p>
+        </div>
+      </div>
+
+      {/* Homepage Hero Cover Photo Management Banner */}
+      <div className="bg-gradient-to-r from-rose-50 via-rose-100/60 to-amber-50 border border-rose-300/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-center gap-3.5">
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-rose-300 shadow-sm shrink-0 bg-stone-900">
+            <img
+              src={resolveImageUrl(
+                currentHeroPhoto?.url || SALON_CONFIG.hero?.imageUrl || SALON_CONFIG.defaultMedia.photos[1]?.url,
+                DEFAULT_SALON_PLACEHOLDER
+              )}
+              alt="Current Hero Cover"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-1 left-1 bg-rose-600 text-white p-0.5 rounded-md shadow-xs">
+              <Sparkles className="w-3 h-3" />
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-rose-800">
+                Homepage Hero Cover Photo
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-200/90 text-rose-950 font-mono">
+                Active on Home
+              </span>
+            </div>
+            <h4 className="font-bold text-stone-900 text-sm truncate max-w-xs sm:max-w-md">
+              {currentHeroPhoto?.title || 'Default Enrich Bridal Artistry'}
+            </h4>
+            <p className="text-xs text-stone-600 font-light">
+              This photo is displayed prominently in the first screen hero section on your home page.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-md shadow-rose-900/15 transition-all cursor-pointer w-full sm:w-auto disabled:opacity-50">
+            {isHeroUploading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Uploading to Cloudinary...</span>
+              </>
+            ) : (
+              <>
+                <UploadCloud className="w-4 h-4" />
+                <span>Upload & Set Hero Photo</span>
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleDirectHeroUpload}
+              disabled={isHeroUploading}
+              className="hidden"
+            />
+          </label>
         </div>
       </div>
 
@@ -577,6 +652,32 @@ export default function AdminGallery() {
                         >
                           <Crown className="w-3.5 h-3.5 text-stone-400 group-hover/btn:text-amber-600 group-hover/btn:fill-amber-500 transition-colors" />
                           <span>Set as Top 4K Hero</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {item.type === 'photo' && (
+                    <div className="pt-2">
+                      {item.isHero ? (
+                        <div className="w-full py-2 px-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-bold flex items-center justify-between shadow-2xs">
+                          <span className="flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-rose-600 fill-rose-500 shrink-0" />
+                            <span>Active Hero Cover</span>
+                          </span>
+                          <span className="text-[10px] bg-rose-200/90 text-rose-950 px-2 py-0.5 rounded-full font-mono font-bold">
+                            Homepage
+                          </span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetHeroPhoto(item._id, item.title)}
+                          className="w-full py-2 px-3 rounded-xl bg-stone-100 hover:bg-rose-50 text-stone-700 hover:text-rose-900 border border-stone-200 hover:border-rose-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer group/btn"
+                          title="Place this photo as the Homepage Hero Cover Photo"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-stone-400 group-hover/btn:text-rose-600 transition-colors" />
+                          <span>Set as Homepage Hero</span>
                         </button>
                       )}
                     </div>
@@ -812,6 +913,33 @@ export default function AdminGallery() {
                   </label>
                   <p className="text-[11px] text-amber-800/80 pl-6">
                     This video will appear as the 100% wide 4K cinematic hero at the top of the Portfolio page.
+                  </p>
+                </div>
+              )}
+
+              {/* Homepage Hero Cover Toggle for Photos */}
+              {formData.type === 'photo' && (
+                <div className="p-3.5 bg-rose-50/80 rounded-2xl border border-rose-200 space-y-2">
+                  <label className="flex items-center space-x-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isHeroPhoto}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          isHeroPhoto: e.target.checked,
+                          isFeatured: e.target.checked ? true : formData.isFeatured
+                        })
+                      }
+                      className="rounded border-rose-300 text-rose-600 focus:ring-rose-500 w-4 h-4"
+                    />
+                    <span className="font-bold text-rose-900 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+                      Set as Homepage Hero Cover Photo
+                    </span>
+                  </label>
+                  <p className="text-[11px] text-rose-800/80 pl-6">
+                    This photo will be displayed in the first screen hero section on the homepage.
                   </p>
                 </div>
               )}

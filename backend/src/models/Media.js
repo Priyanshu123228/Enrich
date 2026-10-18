@@ -78,6 +78,11 @@ const mediaSchema = new mongoose.Schema(
       default: false,
       index: true
     },
+    isHero: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
     isActive: {
       type: Boolean,
       default: true,

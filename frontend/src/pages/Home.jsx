@@ -67,6 +67,7 @@ export default function Home() {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeVideo, setActiveVideo] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
+  const [heroPhotoUrl, setHeroPhotoUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   // ---------------------------------------------------------------------------
@@ -83,15 +84,22 @@ export default function Home() {
           servicesRes,
           staffRes,
           offersRes,
-          mediaRes
+          mediaRes,
+          heroRes
         ] = await Promise.allSettled([
           serviceService.getAllServices({ limit: 50 }),
           staffService.getStaff({ limit: 12 }),
           offerService.getActiveOffers(),
-          mediaService.getFeaturedMedia()
+          mediaService.getFeaturedMedia(),
+          mediaService.getHeroPhoto()
         ]);
 
         if (!isMounted) return;
+
+        // 0. Process Homepage Hero Photo
+        if (heroRes?.status === 'fulfilled' && heroRes.value?.data?.url) {
+          setHeroPhotoUrl(heroRes.value.data.url);
+        }
 
         // 1. Process Services
         if (servicesRes.status === 'fulfilled' && servicesRes.value?.data?.services?.length > 0) {
@@ -384,7 +392,7 @@ export default function Home() {
                 <div className="relative aspect-[4/4.7] sm:aspect-[4/4.5] w-full rounded-3xl overflow-hidden border border-stone-200/90 shadow-2xl bg-stone-900 group">
                   <img
                     src={resolveImageUrl(
-                      SALON_CONFIG.hero?.imageUrl || mediaItems[1]?.url || SALON_CONFIG.defaultMedia.photos[1]?.url,
+                      heroPhotoUrl || SALON_CONFIG.hero?.imageUrl || mediaItems[1]?.url || SALON_CONFIG.defaultMedia.photos[1]?.url,
                       'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80'
                     )}
                     alt="Enrich Beauty Parlour & Aesthetic Clinic Sikar"
