@@ -68,6 +68,7 @@ export default function Home() {
   const [activeVideo, setActiveVideo] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
   const [heroPhotoUrl, setHeroPhotoUrl] = useState('');
+  const [ownerProfile, setOwnerProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // ---------------------------------------------------------------------------
@@ -85,13 +86,15 @@ export default function Home() {
           staffRes,
           offersRes,
           mediaRes,
-          heroRes
+          heroRes,
+          ownerRes
         ] = await Promise.allSettled([
           serviceService.getAllServices({ limit: 50 }),
           staffService.getStaff({ limit: 12 }),
           offerService.getActiveOffers(),
           mediaService.getFeaturedMedia(),
-          mediaService.getHeroPhoto()
+          mediaService.getHeroPhoto(),
+          mediaService.getOwnerPhoto()
         ]);
 
         if (!isMounted) return;
@@ -99,6 +102,11 @@ export default function Home() {
         // 0. Process Homepage Hero Photo
         if (heroRes?.status === 'fulfilled' && heroRes.value?.data?.url) {
           setHeroPhotoUrl(heroRes.value.data.url);
+        }
+
+        // 0b. Process Owner / About Me Photo
+        if (ownerRes?.status === 'fulfilled' && ownerRes.value?.data?.url) {
+          setOwnerProfile(ownerRes.value.data);
         }
 
         // 1. Process Services
@@ -767,12 +775,12 @@ export default function Home() {
               <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-stone-900/10 group bg-stone-900">
                 <img
                   src={resolveImageUrl(
-                    ownerProfile?.url || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=85',
-                    DEFAULT_SALON_PLACEHOLDER
+                    ownerProfile?.url || DEFAULT_AVATAR_PLACEHOLDER,
+                    DEFAULT_AVATAR_PLACEHOLDER
                   )}
                   alt={ownerProfile?.title || 'Enrich Salon Founder & Lead Cosmetologist'}
                   loading="lazy"
-                  onError={handleImageError}
+                  onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
                   className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                 />
 

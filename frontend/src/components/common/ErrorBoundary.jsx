@@ -45,6 +45,12 @@ export default class ErrorBoundary extends React.Component {
               <p className="text-xs sm:text-sm text-stone-600 font-light leading-relaxed">
                 We encountered an unexpected glitch while loading this section. Please reload or return to the main page.
               </p>
+              {this.state.error && (
+                <div className="text-left bg-stone-900 text-rose-300 p-3 rounded-xl text-xs font-mono overflow-auto max-h-48 border border-rose-900/50">
+                  <p className="font-bold text-white mb-1">{this.state.error.name}: {this.state.error.message}</p>
+                  <pre className="text-[10px] text-stone-400 whitespace-pre-wrap">{this.state.error.stack}</pre>
+                </div>
+              )}
             </div>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
