@@ -326,9 +326,9 @@ export default function Home() {
 
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-stone-900 leading-[1.08]">
-                Precision Hair, Skin &{' '}
+                Your Beauty,{' '}
                 <span className="font-normal font-serif text-rose-900">
-                  Clinical Beauty
+                  Our Artistry
                 </span>
               </h1>
 

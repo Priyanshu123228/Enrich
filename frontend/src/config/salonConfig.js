@@ -13,7 +13,7 @@ export const SALON_CONFIG = {
     shortName: 'Enrich Parlour',
     tagline: 'Hair, Makeup, Skin & Cosmetic Clinic Services in Sikar, Rajasthan',
     badge: 'First Floor, Sharda Heights, near Ramlila Maidan / Parshuram Park, Chandpol, Sikar',
-    description: 'A dedicated beauty boutique offering personalized hair color, precision styling, clinical skincare, and luxury nail services. Book your appointment online or visit our studio.',
+    description: "Discover personalized beauty and skincare services at Enrich Beauty Parlour & Cosmetic Clinic, Sikar. From expert hairstyling and professional makeup to bridal transformations, nail care, and skincare treatments, we're here to help you look and feel your best. Book your appointment and visit us in Sikar, Rajasthan.",
     establishedYear: 2018,
   },
 
