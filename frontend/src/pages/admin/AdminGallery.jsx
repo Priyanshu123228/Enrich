@@ -51,12 +51,16 @@ export default function AdminGallery() {
     isFeatured: false,
     isTop4kSpotlight: false,
     isHeroPhoto: false,
+    isOwnerPhoto: false,
     isActive: true,
     beforeUrl: '',
     afterUrl: ''
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isHeroUploading, setIsHeroUploading] = useState(false);
+  const [isOwnerUploading, setIsOwnerUploading] = useState(false);
+  const [isOwnerEditModalOpen, setIsOwnerEditModalOpen] = useState(false);
+  const [ownerEditData, setOwnerEditData] = useState({ title: '', description: '' });
 
   const photoCategories = [
     'Salon Interior',
@@ -648,6 +652,74 @@ export default function AdminGallery() {
         </div>
       </div>
 
+      {/* Founder & About Me Photo Management Banner */}
+      <div className="bg-gradient-to-r from-amber-50 via-rose-50 to-orange-50 border border-amber-300/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-center gap-3.5">
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-amber-300 shadow-sm shrink-0 bg-stone-900">
+            <img
+              src={resolveImageUrl(
+                currentOwnerPhoto?.url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
+                DEFAULT_SALON_PLACEHOLDER
+              )}
+              alt="Current Owner Portrait"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-1 left-1 bg-amber-600 text-white p-0.5 rounded-md shadow-xs">
+              <UserCheck className="w-3 h-3" />
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-900">
+                Founder & About Me Photo
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200/90 text-amber-950 font-mono">
+                Active on Home
+              </span>
+            </div>
+            <h4 className="font-bold text-stone-900 text-sm truncate max-w-xs sm:max-w-md">
+              {currentOwnerPhoto?.title || 'Pooja Sharma • Founder & Lead Cosmetologist'}
+            </h4>
+            <p className="text-xs text-stone-600 font-light line-clamp-1">
+              {currentOwnerPhoto?.description || 'Crafting Confidence, Redefining Elegance - Displayed in the About the Founder section.'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={handleOpenOwnerEditModal}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 text-xs font-semibold shadow-xs transition-all cursor-pointer"
+          >
+            <PenSquare className="w-3.5 h-3.5 text-stone-600" />
+            <span>Edit Story & Name</span>
+          </button>
+
+          <label className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-900/15 transition-all cursor-pointer w-full sm:w-auto disabled:opacity-50">
+            {isOwnerUploading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Uploading to Cloudinary...</span>
+              </>
+            ) : (
+              <>
+                <UploadCloud className="w-4 h-4" />
+                <span>Upload & Set Owner Photo</span>
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleDirectOwnerUpload}
+              disabled={isOwnerUploading}
+              className="hidden"
+            />
+          </label>
+        </div>
+      </div>
+
       {/* Active Top 4K Hero Banner Reminder */}
       {top4kVideo && (
         <div className="bg-gradient-to-r from-amber-50 via-amber-100/60 to-rose-50 border border-amber-300/80 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
@@ -1225,6 +1297,82 @@ export default function AdminGallery() {
 
             </form>
 
+          </div>
+        </div>
+      )}
+
+
+      {/* Modal: Edit Owner Story, Name & Headline */}
+      {isOwnerEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 border border-stone-200 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+                  <UserCheck className="w-4 h-4" />
+                </div>
+                <h3 className="font-serif font-bold text-lg text-stone-900">
+                  Edit Founder & About Me Section
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOwnerEditModalOpen(false)}
+                className="text-stone-400 hover:text-stone-700 p-1 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveOwnerDetails} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                  Headline / Main Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={ownerEditData.title}
+                  onChange={(e) => setOwnerEditData({ ...ownerEditData, title: e.target.value })}
+                  placeholder="e.g. Crafting Confidence, Redefining Elegance"
+                  className="w-full p-3 rounded-xl border border-stone-300 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                  Founder Story & Biography Description
+                </label>
+                <textarea
+                  rows={6}
+                  required
+                  value={ownerEditData.description}
+                  onChange={(e) => setOwnerEditData({ ...ownerEditData, description: e.target.value })}
+                  placeholder="Write your story, cosmetology expertise, salon mission..."
+                  className="w-full p-3 rounded-xl border border-stone-300 text-xs sm:text-sm leading-relaxed focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                />
+                <p className="text-[11px] text-stone-500 mt-1">
+                  Tip: Use line breaks to separate paragraphs on the homepage.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setIsOwnerEditModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 text-xs font-semibold hover:bg-stone-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-900/15 cursor-pointer disabled:opacity-50"
+                >
+                  {isSaving ? 'Saving Changes...' : 'Save & Publish on Homepage'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
