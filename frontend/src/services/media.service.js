@@ -105,6 +105,21 @@ export const mediaService = {
     return await api.get('/media/hero-photo');
   },
 
+  /**
+   * Admin: Designate a photo as the Owner / About Me Photo
+   * @param {string} id
+   */
+  setOwnerPhoto: async (id) => {
+    return await api.put(`/media/${id}/owner-photo`);
+  },
+
+  /**
+   * Public: Get current Owner / About Me Photo & Story
+   */
+  getOwnerPhoto: async () => {
+    return await api.get('/media/owner-photo');
+  },
+
   deleteMedia: async (id) => {
     return await api.delete(`/media/${id}`);
   },

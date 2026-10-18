@@ -13,7 +13,9 @@ import {
   seedDefaultMedia,
   setTop4kVideo,
   setHeroPhoto,
-  getHeroPhoto
+  getHeroPhoto,
+  setOwnerPhoto,
+  getOwnerPhoto
 } from '../controllers/media.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { authorizeRoles } from '../middlewares/role.middleware.js';
@@ -24,6 +26,7 @@ const router = Router();
 
 // Public Gallery Routes
 router.get('/hero-photo', getHeroPhoto);
+router.get('/owner-photo', getOwnerPhoto);
 router.get('/', getGalleryMedia);
 router.get('/featured', getFeaturedMedia);
 router.get('/categories', getMediaCategoriesList);
@@ -36,6 +39,7 @@ router.post('/upload', verifyJWT, authorizeRoles('admin'), uploadMedia.single('f
 router.post('/', verifyJWT, authorizeRoles('admin'), uploadMedia.single('mediaFile'), createMedia);
 router.put('/:id/top-4k', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), setTop4kVideo);
 router.put('/:id/hero-photo', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), setHeroPhoto);
+router.put('/:id/owner-photo', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), setOwnerPhoto);
 router.put('/:id', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), uploadMedia.single('mediaFile'), updateMedia);
 router.put('/:id/status', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), toggleMediaStatus);
 router.delete('/:id', verifyJWT, authorizeRoles('admin'), validateObjectId('id'), deleteMedia);

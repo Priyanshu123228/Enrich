@@ -698,3 +698,43 @@ export const getHeroPhoto = asyncHandler(async (req, res) => {
     new ApiResponse(200, heroPhoto || null, 'Current Homepage Hero Photo retrieved')
   );
 });
+
+/**
+ * @desc    Designate a photo as the Owner / About Me Photo
+ * @route   PUT /api/v1/media/:id/owner-photo
+ * @access  Private / Admin
+ */
+export const setOwnerPhoto = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const targetMedia = await Media.findById(id);
+  if (!targetMedia) {
+    throw new ApiError(404, 'Media photo not found');
+  }
+
+  // Clear isOwner on all other media items
+  await Media.updateMany(
+    { _id: { $ne: id } },
+    { $set: { isOwner: false } }
+  );
+
+  targetMedia.isOwner = true;
+  targetMedia.isActive = true;
+  await targetMedia.save();
+
+  return res.status(200).json(
+    new ApiResponse(200, targetMedia, 'Photo successfully designated as the Owner / About Me Photo')
+  );
+});
+
+/**
+ * @desc    Public: Get current Owner / About Me Photo & Description
+ * @route   GET /api/v1/media/owner-photo
+ * @access  Public
+ */
+export const getOwnerPhoto = asyncHandler(async (req, res) => {
+  const ownerPhoto = await Media.findOne({ isOwner: true, isActive: true }).lean();
+  return res.status(200).json(
+    new ApiResponse(200, ownerPhoto || null, 'Current Owner / About Me Photo retrieved')
+  );
+});

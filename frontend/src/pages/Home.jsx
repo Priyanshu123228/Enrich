@@ -751,90 +751,138 @@ export default function Home() {
         )}
       </section>
       {/* =========================================================================
-          SECTION 4: ABOUT SECTION & STATS
+          SECTION 4: OWNER PROFILE & ABOUT ME (FOUNDER SPOTLIGHT)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl border border-stone-200 p-8 sm:p-12 shadow-xs space-y-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 lg:p-12 shadow-xl shadow-stone-900/5 relative overflow-hidden">
+          
+          {/* Subtle Ambient Decorative Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-rose-100/40 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center relative z-10">
             
-            {/* Story Text */}
-            <div className="lg:col-span-7 space-y-4">
-              <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-                About Enrich
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-                Where Salon Artistry Meets Clinical Precision
-              </h2>
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-                Founded with a vision to combine modern hair styling, bespoke bridal aesthetics, and evidence-backed skincare, Enrich Beauty Parlour & Cosmetic Clinic delivers tailored transformations under strict hygiene and sterilization protocols.
-              </p>
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-                Every consultation begins with a personal assessment by our certified beauticians and cosmetic specialists to ensure your wellness, skin tone, and hair integrity are prioritized above all.
-              </p>
+            {/* Left Column: Large Owner Photo */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-stone-900/10 group bg-stone-900">
+                <img
+                  src={resolveImageUrl(
+                    ownerProfile?.url || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=85',
+                    DEFAULT_SALON_PLACEHOLDER
+                  )}
+                  alt={ownerProfile?.title || 'Enrich Salon Founder & Lead Cosmetologist'}
+                  loading="lazy"
+                  onError={handleImageError}
+                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                />
+
+                {/* Gradient vignette for text contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-90" />
+
+                {/* Floating Aesthetic Seal Badge */}
+                <div className="absolute bottom-4 left-4 right-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-white/60 shadow-lg flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-serif font-bold text-stone-900 truncate">
+                      Pooja Sharma
+                    </p>
+                    <p className="text-[11px] font-medium text-rose-700 truncate">
+                      Founder & Master Cosmetologist
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Configurable Stats Grid */}
-            <div className="lg:col-span-5 grid grid-cols-2 gap-4">
-              {SALON_CONFIG.aboutStats.map((stat, idx) => (
-                <div
-                  key={idx}
-                  className="p-5 rounded-xl bg-stone-50 border border-stone-200/80 text-center space-y-1 shadow-2xs hover:bg-stone-100/60 transition-colors"
-                >
-                  <span className="block text-2xl sm:text-3xl font-serif font-bold text-stone-900 font-mono">
-                    {stat.value}
+            {/* Right Column: Founder Story & Description */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              
+              <div className="space-y-3">
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest text-rose-800 uppercase bg-rose-50 border border-rose-200/80 shadow-2xs">
+                  <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+                  About the Founder • Enrich Sikar
+                </span>
+
+                <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-[1.15]">
+                  {ownerProfile?.title || 'Crafting Confidence, Redefining Elegance'}
+                </h2>
+
+                <p className="text-xs sm:text-sm font-semibold tracking-wider text-rose-700 uppercase">
+                  Pooja Sharma • Founder & Lead Aesthetician
+                </p>
+              </div>
+
+              {/* Story Body */}
+              <div className="text-stone-600 text-xs sm:text-sm leading-relaxed space-y-3 font-normal">
+                {ownerProfile?.description ? (
+                  ownerProfile.description.split('\n').map((paragraph, pIdx) => (
+                    <p key={pIdx}>{paragraph}</p>
+                  ))
+                ) : (
+                  <>
+                    <p>
+                      Welcome to Enrich Beauty Parlour & Cosmetic Clinic. Founded with an unwavering commitment to combining modern hair design, high-definition bridal artistry, and clinical skincare precision, my mission has always been to elevate personal confidence.
+                    </p>
+                    <p>
+                      Every treatment begins with a personal 1-on-1 assessment to understand your skin tone, hair integrity, and aesthetic aspirations. Under strict medical-grade hygiene and sterilization standards, our certified team delivers personalized beauty rituals that leave you glowing inside and out.
+                    </p>
+                  </>
+                )}
+              </div>
+
+              {/* Key Highlights / Badges */}
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 text-center">
+                  <span className="block font-serif font-bold text-lg sm:text-2xl text-stone-900">
+                    12+
                   </span>
-                  <span className="text-xs font-semibold text-stone-800 block">
-                    {stat.label}
-                  </span>
-                  <span className="text-xs text-stone-400 block">
-                    {stat.description}
+                  <span className="text-[10px] sm:text-xs text-stone-600 font-medium">
+                    Years Experience
                   </span>
                 </div>
-              ))}
+                <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 text-center">
+                  <span className="block font-serif font-bold text-lg sm:text-2xl text-stone-900">
+                    5,000+
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-stone-600 font-medium">
+                    Happy Clients
+                  </span>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 text-center">
+                  <span className="block font-serif font-bold text-lg sm:text-2xl text-stone-900">
+                    100%
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-stone-600 font-medium">
+                    Certified Hygiene
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/appointments"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs sm:text-sm font-semibold shadow-md shadow-rose-900/15 transition-all group"
+                >
+                  <Calendar className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                  Book with Our Founder
+                </Link>
+
+                <a
+                  href="https://wa.me/919667900313?text=Hi%20Pooja%2C%20I%20would%20like%20to%20consult%20with%20you%20at%20Enrich%20Beauty%20Parlour."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs sm:text-sm font-medium transition-colors"
+                >
+                  Personal WhatsApp Chat
+                </a>
+              </div>
+
             </div>
 
           </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 5: WHY CHOOSE US / STANDARDS
-          ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-            Quality Assured
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
-            Professional Care & Clean Standards
-          </h2>
-          <p className="text-xs sm:text-sm text-stone-500">
-            We hold ourselves to rigorous clinical hygiene, professional grade ingredients, and continuous specialist education.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SALON_CONFIG.standards.map((standard, idx) => {
-            const IconComponent = ICON_MAP[standard.icon] || ShieldCheck;
-            return (
-              <div
-                key={idx}
-                className="bg-white rounded-xl border border-stone-200 p-6 space-y-3 shadow-xs hover:border-stone-300 transition-colors flex flex-col justify-between"
-              >
-                <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-100">
-                  <IconComponent className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-serif font-bold text-sm text-stone-900">
-                    {standard.title}
-                  </h3>
-                  <p className="text-xs text-stone-500 leading-relaxed mt-1 font-light">
-                    {standard.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
         </div>
       </section>
 

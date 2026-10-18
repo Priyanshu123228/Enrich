@@ -18,7 +18,9 @@ import {
   Layers,
   Clock,
   Sparkles,
-  Crown
+  Crown,
+  UserCheck,
+  PenSquare
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
@@ -64,6 +66,7 @@ export default function AdminGallery() {
     'Nails',
     'Skin Care',
     'Bridal',
+    'About Me',
     'Before & After',
     'Events',
     'Offers'
@@ -322,6 +325,134 @@ export default function AdminGallery() {
   const currentHeroPhoto = useMemo(() => {
     return mediaList.find((m) => m.isHero && m.type === 'photo');
   }, [mediaList]);
+
+
+  // Dynamically identify the designated Homepage Owner / About Me Photo
+  const currentOwnerPhoto = useMemo(() => {
+    return mediaList.find((m) => m.isOwner && m.type === 'photo');
+  }, [mediaList]);
+
+  // Open Edit Modal for Owner Bio & Name
+  const handleOpenOwnerEditModal = () => {
+    setOwnerEditData({
+      title: currentOwnerPhoto?.title || 'Crafting Confidence, Redefining Elegance',
+      description: currentOwnerPhoto?.description || 'Welcome to Enrich Beauty Parlour & Cosmetic Clinic. Founded with an unwavering commitment to combining modern hair design, high-definition bridal artistry, and clinical skincare precision...'
+    });
+    setIsOwnerEditModalOpen(true);
+  };
+
+  // Save Owner Bio & Name
+  const handleSaveOwnerDetails = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    setFeedback({ type: '', message: '' });
+
+    try {
+      if (currentOwnerPhoto) {
+        await mediaService.updateMedia(currentOwnerPhoto._id, {
+          title: ownerEditData.title,
+          description: ownerEditData.description,
+          category: 'About Me',
+          isOwner: true
+        });
+      } else {
+        await mediaService.createMedia({
+          title: ownerEditData.title,
+          description: ownerEditData.description,
+          type: 'photo',
+          category: 'About Me',
+          url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=85',
+          thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=85',
+          isOwner: true,
+          isActive: true
+        });
+      }
+
+      setFeedback({
+        type: 'success',
+        message: 'Founder bio, headline, and details saved successfully!'
+      });
+      setIsOwnerEditModalOpen(false);
+      await fetchAdminMedia();
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || err.message || 'Failed to update owner profile details'
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Direct 1-Click Upload for Owner / About Me Photo
+  const handleDirectOwnerUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsOwnerUploading(true);
+    setFeedback({ type: '', message: '' });
+
+    try {
+      // 1. Upload to Cloudinary
+      const uploadRes = await mediaService.uploadFile(file);
+      const uploadedUrl = uploadRes?.data?.url || uploadRes?.data?.secure_url;
+      if (!uploadedUrl) {
+        throw new Error('Failed to retrieve uploaded image URL');
+      }
+
+      // 2. Create or update media entry designated as Owner Photo
+      const payload = {
+        title: currentOwnerPhoto?.title || 'Crafting Confidence, Redefining Elegance',
+        description: currentOwnerPhoto?.description || 'Welcome to Enrich Beauty Parlour & Cosmetic Clinic. Founded with an unwavering commitment to combining modern hair design, high-definition bridal artistry, and clinical skincare precision, my mission has always been to elevate personal confidence.',
+        type: 'photo',
+        category: 'About Me',
+        url: uploadedUrl,
+        thumbnail: uploadedUrl,
+        isOwner: true,
+        isFeatured: true,
+        isActive: true,
+        displayOrder: 0
+      };
+
+      const createRes = await mediaService.createMedia(payload);
+      const newId = createRes?.data?._id || createRes?.data?.media?._id;
+      if (newId) {
+        await mediaService.setOwnerPhoto(newId);
+      }
+
+      setFeedback({
+        type: 'success',
+        message: 'Owner photo uploaded and updated on homepage successfully!'
+      });
+      await fetchAdminMedia();
+    } catch (err) {
+      console.error('Owner direct upload failed:', err);
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || err.message || 'Failed to upload owner image'
+      });
+    } finally {
+      setIsOwnerUploading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  // 1-Click Action to designate any existing gallery photo as Owner Photo
+  const handleSetOwnerPhoto = async (id, title) => {
+    try {
+      await mediaService.setOwnerPhoto(id);
+      setFeedback({
+        type: 'success',
+        message: '"' + title + '" is now designated as the Owner / About Me Photo on the homepage!'
+      });
+      await fetchAdminMedia();
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to designate owner photo'
+      });
+    }
+  };
 
   // Direct 1-Click Upload for Homepage Hero Photo
   const handleDirectHeroUpload = async (e) => {
