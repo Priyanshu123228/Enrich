@@ -298,7 +298,7 @@ export const createMedia = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Either upload a media file or provide a valid media URL');
   }
 
-  const isHeroVal = isHero === 'true' || isHero === true;
+  const isHeroVal = Boolean(req.body?.isHero === 'true' || req.body?.isHero === true);
   if (isHeroVal) {
     await Media.updateMany({}, { $set: { isHero: false } });
   }
