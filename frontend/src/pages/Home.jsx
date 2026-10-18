@@ -299,14 +299,14 @@ export default function Home() {
       {/* =========================================================================
           SECTION 1: HERO SECTION (LUMINOUS LUXURY ATELIER)
           ========================================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 py-16 sm:py-24 border-b border-stone-200/90">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 py-12 sm:py-20 lg:py-24 border-b border-stone-200/90">
         {/* Soft Ambient Radial Lights */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-200/35 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 -right-32 w-[30rem] h-[30rem] bg-amber-200/25 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#1c1917_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
@@ -317,32 +317,32 @@ export default function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="View Enrich Salon location on Google Maps"
-                className="inline-flex items-center space-x-2 py-1 text-stone-600 hover:text-stone-900 text-xs font-semibold tracking-wider uppercase transition-colors cursor-pointer group max-w-full"
+                className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-stone-200/90 hover:border-rose-300 text-stone-700 hover:text-stone-900 text-xs font-semibold tracking-wide transition-all shadow-2xs group cursor-pointer max-w-full"
               >
-                <MapPin className="w-3.5 h-3.5 text-rose-800 shrink-0" />
-                <span className="truncate max-w-xs sm:max-w-md md:max-w-lg">{SALON_CONFIG.business.badge}</span>
-                <ArrowRight className="w-3 h-3 text-stone-400 group-hover:text-stone-900 group-hover:translate-x-0.5 transition-all shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-rose-700 shrink-0" />
+                <span className="truncate">Sharda Heights, Chandpol, Sikar</span>
+                <ArrowRight className="w-3 h-3 text-stone-400 group-hover:text-rose-700 group-hover:translate-x-0.5 transition-all shrink-0" />
               </a>
 
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-stone-900 leading-[1.08]">
                 Your Beauty,{' '}
-                <span className="font-normal font-serif text-rose-900">
+                <span className="font-normal font-serif text-rose-900 italic">
                   Our Artistry
                 </span>
               </h1>
 
               {/* Short Business Description */}
-              <p className="text-base sm:text-lg text-stone-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                {SALON_CONFIG.business.description}
+              <p className="text-base sm:text-lg text-stone-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
+                Discover personalized beauty and clinical skincare in Sikar. From expert hairstyling and HD bridal transformations to rejuvenating skincare rituals, we're here to help you look and feel radiant.
               </p>
 
-              {/* CTAs */}
-              <div className="pt-3 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              {/* Clean Primary Actions */}
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
                 <Link
                   to="/book"
                   id="hero-book-cta"
-                  className="btn-rose w-full sm:w-auto px-8 py-3.5 text-sm font-bold"
+                  className="btn-rose w-full sm:w-auto px-8 py-3.5 text-sm font-bold shadow-md shadow-rose-950/15"
                 >
                   <Calendar className="w-4 h-4 mr-2 text-rose-200" />
                   Book Appointment
@@ -353,116 +353,88 @@ export default function Home() {
                   id="hero-services-cta"
                   className="btn-secondary w-full sm:w-auto px-7 py-3.5 text-sm"
                 >
-                  View Services
+                  View Services & Treatments
                   <ArrowRight className="w-4 h-4 ml-2 text-stone-600" />
                 </a>
               </div>
 
-              {/* Salon Hours & Concierge Info Badge */}
-              <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left border-t border-stone-200/80 max-w-xl mx-auto lg:mx-0">
-                <div className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white p-3 rounded-xl border border-stone-200 shadow-xs">
-                  <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-stone-900 block">Salon Opening Hours</span>
-                    <span className="text-stone-500 text-xs">{SALON_CONFIG.hours.weekday}</span>
-                  </div>
+              {/* Feather-Light Status & Contact Strip */}
+              <div className="pt-3 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-stone-600 border-t border-stone-200/80 max-w-lg mx-auto lg:mx-0">
+                <div className="flex items-center gap-1.5 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Open Today: {SALON_CONFIG.hours.weekday}</span>
                 </div>
+                <span className="hidden sm:inline text-stone-300">•</span>
                 <a
                   href={SALON_CONFIG.contact.phoneTel}
-                  className="flex items-start space-x-2.5 text-xs text-stone-700 bg-white/90 hover:bg-white p-3 rounded-xl border border-stone-200/80 hover:border-rose-300 shadow-xs transition-colors group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600"
+                  className="inline-flex items-center gap-1.5 font-semibold text-stone-700 hover:text-rose-700 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 group-hover:bg-rose-100 flex items-center justify-center shrink-0 transition-colors">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-stone-900 block group-hover:text-rose-700 transition-colors">Call Direct Concierge</span>
-                    <span className="text-stone-600 font-medium text-xs">
-                      {SALON_CONFIG.contact.phone}
-                    </span>
-                  </div>
+                  <Phone className="w-3.5 h-3.5 text-rose-700" />
+                  <span>{SALON_CONFIG.contact.phone}</span>
                 </a>
               </div>
 
             </div>
 
-            {/* Right Card: Featured Salon Menu */}
+            {/* Right Column: Luxury Editorial Showcase with Floating Social Proof */}
             <div className="lg:col-span-5 w-full">
-              <div className="rounded-xl border border-stone-200 bg-white p-6 sm:p-8 shadow-xs space-y-5 relative">
+              <div className="relative mx-auto max-w-md lg:max-w-none">
                 
-                <div className="flex items-center justify-between border-b border-stone-100 pb-4 relative z-10">
-                  <div>
-                    <span className="text-xs font-bold tracking-wider text-rose-700">
-                      Featured Salon Menu
-                    </span>
-                    <h2 className="text-lg font-serif font-bold text-stone-900 mt-0.5">
-                      Curated Signature Treatments
-                    </h2>
+                {/* Visual Frame */}
+                <div className="relative aspect-[4/4.7] sm:aspect-[4/4.5] w-full rounded-3xl overflow-hidden border border-stone-200/90 shadow-2xl bg-stone-900 group">
+                  <img
+                    src={resolveImageUrl(
+                      mediaItems[1]?.url || SALON_CONFIG.defaultMedia.photos[1]?.url,
+                      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80'
+                    )}
+                    alt="Enrich Beauty Parlour & Aesthetic Clinic Sikar"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                    onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-stone-950/20" />
+
+                  {/* Floating Google Rating Glass Badge */}
+                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-stone-200/80 shadow-lg flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200/60 shrink-0">
+                      <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-bold text-stone-900 leading-tight">4.9★ Google Rated</p>
+                      <p className="text-[10px] text-stone-500 font-medium">510+ Verified Client Reviews</p>
+                    </div>
                   </div>
-                  <div className="w-9 h-9 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shadow-2xs">
-                    <Sparkles className="w-4 h-4" />
+
+                  {/* Floating Aesthetic Clinic Badge */}
+                  <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-stone-200/80 shadow-lg flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-200/60 shrink-0">
+                      <Sparkles className="w-4 h-4 text-rose-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-bold text-stone-900 leading-tight">Aesthetic Clinic</p>
+                      <p className="text-[10px] text-stone-500 font-medium">Certified Specialists</p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Dynamic Featured Services List */}
-                <div className="space-y-3 relative z-10">
-                  {heroFeaturedServices.map((service, idx) => (
-                    <div
-                      key={service._id || idx}
-                      className="p-3.5 rounded-2xl bg-stone-50/90 hover:bg-rose-50/40 border border-stone-200/70 hover:border-rose-200 transition-all duration-300 flex items-center justify-between gap-3 group shadow-2xs hover:shadow-xs"
+                {/* Lightweight Quick Category Pills */}
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-3.5">
+                  {[
+                    { label: '👰 Royal Bridal', cat: 'Bridal' },
+                    { label: '✨ Hydrafacial & Skin', cat: 'Skin' },
+                    { label: '💇 Hair Atelier', cat: 'Hair' },
+                    { label: '💅 Nail Artistry', cat: 'Nails' }
+                  ].map((item) => (
+                    <a
+                      key={item.label}
+                      href="#services"
+                      onClick={() => setActiveCategory(item.cat)}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-rose-700 border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
                     >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs font-bold text-rose-800 px-2.5 py-0.5 rounded-full bg-rose-100 border border-rose-200 uppercase tracking-wide">
-                            {service.category || 'Special'}
-                          </span>
-                          <span className="text-xs text-stone-500 flex items-center">
-                            <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
-                            {service.duration || 45} mins
-                          </span>
-                        </div>
-                        <h3 className="text-xs sm:text-sm font-bold text-stone-900 truncate group-hover:text-rose-700 transition-colors mt-1">
-                          {service.name}
-                        </h3>
-                        <p className="text-xs text-stone-500 line-clamp-1 mt-0.5 font-light">
-                          {service.description || 'Specialized clinical and aesthetic service.'}
-                        </p>
-                      </div>
-
-                      <div className="text-right shrink-0 flex flex-col items-end justify-center pl-2">
-                        {isAuthenticated ? (
-                          <span className="text-sm font-bold text-stone-900 font-serif">
-                            {SALON_CONFIG.currency.symbol}{service.price}
-                          </span>
-                        ) : (
-                          <Link
-                            to="/login?redirect=/#services"
-                            className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-full border border-rose-200/80 transition-colors whitespace-nowrap"
-                          >
-                            <Lock className="w-2.5 h-2.5" />
-                            <span>Sign in</span>
-                          </Link>
-                        )}
-                        <Link
-                          to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
-                          className="btn-primary px-3 py-1 text-xs rounded-md mt-1"
-                        >
-                          Book
-                          <ArrowRight className="w-3 h-3 ml-0.5" />
-                        </Link>
-                      </div>
-                    </div>
+                      {item.label}
+                    </a>
                   ))}
                 </div>
 
-                <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500 relative z-10">
-                  <span className="text-xs">Custom consultations available</span>
-                  <Link to="/services" className="text-rose-700 font-bold hover:text-rose-800 flex items-center gap-1 transition-colors">
-                    Full Price List
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
               </div>
             </div>
 
