@@ -318,6 +318,81 @@ export default function AdminGallery() {
     }
   };
 
+  // Dynamically identify the designated Homepage Hero Cover Photo
+  const currentHeroPhoto = useMemo(() => {
+    return mediaList.find((m) => m.isHero && m.type === 'photo');
+  }, [mediaList]);
+
+  // Direct 1-Click Upload for Homepage Hero Photo
+  const handleDirectHeroUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsHeroUploading(true);
+    setFeedback({ type: '', message: '' });
+
+    try {
+      // 1. Upload directly to Cloudinary
+      const uploadRes = await mediaService.uploadFile(file);
+      const uploadedUrl = uploadRes?.data?.url || uploadRes?.data?.secure_url;
+      if (!uploadedUrl) {
+        throw new Error('Failed to retrieve uploaded image URL');
+      }
+
+      // 2. Create media entry designated as Homepage Hero
+      const payload = {
+        title: file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ') || 'Homepage Hero Cover Photo',
+        description: 'Designated Homepage Hero Cover Photo for Enrich Beauty Atelier',
+        type: 'photo',
+        category: 'Bridal',
+        url: uploadedUrl,
+        thumbnail: uploadedUrl,
+        isHero: true,
+        isFeatured: true,
+        isActive: true,
+        displayOrder: 0
+      };
+
+      const createRes = await mediaService.createMedia(payload);
+      const newId = createRes?.data?._id || createRes?.data?.media?._id;
+      if (newId) {
+        await mediaService.setHeroPhoto(newId);
+      }
+
+      setFeedback({
+        type: 'success',
+        message: '🎉 New Homepage Hero Cover Photo uploaded and activated successfully!'
+      });
+      await fetchAdminMedia();
+    } catch (err) {
+      console.error('Hero direct upload failed:', err);
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || err.message || 'Failed to upload hero image'
+      });
+    } finally {
+      setIsHeroUploading(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  // 1-Click Action to designate any existing gallery photo as Homepage Hero
+  const handleSetHeroPhoto = async (id, title) => {
+    try {
+      await mediaService.setHeroPhoto(id);
+      setFeedback({
+        type: 'success',
+        message: `"${title}" is now designated as the Homepage Hero Cover Photo!`
+      });
+      await fetchAdminMedia();
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to designate hero photo'
+      });
+    }
+  };
+
   // Stats KPI counts
   const totalPhotos = mediaList.filter((m) => m.type === 'photo').length;
   const totalVideos = mediaList.filter((m) => m.type === 'video').length;
