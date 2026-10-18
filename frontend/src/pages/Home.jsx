@@ -388,15 +388,15 @@ export default function Home() {
             <div className="lg:col-span-5 w-full">
               <div className="relative mx-auto max-w-md lg:max-w-none">
                 
-                {/* Visual Frame */}
-                <div className="relative aspect-[4/4.7] sm:aspect-[4/4.5] w-full rounded-3xl overflow-hidden border border-stone-200/90 shadow-2xl bg-stone-900 group">
+                {/* Visual Frame - Complete Image Uncropped */}
+                <div className="relative w-full rounded-3xl overflow-hidden border border-stone-200/90 shadow-2xl bg-stone-900/5 group flex items-center justify-center">
                   <img
                     src={resolveImageUrl(
                       heroPhotoUrl || SALON_CONFIG.hero?.imageUrl || mediaItems[1]?.url || SALON_CONFIG.defaultMedia.photos[1]?.url,
                       'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80'
                     )}
                     alt="Enrich Beauty Parlour & Aesthetic Clinic Sikar"
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-auto block rounded-3xl object-contain group-hover:scale-[1.02] transition-transform duration-500"
                     onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                   />
                 </div>
