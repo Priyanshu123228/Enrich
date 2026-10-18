@@ -7,6 +7,13 @@
  */
 
 export const SALON_CONFIG = {
+  // Hero Section Visual
+  hero: {
+    // 💡 Paste your photo URL here (online link, Cloudinary URL, or local public path like '/hero.jpg')
+    imageUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80',
+    altText: 'Enrich Beauty Parlour & Aesthetic Clinic Sikar',
+  },
+
   // Business Identity
   business: {
     name: 'Enrich Ladies Beauty Parlor',
