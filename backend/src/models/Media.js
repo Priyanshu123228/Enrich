@@ -9,6 +9,7 @@ const mediaCategories = [
   'Nails',
   'Skin Care',
   'Bridal',
+  'About Me',
   'Before & After',
   'Events',
   'Offers',
