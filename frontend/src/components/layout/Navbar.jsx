@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   Scissors,
@@ -27,6 +27,41 @@ import {
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const userDropdownRef = useRef(null);
+  const location = useLocation();
+
+  // Automatically close dropdown on route change
+  useEffect(() => {
+    setUserDropdownOpen(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname, location.search]);
+
+  // Close dropdown when clicking anywhere outside or pressing Escape
+  useEffect(() => {
+    if (!userDropdownOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [userDropdownOpen]);
 
   const { user, isAuthenticated, logout } = useAuth();
 
@@ -118,7 +153,7 @@ export default function Navbar() {
           {/* Right Action CTA & User Menu */}
           <div className="hidden lg:flex items-center space-x-3">
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="relative" ref={userDropdownRef}>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center space-x-2 px-3.5 py-2 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-800 text-xs font-semibold transition-all shadow-2xs cursor-pointer"
