@@ -399,48 +399,35 @@ export default function Home() {
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                     onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-stone-950/20" />
-
-                  {/* Floating Google Rating Glass Badge */}
-                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-stone-200/80 shadow-lg flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200/60 shrink-0">
-                      <Star className="w-4 h-4 fill-amber-400 text-amber-500" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-bold text-stone-900 leading-tight">4.9★ Google Rated</p>
-                      <p className="text-[10px] text-stone-500 font-medium">510+ Verified Client Reviews</p>
-                    </div>
-                  </div>
-
-                  {/* Floating Aesthetic Clinic Badge */}
-                  <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-stone-200/80 shadow-lg flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center border border-rose-200/60 shrink-0">
-                      <Sparkles className="w-4 h-4 text-rose-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-bold text-stone-900 leading-tight">Aesthetic Clinic</p>
-                      <p className="text-[10px] text-stone-500 font-medium">Certified Specialists</p>
-                    </div>
-                  </div>
                 </div>
 
-                {/* Lightweight Quick Category Pills */}
-                <div className="flex flex-wrap items-center justify-center gap-2 pt-3.5">
-                  {[
-                    { label: '👰 Royal Bridal', cat: 'Bridal' },
-                    { label: '✨ Hydrafacial & Skin', cat: 'Skin' },
-                    { label: '💇 Hair Atelier', cat: 'Hair' },
-                    { label: '💅 Nail Artistry', cat: 'Nails' }
-                  ].map((item) => (
-                    <a
-                      key={item.label}
-                      href="#services"
-                      onClick={() => setActiveCategory(item.cat)}
-                      className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-rose-700 border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
-                    >
-                      {item.label}
-                    </a>
-                  ))}
+                {/* Below Photo: Social Proof Review & Category Pills */}
+                <div className="space-y-3 pt-4 text-center">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 border border-stone-200/90 shadow-2xs text-xs">
+                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                    <span className="font-bold text-stone-900">4.9★ Google Rated</span>
+                    <span className="text-stone-300">•</span>
+                    <span className="text-stone-500 text-[11px]">510+ Verified Client Reviews</span>
+                  </div>
+
+                  {/* Lightweight Quick Category Pills */}
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {[
+                      { label: '👰 Royal Bridal', cat: 'Bridal' },
+                      { label: '✨ Hydrafacial & Skin', cat: 'Skin' },
+                      { label: '💇 Hair Atelier', cat: 'Hair' },
+                      { label: '💅 Nail Artistry', cat: 'Nails' }
+                    ].map((item) => (
+                      <a
+                        key={item.label}
+                        href="#services"
+                        onClick={() => setActiveCategory(item.cat)}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-rose-700 border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+                      >
+                        {item.label}
+                      </a>
+                    ))}
+                  </div>
                 </div>
 
               </div>
