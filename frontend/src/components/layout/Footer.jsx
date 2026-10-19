@@ -68,7 +68,7 @@ export default function Footer() {
   const status = getSalonStatus();
 
   return (
-    <footer className="relative bg-gradient-to-b from-[#FAF7F2] via-[#F6F1EA] to-[#EFE7DC] text-stone-700 border-t border-stone-200/90 pt-14 pb-10 overflow-hidden">
+    <footer className="relative bg-gradient-to-b from-[#FAF7F2] via-[#F6F1EA] to-[#EFE7DC] text-stone-700 border-t border-stone-200/90 pt-14 pb-24 md:pb-10 overflow-hidden">
       
       {/* Decorative Warm Ambient Glow */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-rose-200/20 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
