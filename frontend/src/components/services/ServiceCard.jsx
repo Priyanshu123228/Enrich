@@ -6,13 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { customerService } from '../../services/customer.service';
 
 export default function ServiceCard({ service, onBook }) {
-  const isBridalOrConsult =
-    service?.category?.toLowerCase() === 'bridal' ||
-    service?.isBridal ||
-    service?.priceOnConsultation ||
-    !service?.price ||
-    service?.price === 0;
-  const { isAuthenticated } = useAuth();
+    const { isAuthenticated } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -123,31 +117,19 @@ export default function ServiceCard({ service, onBook }) {
       {/* Card Footer Actions */}
       <div className="p-5 pt-0 border-t border-stone-100 mt-2 flex items-center justify-between gap-2">
         <div>
-          {isBridalOrConsult ? (
-            <div>
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-                <Sparkles className="w-3 h-3 text-amber-600" />
-                Price on Consultation
+          <div className="flex items-baseline space-x-1.5">
+            <span className="text-xl font-bold font-serif text-stone-900">
+              ₹{service.discountPrice > 0 ? service.discountPrice : (service.price > 0 ? service.price : 'Custom')}
+            </span>
+            {service.discountPrice > 0 && service.price > 0 && (
+              <span className="text-xs text-stone-400 line-through">
+                ₹{service.price}
               </span>
-              <span className="text-[11px] text-stone-500 block mt-0.5">Bespoke Bridal Tier</span>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-baseline space-x-1.5">
-                <span className="text-xl font-bold font-serif text-stone-900">
-                  ₹{service.discountPrice > 0 ? service.discountPrice : service.price}
-                </span>
-                {service.discountPrice > 0 && (
-                  <span className="text-xs text-stone-400 line-through">
-                    ₹{service.price}
-                  </span>
-                )}
-              </div>
-              <span className="text-xs text-stone-500 uppercase tracking-wider block">
-                Standard Pricing
-              </span>
-            </>
-          )}
+            )}
+          </div>
+          <span className="text-xs text-stone-500 uppercase tracking-wider block">
+            Standard Pricing
+          </span>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -161,9 +143,7 @@ export default function ServiceCard({ service, onBook }) {
           </Link>
           <a
             href={`https://wa.me/919667900313?text=${encodeURIComponent(
-              isBridalOrConsult
-                ? `Hi Enrich Salon, I would like to book a consultation for the bespoke Bridal package: ${service.name}. Could we schedule an appointment?`
-                : `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
+              `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

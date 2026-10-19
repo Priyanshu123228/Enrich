@@ -21,13 +21,7 @@ export default function ServiceDetail() {
   const { id } = useParams();
 
   const [service, setService] = useState(null);
-  const isBridalOrConsult =
-    service?.category?.toLowerCase() === 'bridal' ||
-    service?.isBridal ||
-    service?.priceOnConsultation ||
-    !service?.price ||
-    service?.price === 0;
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -210,46 +204,29 @@ export default function ServiceDetail() {
             </div>
 
             {/* Pricing Section */}
-            {isBridalOrConsult ? (
-              <div className="p-4 bg-gradient-to-br from-amber-50/90 via-rose-50/40 to-stone-50 rounded-2xl border border-amber-200 shadow-xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-600" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-amber-900">Bespoke Bridal Tier</span>
-                  </div>
-                  <span className="text-xs font-bold text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300/70">
-                    Price on Consultation
+            <div className="flex items-baseline justify-between">
+              <div>
+                <p className="text-[11px] text-stone-500 uppercase tracking-wider">Service Fee</p>
+                <div className="flex items-baseline space-x-2 mt-0.5">
+                  <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+                    ₹{service.discountPrice > 0 ? service.discountPrice : (service.price > 0 ? service.price : 'Custom')}
                   </span>
+                  {service.discountPrice > 0 && service.price > 0 && (
+                    <span className="text-xs text-stone-400 line-through">
+                      ₹{service.price}
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs text-stone-600 leading-relaxed font-light">
-                  Bridal artistry is tailored exclusively to your wedding attire, jewelry setting, hair texture, and skin undertones. We provide personalized quotes upon consultation.
+              </div>
+
+              <div className="text-right">
+                <p className="text-[11px] text-stone-500 uppercase tracking-wider">Duration</p>
+                <p className="text-sm font-semibold text-stone-800 mt-0.5 flex items-center justify-end">
+                  <Clock className="w-3.5 h-3.5 mr-1 text-rose-700" />
+                  {service.duration} Minutes
                 </p>
               </div>
-            ) : (
-              <div className="flex items-baseline justify-between">
-                <div>
-                  <p className="text-[11px] text-stone-500 uppercase tracking-wider">Service Fee</p>
-                  <div className="flex items-baseline space-x-2 mt-0.5">
-                    <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                      ₹{service.discountPrice > 0 ? service.discountPrice : service.price}
-                    </span>
-                    {service.discountPrice > 0 && (
-                      <span className="text-xs text-stone-400 line-through">
-                        ₹{service.price}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-[11px] text-stone-500 uppercase tracking-wider">Duration</p>
-                  <p className="text-sm font-semibold text-stone-800 mt-0.5 flex items-center justify-end">
-                    <Clock className="w-3.5 h-3.5 mr-1 text-rose-700" />
-                    {service.duration} Minutes
-                  </p>
-                </div>
-              </div>
-            )}
+            </div>
 
             {/* Meta summary badges */}
             <div className="grid grid-cols-2 gap-3 py-3 border-y border-stone-100 text-xs text-stone-600">
@@ -267,9 +244,7 @@ export default function ServiceDetail() {
             <div className="space-y-2.5 pt-2">
               <a
                 href={`https://wa.me/919667900313?text=${encodeURIComponent(
-                  isBridalOrConsult
-                    ? `Hi Enrich Salon, I would like to schedule a bespoke bridal consultation for "${service.name}". Please let me know available slots.`
-                    : `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
+                  `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

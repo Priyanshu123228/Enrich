@@ -668,13 +668,7 @@ export default function Home() {
         ) : filteredServices.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredServices.map((service, idx) => {
-              const isBridalOrConsult =
-                service.category?.toLowerCase() === 'bridal' ||
-                service.isBridal ||
-                service.priceOnConsultation ||
-                !service.price ||
-                service.price === 0;
-              const imageUrl =
+                            const imageUrl =
                 service.images?.[0]?.url ||
                 service.image ||
                 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
@@ -710,29 +704,22 @@ export default function Home() {
                           <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
                           {service.duration || 45} mins
                         </span>
-                        {isBridalOrConsult ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs">
-                            <Sparkles className="w-2.5 h-2.5 text-amber-600" />
-                            <span>Price on Consultation</span>
-                          </span>
-                        ) : (
-                          <div className="flex items-baseline gap-1.5 font-mono">
-                            {service.discountPrice && service.discountPrice < service.price ? (
-                              <>
-                                <span className="text-sm font-bold text-stone-900">
-                                  {SALON_CONFIG.currency.symbol}{service.discountPrice}
-                                </span>
-                                <span className="text-xs text-stone-400 line-through">
-                                  {SALON_CONFIG.currency.symbol}{service.price}
-                                </span>
-                              </>
-                            ) : (
+                        <div className="flex items-baseline gap-1.5 font-mono">
+                          {service.discountPrice && service.discountPrice < service.price ? (
+                            <>
                               <span className="text-sm font-bold text-stone-900">
+                                {SALON_CONFIG.currency.symbol}{service.discountPrice}
+                              </span>
+                              <span className="text-xs text-stone-400 line-through">
                                 {SALON_CONFIG.currency.symbol}{service.price}
                               </span>
-                            )}
-                          </div>
-                        )}
+                            </>
+                          ) : (
+                            <span className="text-sm font-bold text-stone-900">
+                              {SALON_CONFIG.currency.symbol}{service.price || 'Custom'}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-1">
@@ -749,9 +736,7 @@ export default function Home() {
                   <div className="p-5 pt-0 border-t border-stone-100 mt-2 space-y-2">
                     <a
                       href={`https://wa.me/919667900313?text=${encodeURIComponent(
-                        isBridalOrConsult
-                          ? `Hi Enrich Salon, I would like to book a consultation for the bespoke Bridal package: ${service.name}. Could we schedule an appointment?`
-                          : `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
+                        `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
