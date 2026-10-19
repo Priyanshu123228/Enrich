@@ -15,7 +15,7 @@ async function testSms() {
 
   try {
     const res = await smsService.sendPhoneOTP({
-      phone: '9024659116',
+      phone: '9810766615',
       otp: '482731',
       userName: 'Priyanshu'
     });

@@ -57,7 +57,7 @@ export default function Home() {
   const [services, setServices] = useState([]);
   const [staffList, setStaffList] = useState([]);
   const [offers, setOffers] = useState([]);
-    const [mediaItems, setMediaItems] = useState({ photos: [], videos: [], transformations: [], all: [] });
+  const [mediaItems, setMediaItems] = useState({ photos: [], videos: [], transformations: [], all: [] });
 
   // ---------------------------------------------------------------------------
   // UI & Filter States
@@ -311,7 +311,7 @@ export default function Home() {
         url="/"
       />
 
-      
+
       {/* =========================================================================
           SECTION 1: HERO SECTION (LUMINOUS LUXURY ATELIER)
           ========================================================================= */}
@@ -320,13 +320,13 @@ export default function Home() {
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-200/35 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 -right-32 w-[30rem] h-[30rem] bg-amber-200/25 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#1c1917_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            
+
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              
+
               {/* Location Masthead Kicker */}
               <a
                 href={SALON_CONFIG.contact.googleMapsUrl}
@@ -395,7 +395,7 @@ export default function Home() {
             {/* Right Column: Luxury Editorial Showcase with Floating Social Proof */}
             <div className="lg:col-span-5 w-full">
               <div className="relative mx-auto max-w-md lg:max-w-none">
-                
+
                 {/* Visual Frame - Complete Image Uncropped */}
                 <div className="relative w-full rounded-3xl overflow-hidden border border-stone-200/90 shadow-2xl bg-stone-900/5 group flex items-center justify-center">
                   <img
@@ -450,7 +450,7 @@ export default function Home() {
           ========================================================================= */}
       <section className="w-full bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-16 sm:py-24 lg:py-28 border-y border-stone-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-stone-200/90 pb-6 sm:pb-7">
             <div className="space-y-2">
               <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
@@ -482,11 +482,10 @@ export default function Home() {
                   key={cat}
                   type="button"
                   onClick={() => setActiveGalleryCategory(cat)}
-                  className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                    isActive
-                      ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
-                      : 'bg-white text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200/90 shadow-2xs hover:shadow-xs'
-                  }`}
+                  className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${isActive
+                    ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
+                    : 'bg-white text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200/90 shadow-2xs hover:shadow-xs'
+                    }`}
                 >
                   {cat}
                 </button>
@@ -560,7 +559,7 @@ export default function Home() {
                         <span className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white/95 border border-stone-200 text-stone-800 backdrop-blur-xs shadow-xs">
                           {item.category || 'Studio'}
                         </span>
-                        
+
                         {isVideo && (
                           <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-600 text-white flex items-center shadow-xs">
                             <Video className="w-3 h-3 mr-1.5" />
@@ -631,23 +630,22 @@ export default function Home() {
         {/* Category Tabs & Explore All Link Unified Row (Issue #10) */}
         <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pb-2">
           <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
-          {serviceCategories.map((cat) => {
-            const isActive = activeServiceCategory.toLowerCase() === cat.toLowerCase();
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveServiceCategory(cat)}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
-                  isActive
+            {serviceCategories.map((cat) => {
+              const isActive = activeServiceCategory.toLowerCase() === cat.toLowerCase();
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveServiceCategory(cat)}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${isActive
                     ? 'bg-stone-900 text-white shadow-xs'
                     : 'bg-white text-stone-600 hover:text-stone-900 hover:bg-stone-100 border border-stone-200'
-                }`}
-              >
-                {cat}
-              </button>
-            );
-          })}
+                    }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
 
           <Link
@@ -763,13 +761,13 @@ export default function Home() {
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 lg:p-12 shadow-xl shadow-stone-900/5 relative overflow-hidden">
-          
+
           {/* Subtle Ambient Decorative Glow */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-rose-100/40 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center relative z-10">
-            
+
             {/* Left Column: Large Owner Photo */}
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-stone-900/10 group bg-stone-900">
@@ -806,7 +804,7 @@ export default function Home() {
 
             {/* Right Column: Founder Story & Description */}
             <div className="lg:col-span-7 space-y-6 text-left">
-              
+
               <div className="space-y-3">
                 <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest text-rose-800 uppercase bg-rose-50 border border-rose-200/80 shadow-2xs">
                   <Sparkles className="w-3.5 h-3.5 text-rose-600" />
@@ -818,7 +816,7 @@ export default function Home() {
                 </h2>
 
                 <p className="text-xs sm:text-sm font-semibold tracking-wider text-rose-700 uppercase">
-                  Pooja Sharma • Founder & Lead Aesthetician
+                  Anu Saini • Founder & Lead Aesthetician
                 </p>
               </div>
 
@@ -879,7 +877,7 @@ export default function Home() {
                 </Link>
 
                 <a
-                  href="https://wa.me/919667900313?text=Hi%20Pooja%2C%20I%20would%20like%20to%20consult%20with%20you%20at%20Enrich%20Beauty%20Parlour."
+                  href="https://wa.me/919667900313?text=Hi%20Anu%2C%20I%20would%20like%20to%20consult%20with%20you%20at%20Enrich%20Beauty%20Parlour."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs sm:text-sm font-medium transition-colors"
@@ -1040,7 +1038,7 @@ export default function Home() {
                   className="bg-white rounded-xl border border-rose-200/80 p-6 space-y-4 shadow-xs relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow group"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-bl-full -z-0 pointer-events-none transition-transform group-hover:scale-110" />
-                  
+
                   <div className="relative z-10 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200">
@@ -1118,120 +1116,120 @@ export default function Home() {
       {/* =========================================================================
             SECTION 10: LOCATION & VISIT INFORMATION
             ========================================================================= */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs">
-            <div className="grid grid-cols-1 lg:grid-cols-12">
-              
-              {/* Location Text Information */}
-              <div className="lg:col-span-6 p-8 sm:p-10 space-y-6">
-                <div className="space-y-1.5">
-                  <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-                    Studio Location
-                  </span>
-                  <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                    Visiting {SALON_CONFIG.business.name}
-                  </h2>
-                  <p className="text-xs sm:text-sm text-stone-500 font-light">
-                    Conveniently situated in Sikar with dedicated customer parking and easy road access.
-                  </p>
-                </div>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12">
 
-                <div className="space-y-4 text-xs sm:text-sm">
-                  <a
-                    href={SALON_CONFIG.location.googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-start space-x-3 group cursor-pointer p-2 -mx-2 rounded-xl hover:bg-stone-50 transition-colors"
-                  >
-                    <MapPin className="w-5 h-5 text-rose-700 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                    <div>
-                      <p className="font-semibold text-stone-900 group-hover:text-rose-700 transition-colors">Address</p>
-                      <p className="text-stone-600 mt-0.5 leading-relaxed">{SALON_CONFIG.contact.address}</p>
-                    </div>
-                  </a>
+            {/* Location Text Information */}
+            <div className="lg:col-span-6 p-8 sm:p-10 space-y-6">
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+                  Studio Location
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+                  Visiting {SALON_CONFIG.business.name}
+                </h2>
+                <p className="text-xs sm:text-sm text-stone-500 font-light">
+                  Conveniently situated in Sikar with dedicated customer parking and easy road access.
+                </p>
+              </div>
 
-                  <div className="flex items-start space-x-3 p-2 -mx-2">
-                    <Train className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-stone-900">Transit & Access</p>
-                      <p className="text-stone-600 mt-0.5">
-                        {SALON_CONFIG.location.transitHint}
-                      </p>
-                    </div>
+              <div className="space-y-4 text-xs sm:text-sm">
+                <a
+                  href={SALON_CONFIG.location.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start space-x-3 group cursor-pointer p-2 -mx-2 rounded-xl hover:bg-stone-50 transition-colors"
+                >
+                  <MapPin className="w-5 h-5 text-rose-700 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                  <div>
+                    <p className="font-semibold text-stone-900 group-hover:text-rose-700 transition-colors">Address</p>
+                    <p className="text-stone-600 mt-0.5 leading-relaxed">{SALON_CONFIG.contact.address}</p>
                   </div>
+                </a>
 
-                  <div className="flex items-start space-x-3 p-2 -mx-2">
-                    <Car className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-stone-900">Parking</p>
-                      <p className="text-stone-600 mt-0.5">
-                        {SALON_CONFIG.location.parkingHint}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3 p-2 -mx-2">
-                    <Phone className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-stone-900">Concierge Desk</p>
-                      <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-600 hover:text-rose-700 font-medium mt-0.5 block">
-                        {SALON_CONFIG.contact.phone} | {SALON_CONFIG.contact.email}
-                      </a>
-                    </div>
+                <div className="flex items-start space-x-3 p-2 -mx-2">
+                  <Train className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-stone-900">Transit & Access</p>
+                    <p className="text-stone-600 mt-0.5">
+                      {SALON_CONFIG.location.transitHint}
+                    </p>
                   </div>
                 </div>
 
-                <div className="pt-2 flex flex-wrap gap-3">
-                  <a
-                    href={SALON_CONFIG.location.googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer"
-                  >
-                    <Compass className="w-4 h-4 mr-1.5" />
-                    Open in Google Maps
-                  </a>
+                <div className="flex items-start space-x-3 p-2 -mx-2">
+                  <Car className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-stone-900">Parking</p>
+                    <p className="text-stone-600 mt-0.5">
+                      {SALON_CONFIG.location.parkingHint}
+                    </p>
+                  </div>
+                </div>
 
-                  <a
-                    href={SALON_CONFIG.contact.phoneTel}
-                    className="inline-flex items-center px-5 py-3 bg-white hover:bg-stone-50 text-stone-800 border border-stone-300 rounded-xl text-xs font-bold transition-colors shadow-2xs cursor-pointer active:scale-95"
-                  >
-                    <Phone className="w-4 h-4 mr-1.5 text-rose-700" />
-                    Call Desk (96679 00313)
-                  </a>
+                <div className="flex items-start space-x-3 p-2 -mx-2">
+                  <Phone className="w-5 h-5 text-stone-700 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-stone-900">Concierge Desk</p>
+                    <a href={SALON_CONFIG.contact.phoneTel} className="text-stone-600 hover:text-rose-700 font-medium mt-0.5 block">
+                      {SALON_CONFIG.contact.phone} | {SALON_CONFIG.contact.email}
+                    </a>
+                  </div>
                 </div>
               </div>
 
-              {/* Interactive Google Map Embed Card */}
-              <div className="lg:col-span-6 bg-stone-100 border-t lg:border-t-0 lg:border-l border-stone-200/90 relative min-h-[380px] sm:min-h-[440px] flex flex-col justify-between overflow-hidden">
-                <iframe
-                  title="Enrich Beauty Parlour & Cosmetic Clinic Location Map"
-                  src={SALON_CONFIG.location.mapEmbedUrl || 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed'}
-                  className="w-full h-full min-h-[340px] grow border-0"
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-                <div className="p-3.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 flex items-center justify-between gap-3 z-10">
-                  <div className="flex items-center space-x-2 text-xs text-stone-700 min-w-0">
-                    <MapPin className="w-4 h-4 text-rose-700 shrink-0" />
-                    <span className="truncate font-semibold">{SALON_CONFIG.contact.addressShort}</span>
-                  </div>
-                  <a
-                    href={SALON_CONFIG.location.googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs inline-flex items-center shrink-0"
-                  >
-                    Get Directions
-                    <ArrowRight className="w-3 h-3 ml-1" />
-                  </a>
-                </div>
-              </div>
+              <div className="pt-2 flex flex-wrap gap-3">
+                <a
+                  href={SALON_CONFIG.location.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+                >
+                  <Compass className="w-4 h-4 mr-1.5" />
+                  Open in Google Maps
+                </a>
 
+                <a
+                  href={SALON_CONFIG.contact.phoneTel}
+                  className="inline-flex items-center px-5 py-3 bg-white hover:bg-stone-50 text-stone-800 border border-stone-300 rounded-xl text-xs font-bold transition-colors shadow-2xs cursor-pointer active:scale-95"
+                >
+                  <Phone className="w-4 h-4 mr-1.5 text-rose-700" />
+                  Call Desk (96679 00313)
+                </a>
+              </div>
             </div>
+
+            {/* Interactive Google Map Embed Card */}
+            <div className="lg:col-span-6 bg-stone-100 border-t lg:border-t-0 lg:border-l border-stone-200/90 relative min-h-[380px] sm:min-h-[440px] flex flex-col justify-between overflow-hidden">
+              <iframe
+                title="Enrich Beauty Parlour & Cosmetic Clinic Location Map"
+                src={SALON_CONFIG.location.mapEmbedUrl || 'https://maps.google.com/maps?q=Sharda+Heights,+near+Ramlila+Maidan,+Chandpol,+Sikar,+Rajasthan+332001&t=&z=16&ie=UTF8&iwloc=&output=embed'}
+                className="w-full h-full min-h-[340px] grow border-0"
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+              <div className="p-3.5 bg-white/95 backdrop-blur-md border-t border-stone-200/90 flex items-center justify-between gap-3 z-10">
+                <div className="flex items-center space-x-2 text-xs text-stone-700 min-w-0">
+                  <MapPin className="w-4 h-4 text-rose-700 shrink-0" />
+                  <span className="truncate font-semibold">{SALON_CONFIG.contact.addressShort}</span>
+                </div>
+                <a
+                  href={SALON_CONFIG.location.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs inline-flex items-center shrink-0"
+                >
+                  Get Directions
+                  <ArrowRight className="w-3 h-3 ml-1" />
+                </a>
+              </div>
+            </div>
+
           </div>
-        </section>
+        </div>
+      </section>
 
       {/* =========================================================================
           SECTION 11: APPOINTMENT CTA (ROYAL BERRY LUXURY BANNER)
@@ -1240,7 +1238,7 @@ export default function Home() {
         <div className="rounded-2xl bg-gradient-to-br from-[#2E1822] via-[#481E2C] to-[#1C0E15] text-white p-8 sm:p-14 text-center space-y-6 border border-rose-900/40 shadow-2xl shadow-rose-950/20 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-80 h-80 bg-rose-500/15 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-          
+
           <div className="relative z-10 space-y-3">
             <span className="text-xs font-bold tracking-widest text-rose-300 uppercase block">
               Appointments & Consultations
@@ -1252,7 +1250,7 @@ export default function Home() {
               Select your preferred service, choose your specialist, and confirm your appointment with real-time schedule verification.
             </p>
           </div>
-          
+
           <div className="pt-2 flex flex-col sm:flex-row justify-center gap-4 relative z-10">
             <Link
               to="/book"
