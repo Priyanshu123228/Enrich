@@ -668,6 +668,12 @@ export default function Home() {
         ) : filteredServices.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredServices.map((service, idx) => {
+              const isBridalOrConsult =
+                service.category?.toLowerCase() === 'bridal' ||
+                service.isBridal ||
+                service.priceOnConsultation ||
+                !service.price ||
+                service.price === 0;
               const imageUrl =
                 service.images?.[0]?.url ||
                 service.image ||
