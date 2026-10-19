@@ -720,33 +720,23 @@ export default function Cosmetics() {
                           <span className="text-xs text-stone-400">({product.numReviews || 18})</span>
                         </div>
 
-                        {/* Price Row (Gated for signed-in users) */}
+                        {/* Price Row */}
                         <div className="mt-4 pt-3 border-t border-stone-100 flex items-baseline justify-between">
-                          {isAuthenticated ? (
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-xl font-bold font-serif text-stone-900">
-                                ₹{product.price.toLocaleString()}
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-xl font-bold font-serif text-stone-900">
+                              ₹{product.price.toLocaleString()}
+                            </span>
+                            {product.originalPrice > product.price && (
+                              <span className="text-xs text-stone-400 line-through">
+                                ₹{product.originalPrice.toLocaleString()}
                               </span>
-                              {product.originalPrice > product.price && (
-                                <span className="text-xs text-stone-400 line-through">
-                                  ₹{product.originalPrice.toLocaleString()}
-                                </span>
-                              )}
-                              {savings > 0 && (
-                                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                                  Save {savings}%
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <Link
-                              to="/login?redirect=/cosmetics"
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600"
-                            >
-                              <Lock className="w-3.5 h-3.5 text-rose-600" />
-                              <span>Sign in to view price</span>
-                            </Link>
-                          )}
+                            )}
+                            {savings > 0 && (
+                              <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                Save {savings}%
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -754,25 +744,15 @@ export default function Cosmetics() {
                     {/* Issue #1: Standardized button styles (Primary, Secondary, rounded-lg) */}
                     <div className="p-5 pt-0 flex flex-col gap-2">
                       {/* Primary Action Button */}
-                      {isAuthenticated ? (
-                        <a
-                          href={getWhatsAppUrl(product)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-rose-700 hover:bg-rose-800 shadow-xs transition-colors active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                          <span>Order on WhatsApp</span>
-                        </a>
-                      ) : (
-                        <Link
-                          to="/login?redirect=/cosmetics"
-                          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-rose-700 hover:bg-rose-800 shadow-xs transition-colors active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2"
-                        >
-                          <Lock className="w-3.5 h-3.5 text-white" />
-                          <span>Sign in to Order</span>
-                        </Link>
-                      )}
+                      <a
+                        href={getWhatsAppUrl(product)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-rose-700 hover:bg-rose-800 shadow-xs transition-colors active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Order on WhatsApp</span>
+                      </a>
 
                       {/* Secondary Action Button */}
                       <Link
@@ -858,54 +838,20 @@ export default function Cosmetics() {
                   </div>
                 </div>
 
-                {/* Price Display (Interactive Blurred Gate) */}
-                {isAuthenticated ? (
-                  <div className="flex items-baseline gap-3 p-3.5 bg-stone-50 rounded-xl border border-stone-200/80">
-                    <span className="text-2xl font-bold font-serif text-stone-900">
-                      ₹{quickViewProduct.price.toLocaleString()}
+                {/* Price Display */}
+                <div className="flex items-baseline gap-3 p-3.5 bg-stone-50 rounded-xl border border-stone-200/80">
+                  <span className="text-2xl font-bold font-serif text-stone-900">
+                    ₹{quickViewProduct.price.toLocaleString()}
+                  </span>
+                  {quickViewProduct.originalPrice > quickViewProduct.price && (
+                    <span className="text-sm text-stone-400 line-through">
+                      ₹{quickViewProduct.originalPrice.toLocaleString()}
                     </span>
-                    {quickViewProduct.originalPrice > quickViewProduct.price && (
-                      <span className="text-sm text-stone-400 line-through">
-                        ₹{quickViewProduct.originalPrice.toLocaleString()}
-                      </span>
-                    )}
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full ml-auto">
-                      In Stock ({quickViewProduct.stock || 20} available)
-                    </span>
-                  </div>
-                ) : (
-                  <Link
-                    to={`/login?redirect=/cosmetics/${quickViewProduct.slug || quickViewProduct._id}`}
-                    className="group relative p-4 bg-gradient-to-r from-rose-50/70 via-stone-50 to-rose-50/70 rounded-xl border border-rose-200/80 hover:border-rose-300 flex items-center justify-between gap-3 overflow-hidden cursor-pointer shadow-2xs hover:shadow-xs transition-all"
-                    title="Click to sign in and view price"
-                  >
-                    {/* Blurred Price Background */}
-                    <div className="flex items-baseline gap-3 blur-md opacity-30 group-hover:opacity-20 transition-opacity select-none">
-                      <span className="text-2xl font-bold font-serif text-stone-900">
-                        ₹{quickViewProduct.price || 1299}
-                      </span>
-                      <span className="text-xs text-stone-400 line-through">
-                        ₹{quickViewProduct.originalPrice || 1699}
-                      </span>
-                    </div>
-
-                    {/* Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-between px-4 bg-white/70 backdrop-blur-xs group-hover:bg-white/80 transition-colors">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-                          <Lock className="w-4 h-4 text-rose-700" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-bold text-stone-900">Clinical Price Locked</p>
-                          <p className="text-xs text-rose-700 font-semibold">Click to sign in & view price</p>
-                        </div>
-                      </div>
-                      <span className="px-3.5 py-1.5 rounded-lg bg-rose-700 group-hover:bg-rose-800 text-white text-xs font-semibold shadow-xs transition-all shrink-0">
-                        Sign In
-                      </span>
-                    </div>
-                  </Link>
-                )}
+                  )}
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full ml-auto">
+                    In Stock ({quickViewProduct.stock || 20} available)
+                  </span>
+                </div>
 
                 {/* Description */}
                 <p className="text-xs text-stone-600 leading-relaxed">

@@ -29,6 +29,7 @@ import {
   MapPin,
   Sparkles,
   Phone,
+  MessageCircle,
   Copy,
   Check,
   Star,
@@ -703,18 +704,28 @@ export default function Home() {
                           <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
                           {service.duration || 45} mins
                         </span>
-                        {isAuthenticated ? (
-                          <span className="text-sm font-bold text-stone-900 font-mono">
-                            {SALON_CONFIG.currency.symbol}{service.price}
+                        {isBridalOrConsult ? (
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs">
+                            <Sparkles className="w-2.5 h-2.5 text-amber-600" />
+                            <span>Price on Consultation</span>
                           </span>
                         ) : (
-                          <Link
-                            to="/login?redirect=/#services"
-                            className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2 py-0.5 rounded-full border border-rose-200/80 transition-colors"
-                          >
-                            <Lock className="w-2.5 h-2.5" />
-                            <span>Sign in for price</span>
-                          </Link>
+                          <div className="flex items-baseline gap-1.5 font-mono">
+                            {service.discountPrice && service.discountPrice < service.price ? (
+                              <>
+                                <span className="text-sm font-bold text-stone-900">
+                                  {SALON_CONFIG.currency.symbol}{service.discountPrice}
+                                </span>
+                                <span className="text-xs text-stone-400 line-through">
+                                  {SALON_CONFIG.currency.symbol}{service.price}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-sm font-bold text-stone-900">
+                                {SALON_CONFIG.currency.symbol}{service.price}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
 
@@ -730,13 +741,25 @@ export default function Home() {
 
                   {/* Card Footer CTA */}
                   <div className="p-5 pt-0 border-t border-stone-100 mt-2">
-                    <Link
-                      to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
-                      className="btn-primary w-full py-2.5 px-3 text-xs mt-3"
-                    >
-                      <Calendar className="w-3.5 h-3.5 mr-1.5" />
-                      Book Appointment
-                    </Link>
+                    {isBridalOrConsult ? (
+                      <a
+                        href={`https://wa.me/919667900313?text=${encodeURIComponent(`Hi Enrich Salon, I would like to inquire about the bespoke Bridal package: ${service.name}. Could we schedule a consultation?`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-semibold rounded-lg bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white shadow-xs transition-all duration-200 mt-3"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5 text-amber-100" />
+                        Inquire Consultation
+                      </a>
+                    ) : (
+                      <Link
+                        to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
+                        className="btn-primary w-full py-2.5 px-3 text-xs mt-3 inline-flex items-center justify-center gap-1.5"
+                      >
+                        <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                        Book Appointment
+                      </Link>
+                    )}
                   </div>
                 </div>
               );

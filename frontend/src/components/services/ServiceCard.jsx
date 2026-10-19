@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
-import { Clock, Star, ArrowRight, Calendar, Heart, Lock } from 'lucide-react';
+import { Clock, Star, ArrowRight, Calendar, Heart, Lock, Sparkles, MessageCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { customerService } from '../../services/customer.service';
 
 export default function ServiceCard({ service, onBook }) {
+  const isBridalOrConsult =
+    service?.category?.toLowerCase() === 'bridal' ||
+    service?.isBridal ||
+    service?.priceOnConsultation ||
+    !service?.price ||
+    service?.price === 0;
   const { isAuthenticated } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -115,9 +121,17 @@ export default function ServiceCard({ service, onBook }) {
       </div>
 
       {/* Card Footer Actions */}
-      <div className="p-5 pt-0 border-t border-stone-100 mt-2 flex items-center justify-between">
+      <div className="p-5 pt-0 border-t border-stone-100 mt-2 flex items-center justify-between gap-2">
         <div>
-          {isAuthenticated ? (
+          {isBridalOrConsult ? (
+            <div>
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                <Sparkles className="w-3 h-3 text-amber-600" />
+                Price on Consultation
+              </span>
+              <span className="text-[11px] text-stone-500 block mt-0.5">Bespoke Bridal Tier</span>
+            </div>
+          ) : (
             <>
               <div className="flex items-baseline space-x-1.5">
                 <span className="text-xl font-bold font-serif text-stone-900">
@@ -133,14 +147,6 @@ export default function ServiceCard({ service, onBook }) {
                 Standard Pricing
               </span>
             </>
-          ) : (
-            <Link
-              to="/login?redirect=/services"
-              className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200/80 transition-colors"
-            >
-              <Lock className="w-3 h-3 text-rose-600" />
-              <span>Sign in for price</span>
-            </Link>
           )}
         </div>
 
@@ -153,16 +159,27 @@ export default function ServiceCard({ service, onBook }) {
           >
             <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link
-            to={`/services/${service._id || service.slug}`}
-            className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold"
-          >
-            <Calendar className="w-3.5 h-3.5 mr-1.5 text-rose-300" />
-            Book
-          </Link>
+          {isBridalOrConsult ? (
+            <a
+              href={`https://wa.me/919667900313?text=${encodeURIComponent(`Hi Enrich Salon, I would like to inquire about the bespoke Bridal package: ${service.name}. Could we schedule a consultation?`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary px-3.5 py-2 rounded-lg text-xs font-semibold bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white flex items-center"
+            >
+              <MessageCircle className="w-3.5 h-3.5 mr-1.5 text-amber-100" />
+              Consult
+            </a>
+          ) : (
+            <Link
+              to={`/services/${service._id || service.slug}`}
+              className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center"
+            >
+              <Calendar className="w-3.5 h-3.5 mr-1.5 text-rose-300" />
+              Book
+            </Link>
+          )}
         </div>
       </div>
-
     </div>
   );
 }

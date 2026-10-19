@@ -21,6 +21,12 @@ export default function ServiceDetail() {
   const { id } = useParams();
 
   const [service, setService] = useState(null);
+  const isBridalOrConsult =
+    service?.category?.toLowerCase() === 'bridal' ||
+    service?.isBridal ||
+    service?.priceOnConsultation ||
+    !service?.price ||
+    service?.price === 0;
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
@@ -203,8 +209,23 @@ export default function ServiceDetail() {
               </h1>
             </div>
 
-            {/* Pricing Section (Gated) */}
-            {isAuthenticated ? (
+            {/* Pricing Section */}
+            {isBridalOrConsult ? (
+              <div className="p-4 bg-gradient-to-br from-amber-50/90 via-rose-50/40 to-stone-50 rounded-2xl border border-amber-200 shadow-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-900">Bespoke Bridal Tier</span>
+                  </div>
+                  <span className="text-xs font-bold text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-300/70">
+                    Price on Consultation
+                  </span>
+                </div>
+                <p className="text-xs text-stone-600 leading-relaxed font-light">
+                  Bridal artistry is tailored exclusively to your wedding attire, jewelry setting, hair texture, and skin undertones. We provide personalized quotes upon consultation.
+                </p>
+              </div>
+            ) : (
               <div className="flex items-baseline justify-between">
                 <div>
                   <p className="text-[11px] text-stone-500 uppercase tracking-wider">Service Fee</p>
@@ -228,22 +249,6 @@ export default function ServiceDetail() {
                   </p>
                 </div>
               </div>
-            ) : (
-              <div className="p-4 bg-rose-50/60 rounded-2xl border border-rose-200/80 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <Lock className="w-4 h-4 text-rose-700 shrink-0" />
-                  <div>
-                    <span className="text-xs font-bold text-stone-900 block">Member Exclusive Rate</span>
-                    <span className="text-[11px] text-stone-500">Sign in to unlock treatment price</span>
-                  </div>
-                </div>
-                <Link
-                  to={`/login?redirect=/services/${service._id || service.slug}`}
-                  className="px-3.5 py-1.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs shrink-0 transition-all"
-                >
-                  Sign In
-                </Link>
-              </div>
             )}
 
             {/* Meta summary badges */}
@@ -260,14 +265,26 @@ export default function ServiceDetail() {
 
             {/* Action CTA Buttons */}
             <div className="space-y-3 pt-2">
-              <Link
-                to="/book"
-                state={{ preSelectedServiceId: service._id }}
-                className="w-full flex items-center justify-center py-3 px-6 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm"
-              >
-                <Calendar className="w-4 h-4 mr-2 text-rose-300" />
-                Book Appointment
-              </Link>
+              {isBridalOrConsult ? (
+                <a
+                  href={`https://wa.me/919667900313?text=${encodeURIComponent(`Hi Enrich Salon, I would like to schedule a bespoke bridal consultation for "${service.name}". Please let me know available slots.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center py-3.5 px-6 rounded-lg bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white font-semibold text-xs tracking-wide transition-all shadow-md cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Inquire Bridal Consultation on WhatsApp
+                </a>
+              ) : (
+                <Link
+                  to="/book"
+                  state={{ preSelectedServiceId: service._id }}
+                  className="w-full flex items-center justify-center py-3 px-6 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm"
+                >
+                  <Calendar className="w-4 h-4 mr-2 text-rose-300" />
+                  Book Appointment
+                </Link>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <button
