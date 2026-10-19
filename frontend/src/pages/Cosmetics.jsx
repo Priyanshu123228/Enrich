@@ -421,7 +421,7 @@ export default function Cosmetics() {
   };
 
   const getWhatsAppUrl = (product) => {
-    const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to inquire about / purchase "${product.name}" (₹${product.price}). Please share order details and availability.`;
+    const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to book / order "${product.name}" (₹${product.price}). Please share order details and availability.`;
     return `https://wa.me/919667900313?text=${encodeURIComponent(text)}`;
   };
 
@@ -748,10 +748,10 @@ export default function Cosmetics() {
                         href={getWhatsAppUrl(product)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-rose-700 hover:bg-rose-800 shadow-xs transition-colors active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2"
+                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
                       >
                         <MessageCircle className="w-4 h-4" />
-                        <span>Order on WhatsApp</span>
+                        <span>Book on WhatsApp</span>
                       </a>
 
                       {/* Secondary Action Button */}
@@ -881,10 +881,10 @@ export default function Cosmetics() {
                     href={getWhatsAppUrl(quickViewProduct)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-rose-700 hover:bg-rose-800 shadow-xs transition-colors active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2"
+                    className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    <span>Order on WhatsApp</span>
+                    <span>Book on WhatsApp</span>
                   </a>
 
                   <Link

@@ -349,7 +349,7 @@ export default function ProductDetail() {
 
   const getWhatsAppUrl = () => {
     if (!product) return '#';
-    const text = `Hello Enrich Beauty & Cosmetic Clinic! I am interested in purchasing "${product.name}" (Price: ₹${product.price}). Please share order instructions and salon delivery details.`;
+    const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to book / order "${product.name}" (Price: ₹${product.price}). Please share order instructions and salon delivery details.`;
     return `https://wa.me/919667900313?text=${encodeURIComponent(text)}`;
   };
 
@@ -554,10 +554,10 @@ export default function ProductDetail() {
                 href={getWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2.5 py-3 px-6 rounded-lg text-xs sm:text-sm font-semibold text-white bg-rose-700 hover:bg-rose-800 shadow-xs transition-colors active:scale-98 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 focus-visible:ring-offset-2"
+                className="w-full inline-flex items-center justify-center gap-2.5 py-3 px-6 rounded-lg text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xs transition-colors active:scale-98 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Order on WhatsApp</span>
+                <span>Book on WhatsApp</span>
               </a>
 
               <Link

@@ -159,25 +159,20 @@ export default function ServiceCard({ service, onBook }) {
           >
             <ArrowRight className="w-4 h-4" />
           </Link>
-          {isBridalOrConsult ? (
-            <a
-              href={`https://wa.me/919667900313?text=${encodeURIComponent(`Hi Enrich Salon, I would like to inquire about the bespoke Bridal package: ${service.name}. Could we schedule a consultation?`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary px-3.5 py-2 rounded-lg text-xs font-semibold bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white flex items-center"
-            >
-              <MessageCircle className="w-3.5 h-3.5 mr-1.5 text-amber-100" />
-              Consult
-            </a>
-          ) : (
-            <Link
-              to={`/services/${service._id || service.slug}`}
-              className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold flex items-center"
-            >
-              <Calendar className="w-3.5 h-3.5 mr-1.5 text-rose-300" />
-              Book
-            </Link>
-          )}
+          <a
+            href={`https://wa.me/919667900313?text=${encodeURIComponent(
+              isBridalOrConsult
+                ? `Hi Enrich Salon, I would like to book a consultation for the bespoke Bridal package: ${service.name}. Could we schedule an appointment?`
+                : `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-xs transition-colors"
+            title="Book on WhatsApp"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>Book on WhatsApp</span>
+          </a>
         </div>
       </div>
     </div>

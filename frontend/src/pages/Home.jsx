@@ -746,26 +746,27 @@ export default function Home() {
                   </div>
 
                   {/* Card Footer CTA */}
-                  <div className="p-5 pt-0 border-t border-stone-100 mt-2">
-                    {isBridalOrConsult ? (
-                      <a
-                        href={`https://wa.me/919667900313?text=${encodeURIComponent(`Hi Enrich Salon, I would like to inquire about the bespoke Bridal package: ${service.name}. Could we schedule a consultation?`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-semibold rounded-lg bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700 text-white shadow-xs transition-all duration-200 mt-3"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5 text-amber-100" />
-                        Inquire Consultation
-                      </a>
-                    ) : (
-                      <Link
-                        to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
-                        className="btn-primary w-full py-2.5 px-3 text-xs mt-3 inline-flex items-center justify-center gap-1.5"
-                      >
-                        <Calendar className="w-3.5 h-3.5 mr-1.5" />
-                        Book Appointment
-                      </Link>
-                    )}
+                  <div className="p-5 pt-0 border-t border-stone-100 mt-2 space-y-2">
+                    <a
+                      href={`https://wa.me/919667900313?text=${encodeURIComponent(
+                        isBridalOrConsult
+                          ? `Hi Enrich Salon, I would like to book a consultation for the bespoke Bridal package: ${service.name}. Could we schedule an appointment?`
+                          : `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-xs transition-all duration-200 mt-2.5"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>Book on WhatsApp</span>
+                    </a>
+                    <Link
+                      to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
+                      className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 text-[11px] font-medium rounded-lg text-stone-600 hover:text-stone-900 bg-stone-50 hover:bg-stone-100 border border-stone-200/80 transition-colors"
+                    >
+                      <Calendar className="w-3 h-3 text-rose-600" />
+                      <span>Or Book Online Calendar</span>
+                    </Link>
                   </div>
                 </div>
               );
