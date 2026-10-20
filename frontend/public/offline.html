@@ -5,85 +5,221 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Offline | Enrich Ladies Beauty Parlor Sikar</title>
     <style>
+      :root {
+        --color-primary: #9F1239;
+        --color-primary-dark: #881337;
+        --color-bg: #FAF7F2;
+        --color-surface: #FFFFFF;
+        --color-text-main: #1C1917;
+        --color-text-muted: #78716C;
+        --color-border: #E7E5E4;
+      }
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: #FAF7F2;
-        color: #1c1917;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text-main);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        padding: 20px;
-        box-sizing: border-box;
+        padding: 24px 16px;
+      }
+      .offline-container {
+        max-width: 460px;
+        width: 100%;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 20px;
+        padding: 32px 24px;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
         text-align: center;
       }
-      .card {
-        background: #ffffff;
-        border: 1px solid #e7e5e4;
-        border-radius: 24px;
-        padding: 40px 24px;
-        max-width: 420px;
-        width: 100%;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-      }
-      .icon-box {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 20px;
+      .brand-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-primary);
         background: #ffe4e6;
-        color: #be123c;
-        border-radius: 20px;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        margin-bottom: 16px;
+      }
+      .status-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 16px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #dc2626;
       }
-      .icon-box svg {
-        width: 32px;
-        height: 32px;
-        stroke: #be123c;
-        fill: none;
+      .status-icon svg {
+        width: 30px;
+        height: 30px;
+        stroke: currentColor;
         stroke-width: 2;
+        fill: none;
         stroke-linecap: round;
         stroke-linejoin: round;
       }
       h1 {
-        font-size: 22px;
-        margin: 0 0 10px;
-        color: #1c1917;
+        font-size: 24px;
+        font-family: Georgia, serif;
+        margin: 0 0 8px;
+        color: var(--color-text-main);
       }
-      p {
-        font-size: 14px;
-        line-height: 1.6;
-        color: #78716c;
+      .desc {
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--color-text-muted);
         margin: 0 0 24px;
       }
+      .contact-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
       .btn {
-        display: inline-block;
-        background: #9f1239;
-        color: #ffffff;
-        text-decoration: none;
-        padding: 12px 24px;
-        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 18px;
+        border-radius: 10px;
         font-weight: 600;
-        font-size: 14px;
-        transition: background 0.2s ease;
-      }
-      .btn:hover {
-        background: #881337;
-      }
-      .contact-strip {
-        margin-top: 24px;
-        padding-top: 20px;
-        border-top: 1px solid #f5f5f4;
         font-size: 13px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .btn-call {
+        background: #1c1917;
+        color: #ffffff;
+      }
+      .btn-call:hover {
+        background: #292524;
+      }
+      .btn-whatsapp {
+        background: #047857;
+        color: #ffffff;
+      }
+      .btn-whatsapp:hover {
+        background: #065f46;
+      }
+      .btn-retry {
+        background: #f5f5f4;
         color: #44403c;
+        border-color: #d6d3d1;
+      }
+      .btn-retry:hover {
+        background: #e7e5e4;
+      }
+
+      /* Cached Booking Card */
+      .cached-section {
+        border-top: 1px solid var(--color-border);
+        padding-top: 20px;
+        text-align: left;
+      }
+      .cached-heading {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .cached-badge {
+        font-size: 10px;
+        font-weight: 600;
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+        padding: 2px 8px;
+        border-radius: 6px;
+      }
+      .booking-card {
+        background: #fafaf9;
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 12px;
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+      .booking-title {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--color-text-main);
+        margin-bottom: 4px;
+      }
+      .booking-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+        color: #57534e;
+      }
+      .booking-row strong {
+        color: var(--color-text-main);
+      }
+      .booking-ref {
+        font-family: monospace;
+        background: #e7e5e4;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .offline-hint {
+        font-size: 11px;
+        color: #059669;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .salon-footer {
+        margin-top: 20px;
+        font-size: 11px;
+        color: #a8a29e;
+        line-height: 1.4;
+      }
+      .online-notice {
+        display: none;
+        background: #ecfdf5;
+        color: #065f46;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 12px;
+        font-weight: 600;
       }
     </style>
   </head>
   <body>
-    <div class="card">
-      <div class="icon-box">
+    <div class="offline-container">
+      <div class="brand-badge">Enrich Parlour & Clinic</div>
+
+      <div id="online-alert" class="online-notice">
+        ✓ Internet connection restored! Reloading page...
+      </div>
+
+      <div class="status-icon">
         <svg viewBox="0 0 24 24">
           <line x1="1" y1="1" x2="23" y2="23"></line>
           <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
@@ -94,15 +230,123 @@
           <line x1="12" y1="20" x2="12.01" y2="20"></line>
         </svg>
       </div>
-      <h1>You are Currently Offline</h1>
-      <p>
-        Please check your internet connection. You can still reach our salon desk directly by telephone.
+
+      <h1>You're Currently Offline</h1>
+      <p class="desc">
+        No internet connection detected. You can still access your cached appointment pass or contact our salon desk directly.
       </p>
-      <a href="tel:+919667900313" class="btn">Call Desk: 96679 00313</a>
-      <div class="contact-strip">
-        <strong>Enrich Ladies Beauty Parlor</strong><br />
-        First Floor, Sharda Heights, Chandpol, Sikar
+
+      <div class="contact-actions">
+        <a href="tel:+919667900313" class="btn btn-call">
+          📞 Call Salon Desk: +91 96679 00313
+        </a>
+        <a href="https://wa.me/919667900313" class="btn btn-whatsapp">
+          💬 WhatsApp Concierge Desk
+        </a>
+        <button id="retry-btn" class="btn btn-retry" onclick="checkConnection()">
+          🔄 Check Connection & Reload
+        </button>
+      </div>
+
+      <!-- Cached Booking Details Section -->
+      <div class="cached-section">
+        <div class="cached-heading">
+          <span>Cached Booking Pass</span>
+          <span class="cached-badge">Offline Available</span>
+        </div>
+
+        <div id="booking-container">
+          <!-- Populated dynamically from localStorage -->
+          <div style="font-size: 12px; color: #a8a29e; text-align: center; padding: 12px 0;">
+            Checking stored appointments on this device...
+          </div>
+        </div>
+      </div>
+
+      <div class="salon-footer">
+        <strong>Enrich Ladies Beauty Parlor & Cosmetic Clinic</strong><br />
+        Station Road, Opposite City Center Mall, Sikar, Rajasthan 332001
       </div>
     </div>
+
+    <script>
+      function renderCachedBookings() {
+        const container = document.getElementById('booking-container');
+        try {
+          // Look for single lastBooking or array of appointments
+          let rawLast = localStorage.getItem('lastBooking');
+          let rawArray = localStorage.getItem('enrich_offline_appointments');
+          let booking = null;
+
+          if (rawLast) {
+            try { booking = JSON.parse(rawLast); } catch(e) {}
+          } else if (rawArray) {
+            try {
+              const list = JSON.parse(rawArray);
+              if (Array.isArray(list) && list.length > 0) booking = list[0];
+            } catch(e) {}
+          }
+
+          if (booking && (booking.bookingId || booking.service)) {
+            const serviceName = booking.service?.name || booking.serviceName || 'Salon Treatment';
+            const stylistName = booking.staff?.name || booking.stylistName || 'Salon Specialist';
+            const dateStr = booking.date || 'Scheduled Date';
+            const timeStr = booking.startTime ? (booking.startTime + (booking.endTime ? ' - ' + booking.endTime : '')) : 'Scheduled Slot';
+            const refId = booking.bookingId || 'LX-CONFIRMED';
+            const paymentText = booking.paymentStatus === 'paid' ? 'Paid Online' : 'Pay at Reception Counter';
+
+            container.innerHTML = `
+              <div class="booking-card">
+                <div class="booking-title">${serviceName}</div>
+                <div class="booking-row">
+                  <span>Reference ID:</span>
+                  <span class="booking-ref">${refId}</span>
+                </div>
+                <div class="booking-row">
+                  <span>Date & Time:</span>
+                  <strong>${dateStr} at ${timeStr}</strong>
+                </div>
+                <div class="booking-row">
+                  <span>Stylist:</span>
+                  <span>${stylistName}</span>
+                </div>
+                <div class="booking-row">
+                  <span>Payment:</span>
+                  <span>${paymentText}</span>
+                </div>
+                <div class="offline-hint">
+                  ✓ Present this code at reception counter even when offline.
+                </div>
+              </div>
+            `;
+          } else {
+            container.innerHTML = `
+              <div style="font-size: 12px; color: #78716c; background: #fafaf9; border: 1px dashed #d6d3d1; padding: 14px; border-radius: 10px; text-align: center;">
+                No saved appointments found on this device.<br/>
+                Call <strong>+91 96679 00313</strong> for telephone bookings.
+              </div>
+            `;
+          }
+        } catch(err) {
+          container.innerHTML = '<div style="font-size:11px;color:#a8a29e;">No offline appointment loaded.</div>';
+        }
+      }
+
+      function checkConnection() {
+        if (navigator.onLine) {
+          document.getElementById('online-alert').style.display = 'block';
+          setTimeout(() => { window.location.href = '/'; }, 1000);
+        } else {
+          alert('Still offline. Please check your network or Wi-Fi settings.');
+        }
+      }
+
+      window.addEventListener('online', () => {
+        document.getElementById('online-alert').style.display = 'block';
+        setTimeout(() => { window.location.href = '/'; }, 1200);
+      });
+
+      renderCachedBookings();
+    </script>
   </body>
 </html>

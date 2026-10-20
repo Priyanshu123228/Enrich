@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')).render(
 )
 
 // Register Progressive Web App (PWA) Service Worker in production (or ?pwa=true in dev)
-if ('serviceWorker' in navigator && (import.meta.env.PROD || window.location.search.includes('pwa=true'))) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')

@@ -1,3 +1,4 @@
+import { checkAndSend2HourReminders } from './controllers/notification.controller.js';
 ﻿import dns from 'dns';
 
 // Force all DNS lookups across the entire server to resolve IPv4 addresses first
@@ -36,6 +37,15 @@ const startServer = async () => {
       console.log(`🚀 Server running in [${process.env.NODE_ENV || 'development'}] mode on port ${PORT}`);
       console.log(`📡 Health check available at: http://localhost:${PORT}/api/v1/health`);
 
+
+      // Start Automated 2-Hour Appointment Reminder Interval (Checks every 5 minutes)
+      console.log('🔔 [ReminderScheduler] Initialized: 2-hour appointment reminder monitor active');
+      checkAndSend2HourReminders().catch(() => {});
+      setInterval(() => {
+        checkAndSend2HourReminders().catch((err) => {
+          console.warn('[ReminderScheduler Notice]:', err.message);
+        });
+      }, 5 * 60 * 1000);
       // Verify email transporter non-blockingly
       verifyEmailTransporter().catch((err) => {
         console.warn(`Email check warning: ${err.message}`);

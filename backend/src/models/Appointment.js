@@ -94,6 +94,14 @@ const appointmentSchema = new mongoose.Schema(
     cancelledBy: {
       type: String,
       enum: ['customer', 'admin', 'staff']
+    },
+    reminderSent: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    reminderSentAt: {
+      type: Date
     }
   },
   {

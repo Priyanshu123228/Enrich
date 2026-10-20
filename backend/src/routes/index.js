@@ -1,3 +1,4 @@
+import notificationRoutes from './notification.routes.js';
 ﻿import { Router } from 'express';
 import healthRoutes from './health.routes.js';
 import authRoutes from './auth.routes.js';
@@ -40,5 +41,6 @@ router.use('/contact', inquiryRoutes); // Convenient alias
 router.use('/products', productRoutes);
 router.use('/cosmetics', productRoutes); // Convenient alias
 router.use('/google-reviews', googleReviewsRoutes);
+router.use('/notifications', notificationRoutes);
 
 export default router;

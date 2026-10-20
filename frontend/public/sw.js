@@ -1,9 +1,10 @@
 /**
  * Enrich Salon Progressive Web App Service Worker
- * Version: 1.0.0
+ * Version: 2.0.0
+ * Features: Offline Shell, Navigation Fallback, Web Push & 2-Hour Appointment Reminders
  */
 
-const CACHE_NAME = 'enrich-pwa-v1';
+const CACHE_NAME = 'enrich-pwa-v2';
 
 const STATIC_ASSETS = [
   '/',
@@ -16,7 +17,7 @@ const STATIC_ASSETS = [
   '/offline.html'
 ];
 
-// Install Event - Precache App Shell
+// Install Event - Precache App Shell & Offline fallback
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -40,7 +41,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Stale-while-revalidate for static, Network-first for pages
+// Fetch Event - Network first for navigation with offline.html fallback
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -50,7 +51,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 1. Navigation requests (HTML pages) - Network first, fallback to cache, fallback to offline.html
+  // 1. Navigation requests (HTML pages)
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -70,7 +71,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Static assets (CSS, JS, Fonts, Images) - Cache first, network fallback
+  // 2. Static assets (CSS, JS, Fonts, Images)
   if (
     url.pathname.startsWith('/assets/') ||
     url.pathname.startsWith('/icons/') ||
@@ -98,7 +99,83 @@ self.addEventListener('fetch', (event) => {
   // Default fetch
   event.respondWith(
     caches.match(request).then((cached) => {
-      return cached || fetch(request);
+      return cached || fetch(request).catch(() => caches.match('/offline.html'));
     })
   );
+});
+
+// ==========================================
+// PUSH NOTIFICATIONS & 2-HOUR REMINDERS
+// ==========================================
+
+// Listen for incoming Push Events
+self.addEventListener('push', (event) => {
+  let data = {
+    title: 'Enrich Salon Reminder 💆‍♀️',
+    body: 'Your appointment is coming up in 2 hours! Tap to view details.',
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-192x192.png',
+    url: '/dashboard?tab=upcoming'
+  };
+
+  if (event.data) {
+    try {
+      const parsed = event.data.json();
+      data = { ...data, ...parsed };
+    } catch (e) {
+      data.body = event.data.text() || data.body;
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon || '/icons/icon-192x192.png',
+    badge: data.badge || '/icons/icon-192x192.png',
+    data: data.url || '/dashboard?tab=upcoming',
+    vibrate: [200, 100, 200, 100, 200],
+    actions: [
+      { action: 'open', title: 'View Booking' },
+      { action: 'call', title: 'Call Salon' }
+    ]
+  };
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'call') {
+    clients.openWindow('tel:+919667900313');
+    return;
+  }
+
+  const targetUrl = event.notification.data || '/dashboard?tab=upcoming';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && client.url.includes(targetUrl) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
+// Message listener from client window
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SHOW_REMINDER') {
+    const { title, body, url } = event.data;
+    self.registration.showNotification(title || 'Appointment Reminder 💆‍♀️', {
+      body: body || 'Your salon appointment is coming up in 2 hours!',
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-192x192.png',
+      data: url || '/dashboard?tab=upcoming',
+      vibrate: [200, 100, 200]
+    });
+  }
 });

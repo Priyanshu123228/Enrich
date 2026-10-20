@@ -9,6 +9,7 @@ import { appointmentService } from '../../services/appointment.service';
 import { paymentService } from '../../services/payment.service';
 import { offerService } from '../../services/offer.service';
 import { authService } from '../../services/auth.service';
+import { schedule2HourReminder, requestPushPermission, registerPushSubscription, showLocalNotification } from '../../utils/pushNotifications';
 import { loadRazorpayScript } from '../../utils/loadRazorpay';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -35,7 +36,10 @@ import {
   Copy,
   ExternalLink,
   MapPin,
-  PhoneCall
+  PhoneCall,
+  Bell,
+  BellRing,
+  Wifi
 } from 'lucide-react';
 
 export default function BookingWizard() {
@@ -109,6 +113,10 @@ export default function BookingWizard() {
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmedBooking, setConfirmedBooking] = useState(null);
   const [copiedVoucher, setCopiedVoucher] = useState(false);
+  const [reminderActive, setReminderActive] = useState(() => {
+    return localStorage.getItem('enrich_push_enabled') === 'true';
+  });
+  const [reminderFeedback, setReminderFeedback] = useState('');
 
   // Clear selected slot if it has passed
   useEffect(() => {
@@ -360,7 +368,7 @@ export default function BookingWizard() {
 
       // If user chose Pay at Counter / Salon
       if (paymentMethod === 'counter') {
-        setConfirmedBooking(newApp);
+        saveAndScheduleBooking(newApp);
         setCurrentStep(5);
         setIsSubmitting(false);
         return;
@@ -407,12 +415,13 @@ export default function BookingWizard() {
               paymentMethod: 'razorpay'
             });
 
-            setConfirmedBooking({
+            const paidApp = {
               ...newApp,
               paymentStatus: 'paid',
               status: 'confirmed',
               razorpayPaymentId: response.razorpay_payment_id
-            });
+            };
+            saveAndScheduleBooking(paidApp);
             setCurrentStep(5);
           } catch (verErr) {
             setErrorMsg(verErr.message || 'Payment verification failed on server');
@@ -466,6 +475,50 @@ export default function BookingWizard() {
       }
       setIsSubmitting(false);
     }
+  };
+
+
+  const saveAndScheduleBooking = (booking) => {
+    setConfirmedBooking(booking);
+    try {
+      localStorage.setItem('lastBooking', JSON.stringify(booking));
+      const raw = localStorage.getItem('enrich_offline_appointments');
+      const list = raw ? JSON.parse(raw) : [];
+      const updated = [booking, ...list.filter((b) => b.bookingId !== booking.bookingId)].slice(0, 5);
+      localStorage.setItem('enrich_offline_appointments', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Offline cache notice:', e);
+    }
+    schedule2HourReminder(booking);
+  };
+
+  const handleEnablePushReminder = async () => {
+    const granted = await requestPushPermission();
+    if (granted) {
+      setReminderActive(true);
+      await registerPushSubscription(user?.phone || guestPhone);
+      if (confirmedBooking) {
+        schedule2HourReminder(confirmedBooking);
+      }
+      setReminderFeedback('2-hour appointment reminder active on this device!');
+      setTimeout(() => setReminderFeedback(''), 4000);
+    } else {
+      setReminderFeedback('Push notification permission was denied or dismissed.');
+      setTimeout(() => setReminderFeedback(''), 4000);
+    }
+  };
+
+  const handleTestReminder = async () => {
+    if (Notification.permission !== 'granted') {
+      const granted = await requestPushPermission();
+      if (!granted) return;
+    }
+    const serviceName = confirmedBooking?.service?.name || 'Salon Treatment';
+    const timeStr = confirmedBooking?.startTime || '11:00';
+    await showLocalNotification(
+      '⏰ Reminder: Your Salon Appointment is in 2 Hours!',
+      `Your ${serviceName} session starts at ${timeStr}. Enrich Salon, Sikar.`
+    );
   };
 
   // Helper 1: Google Calendar Link Generator
@@ -1399,6 +1452,65 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                 <span className="font-semibold text-stone-800">{confirmedBooking.razorpayPaymentId}</span>
               </div>
             )}
+          </div>
+
+
+          {/* ENHANCEMENT: 2-HOUR PUSH NOTIFICATION REMINDER */}
+          <div className="p-4 rounded-xl border border-rose-200 bg-rose-50/60 text-left space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-rose-950">
+                <BellRing className="w-4 h-4 text-rose-700 shrink-0" />
+                <h4 className="text-xs font-bold uppercase tracking-wider">
+                  2-Hour Appointment Reminder
+                </h4>
+              </div>
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-rose-100 text-rose-800">
+                Push Notification
+              </span>
+            </div>
+
+            <p className="text-[11px] text-rose-900 leading-snug">
+              Get an automated reminder alert on your phone/browser exactly 2 hours before your appointment at <strong className="font-semibold">{confirmedBooking.startTime}</strong>.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={handleEnablePushReminder}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  reminderActive
+                    ? 'bg-emerald-700 text-white shadow-xs'
+                    : 'bg-rose-700 hover:bg-rose-800 text-white'
+                }`}
+              >
+                {reminderActive ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    Reminder Active
+                  </>
+                ) : (
+                  <>
+                    <Bell className="w-3.5 h-3.5" />
+                    Turn On 2-Hour Reminder
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleTestReminder}
+                className="px-3 py-1.5 rounded-lg border border-rose-300 bg-white hover:bg-rose-50 text-rose-800 text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Send Test Alert
+              </button>
+
+              {reminderFeedback && (
+                <span className="text-[11px] font-medium text-emerald-800 flex items-center gap-1">
+                  <Check className="w-3 h-3 text-emerald-600" />
+                  {reminderFeedback}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* ENHANCEMENT 2: ADD TO CALENDAR 1-TAP BUTTONS */}
