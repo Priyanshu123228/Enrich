@@ -24,11 +24,11 @@ export default function PWAInstallPrompt() {
       return;
     }
 
-    // 2. Check if user dismissed recently (7-day cooldown)
+    // 2. Check if user dismissed recently (1-day cooldown)
     const dismissedAt = localStorage.getItem('enrich_pwa_dismissed');
     if (dismissedAt) {
       const daysSinceDismissed = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60 * 24);
-      if (daysSinceDismissed < 7) {
+      if (daysSinceDismissed < 1) {
         return;
       }
     }
