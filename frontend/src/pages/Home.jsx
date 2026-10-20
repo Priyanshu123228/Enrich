@@ -14,6 +14,7 @@ import VideoModal from '../components/gallery/VideoModal';
 import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
 import SocialMediaSection from '../components/SocialMediaSection';
 import GoogleReviews from '../components/GoogleReviews';
+import HomeReelsSection from '../components/HomeReelsSection';
 import { CardSkeleton } from '../components/common/SkeletonLoader';
 import {
   Calendar,
@@ -414,7 +415,7 @@ export default function Home() {
                 <div className="space-y-3 pt-4 text-center">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 border border-stone-200/90 shadow-2xs text-xs">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
-                    <span className="font-bold text-stone-900">4.9★ Google Rated</span>
+                    <span className="font-bold text-stone-900">4.9 ★ Google Rated</span>
                     <span className="text-stone-300">•</span>
                     <span className="text-stone-500 text-[11px]">510+ Verified Client Reviews</span>
                   </div>
@@ -430,7 +431,7 @@ export default function Home() {
                       <a
                         key={item.label}
                         href="#services"
-                        onClick={() => setActiveCategory(item.cat)}
+                        onClick={() => setActiveServiceCategory(item.cat)}
                         className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-rose-700 border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
                       >
                         {item.label}
@@ -445,6 +446,14 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* =========================================================================
+          SECTION 1B: STUDIO VIDEO REELS & TRANSFORMATIONS (4 SHORT 4K REELS)
+          ========================================================================= */}
+      <HomeReelsSection
+        videos={mediaItems.videos || []}
+        onSelectVideo={(video) => setActiveVideo(video)}
+      />
 
       {/* =========================================================================
           SECTION 2: GALLERY / PARLOUR MEDIA (LUMINOUS STUDIO SHOWCASE)

@@ -336,6 +336,26 @@ export const SALON_CONFIG = {
         description: 'Demonstrating painless deep extraction and skin rejuvenation serums.',
         mediaType: 'video',
       },
+      {
+        _id: 'med_v3',
+        title: 'Couture Bridal Hair & Veil Placement',
+        category: 'Bridal',
+        url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226953/enrich/direct_uploads/qkdiswgerwtf7heyyamp.mp4',
+        thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226953/enrich/direct_uploads/qkdiswgerwtf7heyyamp.mp4',
+        duration: 45,
+        description: 'Behind the scenes master styling for our royal bride featuring intricate crown braiding.',
+        mediaType: 'video',
+      },
+      {
+        _id: 'med_v4',
+        title: 'Artisan Chrome Ombre Nail Process',
+        category: 'Nails',
+        url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226670/enrich/direct_uploads/y96ogvxcfdc6iqbqs35j.mp4',
+        thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226670/enrich/direct_uploads/y96ogvxcfdc6iqbqs35j.mp4',
+        duration: 75,
+        description: 'Watch master nail technician craft mirror-finish French ombre nails in 4K.',
+        mediaType: 'video',
+      },
     ],
     transformations: [
       {
