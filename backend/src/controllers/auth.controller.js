@@ -1,5 +1,7 @@
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
+import { VerificationOTP } from '../models/VerificationOTP.js';
 import { emailService } from '../services/email.service.js';
 import { otpService } from '../services/otp.service.js';
 import { smsService } from '../services/sms.service.js';
@@ -590,5 +592,171 @@ export const changePassword = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(200, null, 'Logged out successfully')
+  );
+});
+
+
+/**
+ * @desc    Send 4-Digit SMS / WhatsApp OTP for Guest Phone Booking
+ * @route   POST /api/v1/auth/guest-send-otp
+ * @access  Public
+ */
+export const sendGuestPhoneOTP = asyncHandler(async (req, res) => {
+  const { phone, name, channel = 'sms' } = req.body;
+
+  if (!phone) {
+    throw new ApiError(400, 'Mobile number is required');
+  }
+
+  const cleanPhone = phone.toString().replace(/\D/g, '').slice(-10);
+  if (cleanPhone.length !== 10) {
+    throw new ApiError(400, 'Please enter a valid 10-digit mobile number');
+  }
+
+  // Find or create customer account
+  let user = await User.findOne({ phone: cleanPhone });
+  if (!user) {
+    const guestEmail = `guest_${cleanPhone}@enrichsalon.com`;
+    let finalEmail = guestEmail;
+    const emailExists = await User.findOne({ email: finalEmail });
+    if (emailExists) {
+      finalEmail = `guest_${cleanPhone}_${Date.now()}@enrichsalon.com`;
+    }
+
+    user = await User.create({
+      name: name?.trim() || 'Guest Client',
+      phone: cleanPhone,
+      email: finalEmail,
+      password: crypto.randomBytes(12).toString('hex') + 'A1!',
+      role: 'customer',
+      status: 'pending_verification',
+      isEmailVerified: true,
+      isPhoneVerified: false,
+      isActive: true
+    });
+  } else if (name && name.trim() && (user.name === 'Guest Client' || !user.name)) {
+    user.name = name.trim();
+    await user.save();
+  }
+
+  // Generate 4-digit numeric OTP
+  const plainOtp = Math.floor(1000 + Math.random() * 9000).toString();
+  const otpHash = crypto.createHash('sha256').update(plainOtp).digest('hex');
+
+  // Invalidate any existing phone OTP for this user
+  await VerificationOTP.deleteMany({ userId: user._id, type: 'phone_verification' });
+
+  // Store hashed 4-digit OTP valid for 10 minutes
+  await VerificationOTP.create({
+    userId: user._id,
+    type: 'phone_verification',
+    otpHash,
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    attempts: 0,
+    lastSentAt: new Date()
+  });
+
+  const channelLabel = channel?.toLowerCase() === 'whatsapp' ? 'WhatsApp' : 'SMS';
+
+  console.log(
+    `\n======================================================\n` +
+    `📱 [${channelLabel.toUpperCase()} 4-DIGIT GUEST OTP DISPATCH]\n` +
+    `Recipient: +91 ${cleanPhone}\n` +
+    `Client: ${name || user.name}\n` +
+    `4-Digit OTP: ${plainOtp}\n` +
+    `Channel: ${channelLabel}\n` +
+    `======================================================\n`
+  );
+
+  try {
+    await smsService.sendPhoneOTP({
+      phone: cleanPhone,
+      otp: plainOtp,
+      userName: name || user.name
+    });
+  } catch (err) {
+    console.warn(`[GuestPhoneOTP] SMS transport note: ${err.message}`);
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        phone: cleanPhone,
+        channel: channelLabel,
+        devOtp: process.env.NODE_ENV !== 'production' ? plainOtp : undefined
+      },
+      `4-digit verification code sent via ${channelLabel} to +91 ${cleanPhone}.`
+    )
+  );
+});
+
+/**
+ * @desc    Verify 4-Digit Guest Phone OTP and issue JWT session
+ * @route   POST /api/v1/auth/guest-verify-otp
+ * @access  Public
+ */
+export const verifyGuestPhoneOTP = asyncHandler(async (req, res) => {
+  const { phone, otp, name } = req.body;
+
+  if (!phone || !otp) {
+    throw new ApiError(400, 'Mobile number and 4-digit verification code are required');
+  }
+
+  const cleanPhone = phone.toString().replace(/\D/g, '').slice(-10);
+  const cleanOtp = otp.toString().trim();
+
+  const user = await User.findOne({ phone: cleanPhone });
+  if (!user) {
+    throw new ApiError(404, 'No pending verification request found for this mobile number. Please request an OTP first.');
+  }
+
+  const record = await VerificationOTP.findOne({ userId: user._id, type: 'phone_verification' });
+  if (!record) {
+    throw new ApiError(400, 'Verification code has expired or was not requested. Please request a new code.');
+  }
+
+  if (new Date() > new Date(record.expiresAt)) {
+    await VerificationOTP.deleteOne({ _id: record._id });
+    throw new ApiError(400, 'Verification code has expired. Please request a new code.');
+  }
+
+  const enteredHash = crypto.createHash('sha256').update(cleanOtp).digest('hex');
+  if (record.otpHash !== enteredHash) {
+    record.attempts += 1;
+    await record.save();
+    const remaining = Math.max(0, 5 - record.attempts);
+    if (remaining === 0) {
+      await VerificationOTP.deleteOne({ _id: record._id });
+      throw new ApiError(429, 'Too many incorrect attempts. This code has been invalidated. Please request a new code.');
+    }
+    throw new ApiError(400, `Incorrect verification code. ${remaining} attempt(s) remaining.`);
+  }
+
+  // Verification succeeded: remove OTP
+  await VerificationOTP.deleteOne({ _id: record._id });
+
+  // Activate & verify user
+  user.isPhoneVerified = true;
+  user.isEmailVerified = true;
+  user.status = 'active';
+  user.isActive = true;
+  if (name && name.trim() && (user.name === 'Guest Client' || !user.name)) {
+    user.name = name.trim();
+  }
+  await user.save();
+
+  // Generate JWT Access Token
+  const token = user.generateAccessToken();
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user: formatUserResponse(user),
+        token
+      },
+      'Mobile number verified successfully. Welcome to Enrich Salon!'
+    )
   );
 });

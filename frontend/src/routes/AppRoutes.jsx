@@ -110,14 +110,7 @@ export default function AppRoutes() {
             }
           />
           <Route path="booking" element={<Navigate to="/book" replace />} />
-          <Route
-            path="book"
-            element={
-              <ProtectedRoute>
-                <BookingWizard />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="book" element={<BookingWizard />} />
           <Route
             path="my-appointments"
             element={

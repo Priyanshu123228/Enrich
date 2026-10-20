@@ -3,6 +3,8 @@ import {
   signup,
   verifyEmail,
   resendEmailOTP,
+  sendGuestPhoneOTP,
+  verifyGuestPhoneOTP,
   login,
   logout,
   forgotPassword,
@@ -44,6 +46,12 @@ router.post('/signup', authLimiter, validateSignup, signup);
 router.post('/register', authLimiter, validateSignup, signup);
 router.post('/verify-email', otpLimiter, validateVerifyEmailOTP, verifyEmail);
 router.post('/resend-email-otp', otpLimiter, validateResendEmailOTP, resendEmailOTP);
+// ==========================================
+// 1.1 GUEST / PHONE OTP BOOKING FLOW
+// ==========================================
+router.post('/guest-send-otp', otpLimiter, sendGuestPhoneOTP);
+router.post('/guest-verify-otp', otpLimiter, verifyGuestPhoneOTP);
+
 
 // ==========================================
 // 2. AUTHENTICATION & SESSION

@@ -80,6 +80,22 @@ export const authService = {
   resendPhoneOTP: async (data = {}) => {
     return await api.post('/auth/resend-phone-otp', data);
   },
+  /**
+   * Guest Phone OTP Dispatch (SMS or WhatsApp)
+   * @param {Object} data - { phone, name, channel }
+   */
+  sendGuestPhoneOTP: async (data) => {
+    return await api.post('/auth/guest-send-otp', data);
+  },
+
+  /**
+   * Verify Guest Phone 4-digit OTP & automatically authenticate
+   * @param {Object} data - { phone, name, otp }
+   */
+  verifyGuestPhoneOTP: async (data) => {
+    return await api.post('/auth/guest-verify-otp', data);
+  },
+
 
   /**
    * Fetch current authenticated user profile

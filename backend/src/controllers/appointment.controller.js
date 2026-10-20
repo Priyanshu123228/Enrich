@@ -32,18 +32,11 @@ export const createAppointment = asyncHandler(async (req, res) => {
   const { serviceId, staffId, date, startTime, notes, promoCode } = req.body;
   const customerId = req.user._id;
 
-  // 0. Verify customer email & phone verification status
-  if (!req.user.isEmailVerified) {
+  // 0. Verify customer mobile / account verification status (Frictionless phone booking)
+  if (!req.user.isPhoneVerified && !req.user.isEmailVerified) {
     throw new ApiError(
       403,
-      'Email verification is required before booking an appointment. Please verify your email address.',
-      { requiresEmailVerification: true }
-    );
-  }
-  if (!req.user.isPhoneVerified) {
-    throw new ApiError(
-      403,
-      'Phone verification is required before booking an appointment. Please verify your phone number.',
+      'Mobile number verification is required before confirming your reservation. Please verify your phone number.',
       { requiresPhoneVerification: true }
     );
   }

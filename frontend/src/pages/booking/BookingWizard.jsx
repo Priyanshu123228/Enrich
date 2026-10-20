@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
+import { resolveImageUrl, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
 import { getTodayDateString, isSlotPassed } from '../../utils/dateUtils';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { serviceService } from '../../services/service.service';
@@ -8,6 +8,7 @@ import { slotService } from '../../services/slot.service';
 import { appointmentService } from '../../services/appointment.service';
 import { paymentService } from '../../services/payment.service';
 import { offerService } from '../../services/offer.service';
+import { authService } from '../../services/auth.service';
 import { loadRazorpayScript } from '../../utils/loadRazorpay';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -22,19 +23,23 @@ import {
   ChevronLeft,
   Loader2,
   AlertCircle,
-  FileText,
-  DollarSign,
   CreditCard,
   ShieldCheck,
   Building2,
   Tag,
-  Gift,
-  Percent,
-  Check
+  Check,
+  Smartphone,
+  MessageSquare,
+  Share2,
+  Download,
+  Copy,
+  ExternalLink,
+  MapPin,
+  PhoneCall
 } from 'lucide-react';
 
 export default function BookingWizard() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -53,6 +58,41 @@ export default function BookingWizard() {
   const [selectedSlot, setSelectedSlot] = useState('');
   const [notes, setNotes] = useState('');
 
+  // Guest & Phone OTP Verification States (Frictionless Booking)
+  const [guestName, setGuestName] = useState(user?.name || '');
+  const [guestPhone, setGuestPhone] = useState(user?.phone || '');
+  const [guestChannel, setGuestChannel] = useState('sms'); // 'sms' | 'whatsapp'
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpFeedback, setOtpFeedback] = useState({ type: '', message: '' });
+  const [devOtpHint, setDevOtpHint] = useState('');
+  const [otpCountdown, setOtpCountdown] = useState(0);
+  const [isMobileVerified, setIsMobileVerified] = useState(Boolean(user?.isPhoneVerified));
+
+  // Sync state if user logs in or profile refreshes
+  useEffect(() => {
+    if (user?.isPhoneVerified) {
+      setIsMobileVerified(true);
+    }
+    if (user?.name && !guestName) {
+      setGuestName(user.name);
+    }
+    if (user?.phone && !guestPhone) {
+      setGuestPhone(user.phone);
+    }
+  }, [user]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (otpCountdown <= 0) return;
+    const timer = setInterval(() => {
+      setOtpCountdown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [otpCountdown]);
+
   // Promo / Coupon States
   const [promoCodeInput, setPromoCodeInput] = useState(() => {
     return new URLSearchParams(location.search).get('promo') || '';
@@ -68,6 +108,7 @@ export default function BookingWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmedBooking, setConfirmedBooking] = useState(null);
+  const [copiedVoucher, setCopiedVoucher] = useState(false);
 
   // Clear selected slot if it has passed
   useEffect(() => {
@@ -159,7 +200,6 @@ export default function BookingWizard() {
 
   // Payment states
   const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' | 'counter'
-  const [paymentInfo, setPaymentInfo] = useState(null);
 
   // Filter staff offering the selected service
   const qualifiedStaff = selectedService
@@ -210,24 +250,100 @@ export default function BookingWizard() {
     setPromoFeedback({ type: '', message: '' });
   };
 
+  // Dispatch 4-digit SMS / WhatsApp OTP
+  const handleSendOtp = async () => {
+    const clean = guestPhone.replace(/\D/g, '').slice(-10);
+    if (clean.length !== 10) {
+      setOtpFeedback({ type: 'error', message: 'Please enter a valid 10-digit mobile number' });
+      return;
+    }
+
+    setIsSendingOtp(true);
+    setOtpFeedback({ type: '', message: '' });
+    setDevOtpHint('');
+
+    try {
+      const res = await authService.sendGuestPhoneOTP({
+        phone: clean,
+        name: guestName.trim() || 'Valued Client',
+        channel: guestChannel
+      });
+
+      setOtpSent(true);
+      setOtpCountdown(45);
+      if (res?.data?.devOtp) {
+        setDevOtpHint(res.data.devOtp);
+      }
+      setOtpFeedback({
+        type: 'success',
+        message: res.message || `4-digit OTP sent via ${guestChannel === 'whatsapp' ? 'WhatsApp' : 'SMS'}!`
+      });
+    } catch (err) {
+      setOtpFeedback({
+        type: 'error',
+        message: err.message || 'Failed to dispatch verification code. Please try again.'
+      });
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  // Verify 4-digit OTP and establish session
+  const handleVerifyOtp = async () => {
+    const clean = guestPhone.replace(/\D/g, '').slice(-10);
+    const code = otpInput.trim();
+
+    if (code.length !== 4) {
+      setOtpFeedback({ type: 'error', message: 'Please enter the 4-digit verification code' });
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    setOtpFeedback({ type: '', message: '' });
+
+    try {
+      const res = await authService.verifyGuestPhoneOTP({
+        phone: clean,
+        otp: code,
+        name: guestName.trim()
+      });
+
+      if (res?.data?.token) {
+        localStorage.setItem('token', res.data.token);
+        if (typeof refreshUser === 'function') {
+          await refreshUser();
+        }
+      }
+
+      setIsMobileVerified(true);
+      setOtpFeedback({
+        type: 'success',
+        message: 'Mobile number verified successfully!'
+      });
+    } catch (err) {
+      setOtpFeedback({
+        type: 'error',
+        message: err.message || 'Incorrect or expired verification code'
+      });
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  // Final Appointment Submission
   const handleConfirmAppointment = async () => {
     setErrorMsg('');
 
-    // Require phone verification before confirming appointment
-    if (!user?.isPhoneVerified) {
-      navigate('/verify-phone', {
-        state: {
-          from: '/book',
-          message: 'Phone verification is required before confirming your salon reservation.'
-        }
-      });
+    // Frictionless Check: Verify mobile number before booking
+    if (!user?.isPhoneVerified && !isMobileVerified) {
+      setErrorMsg('Please complete quick mobile verification above before confirming your reservation.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // 1. Create Appointment Reservation (Status: pending/confirmed, paymentStatus: pending)
+      // 1. Create Appointment Reservation
       const appRes = await appointmentService.createAppointment({
         serviceId: selectedService._id,
         staffId: selectedStaff === 'any' ? 'any' : selectedStaff._id,
@@ -268,14 +384,14 @@ export default function BookingWizard() {
         key: orderRes.data.keyId,
         amount: orderRes.data.amount,
         currency: orderRes.data.currency,
-        name: 'Enrich Beauty Parlour & Cosmetic Clinic',
+        name: 'Enrich Ladies Beauty Parlor & Cosmetic Clinic',
         description: `${selectedService.name} Booking Reservation`,
         image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=200&q=80',
         order_id: orderRes.data.orderId,
         prefill: {
-          name: user?.name || orderRes.data.customer?.name || '',
+          name: user?.name || guestName || orderRes.data.customer?.name || '',
           email: user?.email || orderRes.data.customer?.email || '',
-          contact: user?.phone || orderRes.data.customer?.phone || ''
+          contact: user?.phone || guestPhone || orderRes.data.customer?.phone || ''
         },
         theme: {
           color: '#1c1917'
@@ -283,8 +399,7 @@ export default function BookingWizard() {
         handler: async (response) => {
           setIsSubmitting(true);
           try {
-            // 3. Verify Razorpay HMAC signature on backend
-            const verifyRes = await paymentService.verifyPayment({
+            await paymentService.verifyPayment({
               appointmentId: newApp._id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -292,7 +407,6 @@ export default function BookingWizard() {
               paymentMethod: 'razorpay'
             });
 
-            setPaymentInfo(verifyRes.data);
             setConfirmedBooking({
               ...newApp,
               paymentStatus: 'paid',
@@ -314,7 +428,6 @@ export default function BookingWizard() {
         },
         modal: {
           ondismiss: async () => {
-            // Customer closed modal without completing payment
             await paymentService.reportFailure({
               appointmentId: newApp._id,
               razorpay_order_id: orderRes.data.orderId,
@@ -347,12 +460,112 @@ export default function BookingWizard() {
       rzp.open();
     } catch (err) {
       if (err.status === 401 || err.message?.toLowerCase().includes('token') || err.message?.toLowerCase().includes('unauthorized')) {
-        setErrorMsg('Your login session has expired. Please log in again to confirm your appointment reservation.');
+        setErrorMsg('Please complete quick mobile verification above before confirming your reservation.');
       } else {
         setErrorMsg(err.message || 'Failed to complete reservation. Please try again.');
       }
       setIsSubmitting(false);
     }
+  };
+
+  // Helper 1: Google Calendar Link Generator
+  const getGoogleCalendarUrl = (booking) => {
+    if (!booking) return '#';
+    const cleanDate = booking.date.replace(/-/g, '');
+    const cleanStart = booking.startTime.replace(':', '') + '00';
+    const cleanEnd = (booking.endTime || booking.startTime).replace(':', '') + '00';
+    const dates = `${cleanDate}T${cleanStart}/${cleanDate}T${cleanEnd}`;
+
+    const title = encodeURIComponent(`${booking.service?.name || 'Treatment'} - Enrich Beauty Parlour`);
+    const details = encodeURIComponent(
+      `Booking ID: ${booking.bookingId}\n` +
+      `Service: ${booking.service?.name}\n` +
+      `Stylist: ${booking.staff?.name}\n` +
+      `Time: ${booking.startTime} - ${booking.endTime}\n` +
+      `Enrich Ladies Beauty Parlor & Cosmetic Clinic\n` +
+      `Phone: +91 96679 00313\n` +
+      `Address: Station Road, Opposite City Center Mall, Sikar, Rajasthan 332001`
+    );
+    const location = encodeURIComponent('Enrich Ladies Beauty Parlor & Cosmetic Clinic, Station Road, Sikar, Rajasthan 332001');
+
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+  };
+
+  // Helper 2: Apple Calendar / Outlook .ics File Generator
+  const handleDownloadIcs = (booking) => {
+    if (!booking) return;
+    const cleanDate = booking.date.replace(/-/g, '');
+    const cleanStart = booking.startTime.replace(':', '') + '00';
+    const cleanEnd = (booking.endTime || booking.startTime).replace(':', '') + '00';
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Enrich Beauty Parlour//Booking System//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:${booking.bookingId || Date.now()}@enrichsalon.com`,
+      `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+      `DTSTART:${cleanDate}T${cleanStart}`,
+      `DTEND:${cleanDate}T${cleanEnd}`,
+      `SUMMARY:${booking.service?.name || 'Treatment'} - Enrich Salon Sikar`,
+      `DESCRIPTION:Booking ID: ${booking.bookingId}\\nService: ${booking.service?.name}\\nStylist: ${booking.staff?.name}\\nHelpline: +91 96679 00313`,
+      'LOCATION:Enrich Ladies Beauty Parlor & Cosmetic Clinic\\, Opposite City Center Mall\\, Station Road\\, Sikar\\, Rajasthan 332001',
+      'STATUS:CONFIRMED',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Enrich-Appointment-${booking.bookingId}.ics`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Helper 3: WhatsApp Booking Voucher Text
+  const getWhatsAppVoucherText = (booking) => {
+    if (!booking) return '';
+    const mapUrl = 'https://maps.google.com/?q=Enrich+Ladies+Beauty+Parlor+Sikar';
+    const paymentLabel = booking.paymentStatus === 'paid' ? 'Paid Online via Razorpay ✅' : 'Pay at Reception Counter 🏢';
+
+    return (
+`✨ *ENRICH BEAUTY PARLOUR & CLINIC* ✨
+━━━━━━━━━━━━━━━━━━━━━━
+🎉 *APPOINTMENT CONFIRMATION VOUCHER*
+
+📋 *Booking ID:* ${booking.bookingId}
+💆‍♀️ *Service:* ${booking.service?.name || 'Salon Treatment'}
+👤 *Stylist:* ${booking.staff?.name || 'Salon Specialist'}
+📅 *Date:* ${booking.date}
+⏰ *Time:* ${booking.startTime} - ${booking.endTime}
+💰 *Total Amount:* ₹${booking.finalAmount || booking.price || 0}
+💳 *Payment:* ${paymentLabel}
+
+📍 *Salon Address:*
+Enrich Ladies Beauty Parlor & Cosmetic Clinic,
+Opposite City Center Mall, Station Road,
+Sikar, Rajasthan 332001
+
+🗺️ *Google Maps Location:*
+${mapUrl}
+
+📞 *Direct Helpline:* +91 96679 00313
+━━━━━━━━━━━━━━━━━━━━━━
+_Please arrive 5-10 minutes prior to your scheduled time. We look forward to pampering you!_`
+    );
+  };
+
+  const handleCopyVoucher = () => {
+    if (!confirmedBooking) return;
+    navigator.clipboard.writeText(getWhatsAppVoucherText(confirmedBooking));
+    setCopiedVoucher(true);
+    setTimeout(() => setCopiedVoucher(false), 2500);
   };
 
   const steps = [
@@ -366,7 +579,7 @@ export default function BookingWizard() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center">
         <Loader2 className="w-8 h-8 text-stone-700 animate-spin mb-3" />
-        <p className="text-sm text-stone-500">Loading booking options...</p>
+        <p className="text-sm text-stone-500">Loading booking catalog...</p>
       </div>
     );
   }
@@ -448,15 +661,20 @@ export default function BookingWizard() {
                   <div className="space-y-1 flex-1">
                     <div className="flex justify-between items-start">
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-700">
-                        {service.category}
+                        {service.category?.name || 'Treatment'}
                       </span>
-                      <span className="text-base font-bold font-serif text-stone-900">
-                        ${service.discountPrice > 0 ? service.discountPrice : service.price}
-                      </span>
+                      <div className="text-right">
+                        {service.discountPrice > 0 ? (
+                          <div className="flex items-center space-x-1.5">
+                            <span className="text-xs text-stone-400 line-through">₹{service.price}</span>
+                            <span className="text-sm font-bold text-stone-900">₹{service.discountPrice}</span>
+                          </div>
+                        ) : (
+                          <span className="text-sm font-bold text-stone-900">₹{service.price}</span>
+                        )}
+                      </div>
                     </div>
-                    <h4 className="font-bold text-sm text-stone-900 font-serif leading-snug">
-                      {service.name}
-                    </h4>
+                    <h3 className="font-bold text-base text-stone-900">{service.name}</h3>
                     <p className="text-xs text-stone-500 line-clamp-1">{service.description}</p>
                     <div className="text-[11px] text-stone-600 font-medium flex items-center pt-1">
                       <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
@@ -468,7 +686,7 @@ export default function BookingWizard() {
             })}
           </div>
 
-          <div className="pt-4 flex justify-end">
+          <div className="pt-4 flex justify-end border-t border-stone-100">
             <button
               onClick={() => setCurrentStep(2)}
               disabled={!selectedService}
@@ -512,7 +730,7 @@ export default function BookingWizard() {
                   Any Available Stylist
                 </h4>
                 <p className="text-xs text-stone-500 leading-relaxed">
-                  We will assign the first available qualified stylist to give you the most flexible schedule options.
+                  We will assign the first available qualified specialist to give you the most flexible schedule options.
                 </p>
               </div>
               <span className="text-[11px] font-semibold text-stone-700 mt-4 block">
@@ -650,23 +868,14 @@ export default function BookingWizard() {
                           : 'bg-white text-stone-800 border-stone-200 hover:border-stone-400 hover:bg-stone-50 font-medium cursor-pointer'
                       }`}
                     >
-                      <div className={`text-sm font-mono ${isPassed ? 'line-through text-stone-400' : ''}`}>
-                        {slot.time}
-                      </div>
-                      <div className={`text-xs ${isPassed ? 'text-stone-400 font-normal' : isSelected ? 'text-stone-300' : 'text-stone-400'}`}>
-                        {isPassed ? 'Passed' : `to ${slot.endTime}`}
-                      </div>
+                      <span className="text-xs">{slot.time}</span>
                     </button>
                   );
                 })}
               </div>
             ) : (
-              <div className="p-10 text-center bg-stone-50 rounded-lg border border-stone-200 space-y-2">
-                <Clock className="w-8 h-8 text-stone-400 mx-auto" />
-                <p className="text-sm font-semibold text-stone-700">No Open Slots Available</p>
-                <p className="text-xs text-stone-500">
-                  All slots for this day are fully booked or the stylist is off duty. Please choose a different date.
-                </p>
+              <div className="p-8 text-center border border-dashed border-stone-300 rounded-lg text-stone-500 text-xs">
+                No slots available on this date for the selected stylist. Please try another date or select "Any Available Stylist".
               </div>
             )}
           </div>
@@ -691,7 +900,7 @@ export default function BookingWizard() {
         </div>
       )}
 
-      {/* STEP 4: REVIEW & CONFIRM */}
+      {/* STEP 4: REVIEW, GUEST MOBILE OTP & CONFIRM */}
       {currentStep === 4 && (
         <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-6">
           <div className="space-y-1">
@@ -699,16 +908,19 @@ export default function BookingWizard() {
               4. Review & Confirm Booking
             </h2>
             <p className="text-xs text-stone-500">
-              Double-check your appointment details before confirming.
+              Verify your mobile number and review appointment details before locking your slot.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            {/* Summary Details Card */}
+            {/* Left Column: Summary Details Card */}
             <div className="p-6 bg-stone-50 rounded-lg border border-stone-200 space-y-4 text-xs text-stone-700">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
-                Booking Summary
+              <h4 className="text-sm font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between">
+                <span>Booking Summary</span>
+                <span className="text-[11px] font-normal text-stone-500 font-sans">
+                  {selectedService?.duration} mins
+                </span>
               </h4>
 
               <div className="flex justify-between">
@@ -800,20 +1012,20 @@ export default function BookingWizard() {
                   <div className="pt-3 border-t border-stone-200 space-y-1.5">
                     <div className="flex justify-between text-stone-500">
                       <span>Treatment Price:</span>
-                      <span className="font-semibold text-stone-800">${basePrice}</span>
+                      <span className="font-semibold text-stone-800">₹{basePrice}</span>
                     </div>
 
                     {discountAmount > 0 && (
                       <div className="flex justify-between text-emerald-700 font-semibold">
                         <span>Promo Discount ({appliedOffer?.code}):</span>
-                        <span>-${discountAmount}</span>
+                        <span>-₹{discountAmount}</span>
                       </div>
                     )}
 
                     <div className="pt-2 border-t border-stone-200/60 flex justify-between items-baseline">
                       <span className="text-sm font-bold text-stone-900">Total Payable:</span>
                       <span className="text-2xl font-bold font-serif text-stone-900">
-                        ${finalPayable}
+                        ₹{finalPayable}
                       </span>
                     </div>
                   </div>
@@ -821,8 +1033,200 @@ export default function BookingWizard() {
               })()}
             </div>
 
-            {/* Client Notes & Payment Options */}
-            <div className="space-y-4">
+            {/* Right Column: Guest Mobile OTP Verification & Payment Preference */}
+            <div className="space-y-5">
+              
+              {/* ENHANCEMENT 1: FRICTIONLESS GUEST / PHONE OTP VERIFICATION */}
+              <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/70 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Smartphone className="w-4 h-4 text-stone-800" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-stone-900">
+                      Client Contact & Verification
+                    </span>
+                  </div>
+                  {isMobileVerified ? (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      <Check className="w-3 h-3 mr-1" />
+                      Phone Verified
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                      Instant 4-Digit OTP
+                    </span>
+                  )}
+                </div>
+
+                {isMobileVerified ? (
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-xs space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-emerald-950">
+                        {user?.name || guestName || 'Valued Client'}
+                      </span>
+                      <span className="font-mono text-emerald-800 font-bold">
+                        +91 {user?.phone || guestPhone}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700">
+                      ✓ Mobile confirmed. WhatsApp booking voucher and SMS will be sent to this number.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-1">
+                    <p className="text-[11px] text-stone-500 leading-snug">
+                      No password required. Enter your name and mobile number to receive your instant 4-digit confirmation code.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-stone-600 mb-1">
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          placeholder="e.g. Priya Sharma"
+                          className="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-xs focus:outline-stone-500 font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase text-stone-600 mb-1">
+                          Mobile Number *
+                        </label>
+                        <div className="flex">
+                          <span className="inline-flex items-center px-2.5 rounded-l-lg border border-r-0 border-stone-300 bg-stone-100 text-stone-600 text-xs font-semibold">
+                            +91
+                          </span>
+                          <input
+                            type="tel"
+                            maxLength={10}
+                            value={guestPhone}
+                            onChange={(e) => setGuestPhone(e.target.value.replace(/\D/g, ''))}
+                            placeholder="9876543210"
+                            className="w-full px-3 py-2 rounded-r-lg border border-stone-300 bg-white text-xs font-mono font-medium focus:outline-stone-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Channel Selector: SMS vs WhatsApp */}
+                    <div className="flex items-center space-x-2 pt-1">
+                      <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+                        Send via:
+                      </span>
+                      <div className="inline-flex rounded-lg border border-stone-200 bg-white p-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setGuestChannel('sms')}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                            guestChannel === 'sms'
+                              ? 'bg-stone-900 text-white shadow-xs'
+                              : 'text-stone-600 hover:text-stone-900'
+                          }`}
+                        >
+                          SMS
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setGuestChannel('whatsapp')}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                            guestChannel === 'whatsapp'
+                              ? 'bg-emerald-700 text-white shadow-xs'
+                              : 'text-stone-600 hover:text-emerald-700'
+                          }`}
+                        >
+                          WhatsApp
+                        </button>
+                      </div>
+
+                      {!otpSent && (
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          disabled={isSendingOtp || guestPhone.replace(/\D/g, '').length < 10}
+                          className="ml-auto px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
+                        >
+                          {isSendingOtp ? (
+                            <>
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              <Smartphone className="w-3.5 h-3.5" />
+                              Send 4-Digit OTP
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Inline 4-Digit OTP Entry Form */}
+                    {otpSent && (
+                      <div className="p-3 bg-white rounded-lg border border-stone-200 space-y-2 mt-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[11px] font-bold text-stone-700 uppercase tracking-wider">
+                            Enter 4-Digit Code
+                          </label>
+                          {devOtpHint && (
+                            <span className="text-[10px] font-bold bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200">
+                              Demo Code: <strong className="font-mono text-amber-950">{devOtpHint}</strong>
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            maxLength={4}
+                            value={otpInput}
+                            onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                            placeholder="4-digit code"
+                            className="flex-1 px-3 py-2 rounded-lg border border-stone-300 text-center font-mono text-sm tracking-widest font-bold focus:outline-stone-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleVerifyOtp}
+                            disabled={isVerifyingOtp || otpInput.trim().length !== 4}
+                            className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1"
+                          >
+                            {isVerifyingOtp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Verify Code'}
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] text-stone-500 pt-1">
+                          <span>Didn't receive code?</span>
+                          {otpCountdown > 0 ? (
+                            <span className="text-stone-400">Resend in {otpCountdown}s</span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={handleSendOtp}
+                              className="font-bold text-stone-900 hover:underline cursor-pointer"
+                            >
+                              Resend OTP
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {otpFeedback.message && (
+                      <p
+                        className={`text-[11px] font-medium flex items-center gap-1 ${
+                          otpFeedback.type === 'success' ? 'text-emerald-700' : 'text-red-600'
+                        }`}
+                      >
+                        {otpFeedback.type === 'success' && <Check className="w-3 h-3 text-emerald-600 shrink-0" />}
+                        {otpFeedback.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Payment Preference */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
                   Select Payment Preference *
@@ -834,7 +1238,7 @@ export default function BookingWizard() {
                     onClick={() => setPaymentMethod('online')}
                     className={`p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
                       paymentMethod === 'online'
-                        ? 'border-stone-900 bg-stone-50 shadow-xs'
+                        ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
                         : 'border-stone-200 bg-white hover:border-stone-300'
                     }`}
                   >
@@ -850,7 +1254,7 @@ export default function BookingWizard() {
                       </span>
                     </div>
                     <p className="text-[11px] text-stone-500 leading-snug">
-                      UPI, Cards, NetBanking, Wallets
+                      UPI, Cards, NetBanking, Instant Refund
                     </p>
                   </button>
 
@@ -860,7 +1264,7 @@ export default function BookingWizard() {
                     onClick={() => setPaymentMethod('counter')}
                     className={`p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
                       paymentMethod === 'counter'
-                        ? 'border-stone-900 bg-stone-50 shadow-xs'
+                        ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
                         : 'border-stone-200 bg-white hover:border-stone-300'
                     }`}
                   >
@@ -884,7 +1288,7 @@ export default function BookingWizard() {
                   Special Notes or Treatment Preferences (Optional)
                 </label>
                 <textarea
-                  rows="3"
+                  rows="2"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Sensitive skin or low heat styling..."
@@ -892,7 +1296,7 @@ export default function BookingWizard() {
                 />
               </div>
 
-              <div className="p-3.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-700 text-xs flex items-center space-x-2">
+              <div className="p-3 rounded-lg bg-stone-50 border border-stone-200 text-stone-700 text-xs flex items-center space-x-2">
                 <ShieldCheck className="w-4 h-4 text-stone-600 shrink-0" />
                 <span className="text-[11px] text-stone-600">
                   Zero cancellation fee up to 4 hours prior to appointment.
@@ -913,7 +1317,7 @@ export default function BookingWizard() {
             <button
               onClick={handleConfirmAppointment}
               disabled={isSubmitting}
-              className="inline-flex items-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-70"
+              className="inline-flex items-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-70 shadow-sm"
             >
               {isSubmitting ? (
                 <>
@@ -931,14 +1335,14 @@ export default function BookingWizard() {
         </div>
       )}
 
-      {/* STEP 5: SUCCESS CONFIRMATION */}
+      {/* STEP 5: SUCCESS CONFIRMATION + CALENDAR (.ICS) + WHATSAPP VOUCHER */}
       {currentStep === 5 && confirmedBooking && (
         <div className="bg-white p-8 sm:p-12 rounded-xl border border-stone-200 shadow-xs max-w-2xl mx-auto text-center space-y-6">
-          <div className="w-16 h-16 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-xs">
             <CheckCircle2 className="w-10 h-10" />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <span className="text-xs font-bold tracking-widest text-emerald-800 uppercase">
               Reservation Confirmed
             </span>
@@ -946,14 +1350,17 @@ export default function BookingWizard() {
               Appointment Scheduled
             </h2>
             <p className="text-xs sm:text-sm text-stone-500">
-              Your appointment is recorded in our system.
+              Your appointment is recorded in our system. A confirmation SMS & WhatsApp message has been generated.
             </p>
           </div>
 
-          <div className="p-6 bg-stone-50 rounded-lg border border-stone-200 text-left text-xs space-y-3">
-            <div className="flex justify-between border-b border-stone-200 pb-2">
+          {/* Booking Summary Box */}
+          <div className="p-6 bg-stone-50 rounded-xl border border-stone-200 text-left text-xs space-y-3">
+            <div className="flex justify-between border-b border-stone-200 pb-2.5 items-center">
               <span className="text-stone-500">Booking Reference:</span>
-              <span className="font-bold text-stone-900 font-mono text-sm">{confirmedBooking.bookingId}</span>
+              <span className="font-bold text-stone-900 font-mono text-sm bg-stone-200/60 px-2 py-0.5 rounded">
+                {confirmedBooking.bookingId}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-stone-500">Treatment:</span>
@@ -992,6 +1399,86 @@ export default function BookingWizard() {
                 <span className="font-semibold text-stone-800">{confirmedBooking.razorpayPaymentId}</span>
               </div>
             )}
+          </div>
+
+          {/* ENHANCEMENT 2: ADD TO CALENDAR 1-TAP BUTTONS */}
+          <div className="p-4 rounded-xl border border-stone-200 bg-white text-left space-y-3">
+            <div className="flex items-center space-x-2 text-stone-900">
+              <Calendar className="w-4 h-4 text-stone-700" />
+              <h4 className="text-xs font-bold uppercase tracking-wider">
+                Add to Your Calendar
+              </h4>
+            </div>
+            <p className="text-[11px] text-stone-500 leading-snug">
+              Sync this appointment with your device calendar so you never miss your scheduled pampering session.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              <a
+                href={getGoogleCalendarUrl(confirmedBooking)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-stone-300 hover:bg-stone-50 text-stone-800 font-semibold text-xs transition-colors cursor-pointer group"
+              >
+                <Calendar className="w-3.5 h-3.5 mr-2 text-blue-600 group-hover:scale-110 transition-transform" />
+                Add to Google Calendar
+                <ExternalLink className="w-3 h-3 ml-1.5 text-stone-400" />
+              </a>
+              <button
+                type="button"
+                onClick={() => handleDownloadIcs(confirmedBooking)}
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-stone-300 hover:bg-stone-50 text-stone-800 font-semibold text-xs transition-colors cursor-pointer group"
+              >
+                <Download className="w-3.5 h-3.5 mr-2 text-stone-700 group-hover:scale-110 transition-transform" />
+                Apple / Outlook (.ics)
+              </button>
+            </div>
+          </div>
+
+          {/* ENHANCEMENT 3: AUTOMATED WHATSAPP BOOKING VOUCHER */}
+          <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 text-left space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-emerald-950">
+                <MessageSquare className="w-4 h-4 text-emerald-700" />
+                <h4 className="text-xs font-bold uppercase tracking-wider">
+                  Automated WhatsApp Booking Voucher
+                </h4>
+              </div>
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                Instant Delivery
+              </span>
+            </div>
+            <p className="text-[11px] text-emerald-800 leading-snug">
+              Access your digital appointment voucher with salon address link, stylist details, and booking reference.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(getWhatsAppVoucherText(confirmedBooking))}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs"
+              >
+                <Share2 className="w-3.5 h-3.5 mr-2" />
+                Save / Send WhatsApp Voucher
+              </a>
+              <button
+                type="button"
+                onClick={handleCopyVoucher}
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-900 font-semibold text-xs transition-colors cursor-pointer"
+              >
+                {copiedVoucher ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 mr-1.5 text-emerald-700" />
+                    Copy Voucher Text
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
