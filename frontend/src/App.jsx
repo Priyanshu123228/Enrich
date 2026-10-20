@@ -6,6 +6,7 @@ import ScrollToTop from './components/common/ScrollToTop';
 import CookieConsent from './components/common/CookieConsent';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import WhatsAppWidget from './components/common/WhatsAppWidget';
+import PWAInstallPrompt from './components/common/PWAInstallPrompt';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
             <AppRoutes />
             <CookieConsent />
             <WhatsAppWidget />
+            <PWAInstallPrompt />
           </ToastProvider>
         </AuthProvider>
       </BrowserRouter>

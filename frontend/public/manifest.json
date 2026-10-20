@@ -1,0 +1,81 @@
+{
+  "name": "Enrich Ladies Beauty Parlor & Aesthetic Clinic",
+  "short_name": "Enrich Parlour",
+  "description": "Book bridal makeup, hair styling, skin treatments, and clinical cosmetics in Sikar, Rajasthan.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#9F1239",
+  "orientation": "portrait",
+  "lang": "en-IN",
+  "categories": [
+    "beauty",
+    "lifestyle",
+    "shopping"
+  ],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book Appointment",
+      "short_name": "Book",
+      "description": "Quick appointment booking at Enrich Sikar",
+      "url": "/book",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Salon Services",
+      "short_name": "Services",
+      "description": "Browse hair, skin, and bridal treatments",
+      "url": "/services",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "WhatsApp Concierge",
+      "short_name": "WhatsApp",
+      "description": "Direct desk chat on WhatsApp",
+      "url": "https://wa.me/919667900313",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
