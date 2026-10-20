@@ -1,9 +1,10 @@
 import SEO from '../components/common/SEO';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { mediaService } from '../services/media.service';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import VideoModal from '../components/gallery/VideoModal';
+import { FeaturedHeroCard, VideoReelCard, ReelsCarousel } from '../components/gallery/VideoReelsGallery';
 import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
 import EmptyState from '../components/common/EmptyState';
 import ErrorState from '../components/common/ErrorState';
@@ -14,214 +15,22 @@ import {
   Video,
   Layers,
   Eye,
-  Sparkles,
-  Play,
-  Clock,
-  Film,
   Sparkle,
+  Sparkles,
+  Star,
   ArrowRight,
-  Phone
+  MessageCircle,
+  Calendar,
+  Image as ImageIcon,
+  CheckCircle2,
+  ExternalLink
 } from 'lucide-react';
 
-// Streamlined, single-row filter options
-const GALLERY_FILTERS = [
-  { id: 'all', label: 'All Portfolio', icon: Layers },
-  { id: 'photo', label: 'Photos', icon: Camera },
-  { id: 'video', label: 'Videos & Reels', icon: Video },
-  { id: 'bridal', label: 'Bridal', icon: Sparkles },
-  { id: 'hair', label: 'Hair', icon: Sparkle },
-  { id: 'skin', label: 'Skin & Clinic', icon: Sparkle },
-  { id: 'before-after', label: 'Before & After', icon: Eye }
-];
-
-/**
- * Format video duration in seconds to MM:SS or Xs
- */
-function formatVideoDuration(seconds) {
-  if (!seconds || seconds <= 0) return '';
-  if (seconds < 60) return `${seconds}s`;
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-}
-
-/**
- * Clean Video Card with hover preview and tap-to-modal
- */
-function GalleryVideoCard({ video, onSelectVideo }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const videoRef = useRef(null);
-
-  const videoSrc = resolveImageUrl(video?.url || video?.videoUrl);
-  const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
-  const isImageThumb =
-    video?.thumbnail &&
-    !video.thumbnail.includes('.mp4') &&
-    !video.thumbnail.includes('.webm') &&
-    video.thumbnail !== video?.url;
-
-  useEffect(() => {
-    if (!videoRef.current || !hasVideoUrl) return;
-    if (isHovered) {
-      videoRef.current.currentTime = 0;
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {});
-      }
-    } else {
-      videoRef.current.pause();
-    }
-  }, [isHovered, hasVideoUrl]);
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={`Watch reel: ${video.title || 'Salon transformation'}`}
-      onClick={() => onSelectVideo(video)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelectVideo(video);
-        }
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-950 border border-stone-800/80 hover:border-rose-500 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between aspect-[9/16] cursor-pointer select-none active:scale-[0.98]"
-    >
-      {/* Background Poster / Video Preview */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
-        {isImageThumb ? (
-          <img
-            src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
-            alt={video.title || 'Salon Video Reel'}
-            loading="lazy"
-            className={`w-full h-full object-cover object-top transition-transform duration-700 ${
-              isHovered ? 'scale-108 opacity-40' : 'scale-100 opacity-95'
-            }`}
-            onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
-          />
-        ) : null}
-
-        {hasVideoUrl ? (
-          <video
-            ref={videoRef}
-            src={videoSrc}
-            muted
-            playsInline
-            loop
-            preload="metadata"
-            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 ${
-              isHovered || !isImageThumb ? 'opacity-95' : 'opacity-0'
-            }`}
-          />
-        ) : null}
-
-        {/* Cinematic Vignettes */}
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-stone-950/80 via-stone-950/20 to-transparent pointer-events-none z-10" />
-        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-stone-950 via-stone-950/70 to-transparent pointer-events-none z-10" />
-      </div>
-
-      {/* Top Badges */}
-      <div className="relative p-3 sm:p-4 flex items-center justify-between gap-2 z-10">
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 text-stone-200 border border-white/15 text-[10px] sm:text-xs font-semibold backdrop-blur-md">
-          <Film className="w-3 h-3 text-rose-400" />
-          <span className="truncate max-w-[90px]">{video.category || 'Video'}</span>
-        </span>
-
-        {video.duration ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 text-stone-200 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-white/15">
-            <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400" />
-            <span>{formatVideoDuration(video.duration)}</span>
-          </span>
-        ) : (
-          <span className="px-2 py-0.5 rounded-full bg-rose-950/80 text-rose-300 text-[10px] font-mono border border-rose-800/60">
-            HD
-          </span>
-        )}
-      </div>
-
-      {/* Center Play Button */}
-      <div className="relative flex items-center justify-center z-10 my-auto py-2">
-        <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-rose-600/90 text-white border-2 border-white/90 flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-rose-500 transition-all duration-300 backdrop-blur-md">
-          <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5 text-white" />
-        </div>
-      </div>
-
-      {/* Bottom Title & Action */}
-      <div className="relative p-3.5 sm:p-4 z-10 space-y-1">
-        <h4 className="text-xs sm:text-sm font-serif font-bold text-white tracking-tight leading-snug line-clamp-2 drop-shadow-md group-hover:text-rose-200 transition-colors">
-          {video.title || 'Studio Reel'}
-        </h4>
-        <div className="flex items-center text-[11px] text-rose-300 font-medium pt-0.5">
-          <span>Watch Reel</span>
-          <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Clean Photo Card with click-to-lightbox
- */
-function GalleryPhotoCard({ photo, onSelectPhoto }) {
-  const thumbUrl = resolveImageUrl(photo.url || photo.thumbnail, DEFAULT_SALON_PLACEHOLDER);
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={`View photo: ${photo.title || 'Salon portfolio'}`}
-      onClick={() => onSelectPhoto(photo)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelectPhoto(photo);
-        }
-      }}
-      className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-100 border border-stone-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between aspect-[3/4] cursor-pointer active:scale-[0.98]"
-    >
-      <img
-        src={thumbUrl}
-        alt={photo.title || 'Salon Portfolio Photo'}
-        loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
-        onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
-      />
-
-      {/* Subtle Bottom Dark Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none" />
-
-      {/* Category Pill */}
-      <div className="relative p-3 sm:p-4 z-10">
-        <span className="inline-block px-2.5 py-1 rounded-full bg-black/60 text-stone-100 border border-white/20 text-[10px] sm:text-xs font-semibold backdrop-blur-md shadow-xs">
-          {photo.category || 'Portfolio'}
-        </span>
-      </div>
-
-      {/* Bottom Caption & View Action */}
-      <div className="relative p-3.5 sm:p-4 z-10 space-y-1 text-white">
-        <h4 className="text-xs sm:text-sm font-serif font-bold text-white tracking-tight leading-snug line-clamp-2 drop-shadow-md group-hover:text-rose-200 transition-colors">
-          {photo.title || 'Artistry & Styling'}
-        </h4>
-        <div className="flex items-center text-[10px] sm:text-xs text-rose-300 font-medium pt-0.5">
-          <Eye className="w-3.5 h-3.5 mr-1" />
-          <span>View Photograph</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Gallery Page Component
- * 
- * Simplified, single-row filter bar, clear gallery grid, and 0 confusing blocks.
- */
 export default function Gallery() {
   const [mediaList, setMediaList] = useState([]);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [categories, setCategories] = useState([]);
+  const [selectedType, setSelectedType] = useState('all'); // 'all' | 'photo' | 'video' | 'before-after'
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -229,12 +38,35 @@ export default function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeVideo, setActiveVideo] = useState(null);
 
-  // Fetch full media catalog once for instant client-side filtering
+  // Fetch categories & media
   const fetchData = async () => {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      const res = await mediaService.getGalleryMedia({ limit: 100 });
+      // 1. Fetch categories
+      try {
+        const catRes = await mediaService.getCategories();
+        if (catRes?.data) {
+          const rawCats = Array.isArray(catRes.data) ? catRes.data : catRes.data?.categories || [];
+          setCategories(rawCats.map((c) => (typeof c === 'string' ? c : c?.name)).filter(Boolean));
+        }
+      } catch (catErr) {
+        console.warn('Could not load categories:', catErr);
+      }
+
+      // 2. Fetch media with current filters
+      const params = {};
+      if (selectedType === 'photo' || selectedType === 'video') {
+        params.type = selectedType;
+      }
+      if (selectedType === 'before-after') {
+        params.category = 'Before & After';
+      } else if (selectedCategory !== 'all') {
+        params.category = selectedCategory;
+      }
+
+      let res = await mediaService.getGalleryMedia(params);
+
       if (res?.data?.media && Array.isArray(res.data.media)) {
         setMediaList(res.data.media);
       } else if (Array.isArray(res?.data)) {
@@ -252,114 +84,166 @@ export default function Gallery() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedType, selectedCategory]);
 
-  // Filtered Items (Calculated instantaneously)
-  const filteredMedia = useMemo(() => {
-    if (!Array.isArray(mediaList)) return [];
+  const safeMediaList = Array.isArray(mediaList) ? mediaList : [];
+  const photoList = useMemo(() => safeMediaList.filter((m) => m?.type === 'photo'), [safeMediaList]);
+  const videoList = useMemo(() => safeMediaList.filter((m) => m?.type === 'video'), [safeMediaList]);
+  const transformationList = useMemo(
+    () => safeMediaList.filter((m) => m?.category === 'Before & After' || m?.beforeAfter?.beforeUrl),
+    [safeMediaList]
+  );
 
-    if (activeFilter === 'all') return mediaList;
-
-    if (activeFilter === 'photo') {
-      return mediaList.filter((m) => m?.type === 'photo');
+  // Admin-designated Top 4K Spotlight Hero Video
+  // Priority rule:
+  // 1. Video where isFeatured is true, sorted by displayOrder (0 first)
+  // 2. Fallback to video with lowest displayOrder
+  const featuredVideo = useMemo(() => {
+    if (!Array.isArray(videoList) || videoList.length === 0) return null;
+    const featuredList = videoList.filter((v) => v?.isFeatured || v?.featured);
+    if (featuredList.length > 0) {
+      return [...featuredList].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))[0];
     }
+    return [...videoList].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))[0];
+  }, [videoList]);
 
-    if (activeFilter === 'video') {
-      return mediaList.filter((m) => m?.type === 'video');
-    }
+  // Secondary reels list (excluding the top 4k featured hero, up to 4 for horizontal desktop row)
+  const secondaryReels = useMemo(() => {
+    if (!featuredVideo) return videoList.slice(0, 4);
+    return videoList.filter((v) => (v?._id || v?.id) !== (featuredVideo?._id || featuredVideo?.id)).slice(0, 4);
+  }, [videoList, featuredVideo]);
 
-    if (activeFilter === 'before-after') {
-      return mediaList.filter(
-        (m) =>
-          m?.category?.toLowerCase().includes('before') ||
-          m?.category?.toLowerCase().includes('after') ||
-          m?.type === 'before_after' ||
-          m?.beforeAfter?.beforeUrl
-      );
-    }
+  const openPhotoLightbox = (item) => {
+    const idx = photoList.findIndex((p) => p._id === item._id);
+    if (idx !== -1) setLightboxIndex(idx);
+  };
 
-    // Category matches (bridal, hair, skin)
-    return mediaList.filter((m) => {
-      const cat = (m?.category || '').toLowerCase();
-      if (activeFilter === 'bridal') return cat.includes('bridal');
-      if (activeFilter === 'hair') return cat.includes('hair');
-      if (activeFilter === 'skin') return cat.includes('skin') || cat.includes('makeup') || cat.includes('clinic');
-      return true;
-    });
-  }, [mediaList, activeFilter]);
-
-  // Full photo list for lightbox navigation
-  const lightboxPhotoList = useMemo(() => {
-    return filteredMedia.filter((m) => m?.type === 'photo');
-  }, [filteredMedia]);
-
-  // Full video list for modal playlist
-  const videoPlaylist = useMemo(() => {
-    const vids = mediaList.filter((m) => m?.type === 'video');
-    return vids.length > 0 ? vids : [];
-  }, [mediaList]);
-
-  const handleSelectPhoto = (photo) => {
-    const idx = lightboxPhotoList.findIndex((p) => p._id === photo._id || p.url === photo.url);
-    setLightboxIndex(idx >= 0 ? idx : 0);
+  const handleWhatsAppChat = () => {
+    const message = encodeURIComponent('Hi Enrich Beauty Parlour, I am browsing your portfolio and would like to book an appointment.');
+    window.open('https://wa.me/919667900313?text=' + message, '_blank', 'noopener,noreferrer');
   };
 
   return (
-    <div className="space-y-8 sm:space-y-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+    <div className="space-y-16 sm:space-y-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
       <SEO
-        title="Salon Gallery & Transformations | Enrich Beauty Sikar"
-        description="Browse real bridal makeovers, hair styling, skin treatments, and studio video reels filmed live at Enrich Beauty Salon in Sikar."
+        title="Artistry & Transformations Portfolio | Enrich Beauty Salon"
+        description="Explore our high-end portfolio of bridal looks, hair transformations, salon tours, skin treatments, and before-and-after results at Enrich Beauty."
         keywords="salon gallery, beauty portfolio, bridal makeup videos, hair transformation reels, Enrich Beauty salon"
       />
 
-      {/* =========================================================================
-          1. CLEAN, MINIMAL HEADER
-          ========================================================================= */}
-      <section className="text-center max-w-2xl mx-auto space-y-2.5 pt-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200/90 text-rose-800 text-xs font-bold uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5 text-rose-600" />
-          <span>Salon Portfolio</span>
-        </div>
-
-        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
+      {/* ========================================================================= */}
+      {/* 1. HERO / INTRO SECTION */}
+      {/* ========================================================================= */}
+      <section className="text-center max-w-3xl mx-auto space-y-4 pt-2">
+        <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
+          Curated Salon Portfolio
+        </p>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
           Artistry & Transformations
         </h1>
-
-        <p className="text-stone-600 text-xs sm:text-sm font-light max-w-lg mx-auto leading-relaxed">
-          Real bridal makeovers, hair transformations, skin treatments, and studio video reels.
+        <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-light">
+          A visual collection of salon transformations, artistry, interiors, bridal work, skincare, and behind-the-scenes moments at Enrich Beauty.
         </p>
+
+        {/* Streamlined Portfolio Filter Tabs */}
+        <div className="pt-4 flex flex-wrap items-center justify-center gap-2">
+          <div className="inline-flex p-1.5 bg-stone-100 rounded-2xl border border-stone-200/80 gap-1.5">
+            <button
+              onClick={() => {
+                setSelectedType('all');
+                setSelectedCategory('all');
+              }}
+              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+                selectedType === 'all'
+                  ? 'bg-white text-stone-900 shadow-xs ring-1 ring-stone-900/5 font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+              )}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>All Portfolio</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setSelectedType('photo');
+                setSelectedCategory('all');
+              }}
+              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+                selectedType === 'photo'
+                  ? 'bg-white text-stone-900 shadow-xs ring-1 ring-stone-900/5 font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+              )}
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span>Photos</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setSelectedType('video');
+                setSelectedCategory('all');
+              }}
+              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+                selectedType === 'video'
+                  ? 'bg-stone-900 text-white shadow-xs font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+              )}
+            >
+              <Video className="w-3.5 h-3.5" />
+              <span>Studio Videos & Reels</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setSelectedType('before-after');
+                setSelectedCategory('all');
+              }}
+              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+                selectedType === 'before-after'
+                  ? 'bg-white text-stone-900 shadow-xs ring-1 ring-stone-900/5 font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+              )}
+            >
+              <Sparkle className="w-3.5 h-3.5" />
+              <span>Before & After</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Secondary Category Filter Pills */}
+        {selectedType !== 'before-after' && categories.length > 0 && (
+          <div className="pt-2 flex items-center justify-center space-x-2 overflow-x-auto max-w-full pb-2 scrollbar-none">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={'px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
+                selectedCategory === 'all'
+                  ? 'bg-stone-900 text-white shadow-xs'
+                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+              )}
+            >
+              All Categories
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={'px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
+                  selectedCategory === cat
+                    ? 'bg-stone-900 text-white shadow-xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                )}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* =========================================================================
-          2. STREAMLINED, SINGLE-ROW FILTER PILLS
-          ========================================================================= */}
-      <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-        {GALLERY_FILTERS.map((f) => {
-          const isActive = activeFilter === f.id;
-          const Icon = f.icon;
-          return (
-            <button
-              key={f.id}
-              onClick={() => setActiveFilter(f.id)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 cursor-pointer shrink-0 active:scale-95 ${
-                isActive
-                  ? 'bg-rose-700 text-white shadow-md shadow-rose-900/25 ring-1 ring-rose-700'
-                  : 'bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-900 border border-stone-200 shadow-2xs'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{f.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* =========================================================================
-          3. UNIFIED GALLERY GRID
-          ========================================================================= */}
+      {/* ERROR OR LOADING STATES */}
       {isLoading ? (
         <div className="py-12">
-          <CardSkeleton count={8} />
+          <CardSkeleton count={6} />
         </div>
       ) : errorMsg ? (
         <ErrorState
@@ -367,114 +251,290 @@ export default function Gallery() {
           message={errorMsg}
           onRetry={fetchData}
         />
-      ) : filteredMedia.length === 0 ? (
+      ) : safeMediaList.length === 0 ? (
         <EmptyState
-          icon={Camera}
-          title="No Items Found"
-          description={`No portfolio media found under "${activeFilter}". Try selecting "All Portfolio".`}
-          actionText="Show All Portfolio"
-          onAction={() => setActiveFilter('all')}
+          icon={ImageIcon}
+          title="No Media Found"
+          description="No photos or videos match this category filter. Try selecting All Categories."
+          actionText="Reset Filters"
+          onAction={() => {
+            setSelectedType('all');
+            setSelectedCategory('all');
+          }}
         />
       ) : (
-        <div className="space-y-8 sm:space-y-12">
-          {/* Main Grid: Responsive 2-col on mobile, 3-col on tablet, 4-col on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5 lg:gap-6 animate-in fade-in duration-300">
-            {filteredMedia.map((item, idx) => {
-              const isVideo = item.type === 'video' || item.duration > 0 || item.videoUrl;
-              const isTransformation =
-                item.category === 'Before & After' ||
-                item.type === 'before_after' ||
-                (item.beforeAfter?.beforeUrl && item.beforeAfter?.afterUrl);
+        <div className="space-y-20 sm:space-y-28">
 
-              // 1. Video Card
-              if (isVideo) {
-                return (
-                  <GalleryVideoCard
-                    key={item._id || item.id || idx}
-                    video={item}
-                    onSelectVideo={(v) => setActiveVideo(v)}
-                  />
-                );
-              }
+          {/* ========================================================================= */}
+          {/* 2. FEATURED EXPERIENCE (MAIN 4K VISUAL ANCHOR) */}
+          {/* ========================================================================= */}
+          {featuredVideo && selectedType !== 'photo' && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                <div className="flex items-center gap-2 text-rose-700 text-xs font-bold uppercase tracking-widest">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Featured Experience</span>
+                </div>
+                <span className="text-xs text-stone-500 font-mono">4K Studio Spotlight</span>
+              </div>
 
-              // 2. Before / After Slider Card
-              if (isTransformation) {
-                return (
-                  <div
-                    key={item._id || idx}
-                    className="col-span-2 rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/90 shadow-sm bg-white p-2"
-                  >
-                    <BeforeAfterSlider
-                      beforeImage={item.beforeAfter?.beforeUrl || item.beforeImage}
-                      afterImage={item.beforeAfter?.afterUrl || item.afterImage || item.url}
-                      title={item.title || 'Transformation Result'}
-                      category={item.category || 'Before & After'}
-                    />
+              <FeaturedHeroCard
+                video={featuredVideo}
+                onSelectVideo={(v) => setActiveVideo(v)}
+              />
+            </section>
+          )}
+
+          {/* ========================================================================= */}
+          {/* 3. REELS & HIGHLIGHTS (NEXT / PREV CONTROLS & AUTO-NEXT SLIDER) */}
+          {/* ========================================================================= */}
+          {secondaryReels.length > 0 && selectedType !== 'photo' && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                <div className="space-y-0.5">
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                    Reels & Highlights
+                  </h3>
+                  <p className="text-xs text-stone-500">
+                    Bite-sized transformation stories and behind-the-scenes moments
+                  </p>
+                </div>
+                <span className="text-xs font-mono text-stone-500 bg-stone-100 px-3 py-1 rounded-full">
+                  {videoList.length} stories
+                </span>
+              </div>
+
+              {/* Reels Carousel with Next button & Auto-Next timer */}
+              <ReelsCarousel
+                videos={secondaryReels}
+                onSelectVideo={(v) => setActiveVideo(v)}
+                autoPlayInterval={4500}
+              />
+            </section>
+          )}
+
+          {/* ========================================================================= */}
+          {/* 4. PHOTO STORIES & TRANSFORMATIONS (HIGH-DEFINITION EDITORIAL MASONRY) */}
+          {/* ========================================================================= */}
+          {photoList.length > 0 && selectedType !== 'video' && (
+            <section className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-2 border-b border-stone-200 gap-2">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-rose-700 text-xs font-bold uppercase tracking-widest">
+                    <Camera className="w-3.5 h-3.5" />
+                    <span>Editorial Stories</span>
                   </div>
-                );
-              }
+                  <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+                    Photo Stories & Transformations
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono text-stone-500 bg-stone-100 px-3 py-1 rounded-full">
+                    {photoList.length} photographs
+                  </span>
+                </div>
+              </div>
 
-              // 3. Photo Card
-              return (
-                <GalleryPhotoCard
-                  key={item._id || item.id || idx}
-                  photo={item}
-                  onSelectPhoto={handleSelectPhoto}
-                />
-              );
-            })}
-          </div>
+              {/* Luxury Multi-Column Editorial Masonry Layout (Flattering 3:4 & 4:5 ratios, Zero Head-Cropping) */}
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 sm:gap-6 [column-fill:_balance]">
+                {photoList.map((item, idx) => {
+                  // Carefully balanced portrait & square ratios so every photo, face, and dress is 100% visible
+                  const ratioPattern = [
+                    'aspect-[3/4]',    // Classic portrait (perfect for bridal/hair)
+                    'aspect-[4/5]',    // Fashion look
+                    'aspect-[3/3.8]',  // Balanced portrait
+                    'aspect-[4/5]',    // Editorial look
+                    'aspect-[1/1]',    // High-impact square
+                    'aspect-[3/4.2]'   // Tall bridal showcase
+                  ];
+                  const cardAspect = ratioPattern[idx % ratioPattern.length];
 
-          {/* Quick Consultation Strip */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-rose-50 via-white to-rose-50 border border-rose-200/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-            <div className="space-y-0.5">
-              <h4 className="text-sm sm:text-base font-serif font-bold text-stone-900">
-                Want a personalized makeover or bridal consultation?
-              </h4>
-              <p className="text-xs text-stone-600 font-light">
-                Visit us at Sharda Heights, Chandpol, Sikar, or book an appointment online.
+                  return (
+                    <div
+                      key={item._id || item.title || idx}
+                      onClick={() => openPhotoLightbox(item)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={'View photo: ' + (item.title || 'Portfolio Image')}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          openPhotoLightbox(item);
+                        }
+                      }}
+                      className={'group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-950 border border-stone-200/90 shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col justify-end break-inside-avoid mb-5 sm:mb-6 ' + cardAspect}
+                    >
+                      <img
+                        src={resolveImageUrl(item.url || item.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
+                        alt={item.title || 'Salon Gallery Photo'}
+                        className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                        loading="lazy"
+                        onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+                      />
+
+                      {/* Multi-tier dark gradient overlay for text readability without obscuring photo */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/20 to-transparent opacity-60 group-hover:opacity-85 transition-opacity duration-300 pointer-events-none" />
+
+                      {/* Top Category Badge */}
+                      <div className="absolute top-3.5 left-3.5 z-10">
+                        <span className="px-3 py-1 rounded-full bg-stone-900/85 backdrop-blur-md text-stone-200 text-[10px] font-bold uppercase tracking-wider border border-stone-700/80 shadow-md">
+                          {item.category || 'Artistry'}
+                        </span>
+                      </div>
+
+                      {/* Bottom Editorial Caption */}
+                      <div className="relative p-4 sm:p-5 space-y-1 text-white z-10 translate-y-1 group-hover:translate-y-0 transition-transform duration-300 pointer-events-none">
+                        <h4 className="font-serif font-bold text-sm sm:text-base leading-snug line-clamp-2 group-hover:text-rose-200 transition-colors drop-shadow-md">
+                          {item.title}
+                        </h4>
+                        {item.description && (
+                          <p className="text-[11px] sm:text-xs text-stone-300 line-clamp-2 font-light drop-shadow-sm leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                            {item.description}
+                          </p>
+                        )}
+                        <div className="pt-1 flex items-center text-[10px] text-rose-300 font-semibold tracking-wide opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <Eye className="w-3.5 h-3.5 mr-1 text-rose-400" />
+                          <span>View Full Photograph &rarr;</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* ========================================================================= */}
+          {/* 5. BEFORE & AFTER (DEDICATED SECTION) */}
+          {/* ========================================================================= */}
+          {transformationList.length > 0 && (
+            <section className="space-y-6 pt-4">
+              <div className="text-center max-w-2xl mx-auto space-y-2">
+                <div className="inline-flex items-center gap-1.5 text-rose-700 text-xs font-bold uppercase tracking-widest">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>TRANSFORMATION SPOTLIGHT</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900">
+                  Before & After
+                </h3>
+                <p className="text-stone-600 text-xs sm:text-sm font-light">
+                  Real transformations. Real artistry. Swipe to explore the precision and results of our signature treatments.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-2">
+                {transformationList.map((item, idx) => (
+                  <BeforeAfterSlider
+                    key={item._id || idx}
+                    beforeImage={item.beforeAfter?.beforeUrl || item.beforeImage}
+                    afterImage={item.beforeAfter?.afterUrl || item.afterImage || item.url}
+                    title={item.title || 'Salon Treatment Result'}
+                    category={item.category || 'Transformation'}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ========================================================================= */}
+          {/* 6. CLIENT LOVE / GOOGLE REVIEWS SECTION */}
+          {/* ========================================================================= */}
+          <section className="bg-stone-950 text-white rounded-3xl p-8 sm:p-12 border border-stone-800 shadow-xl overflow-hidden relative">
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-xl">
+                <div className="flex items-center gap-2 text-rose-400 text-xs font-bold tracking-widest uppercase">
+                  <Sparkle className="w-3.5 h-3.5" />
+                  <span>CLIENT LOVE</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
+                  512+ Google Reviews
+                </h3>
+                
+                <div className="flex items-center gap-2 pt-1">
+                  <div className="flex items-center text-amber-400">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-stone-200">5.0 Star Rating</span>
+                  <span className="text-xs text-stone-400">• Verified Experience</span>
+                </div>
+
+                <p className="text-stone-300 text-xs sm:text-sm font-light pt-1">
+                  Trusted by hundreds of clients across our salon locations for flawless hair, luxury bridal makeup, and clinical skincare.
+                </p>
+              </div>
+
+              <div className="shrink-0 w-full sm:w-auto">
+                <a
+                  href="https://maps.google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white hover:bg-stone-100 text-stone-900 font-semibold text-xs uppercase tracking-wider transition-colors w-full sm:w-auto"
+                >
+                  <span>View Google Reviews</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-stone-700" />
+                </a>
+              </div>
+            </div>
+          </section>
+
+          {/* ========================================================================= */}
+          {/* 7. FINAL EDITORIAL CTA */}
+          {/* ========================================================================= */}
+          <section className="text-center max-w-3xl mx-auto space-y-6 pt-4 pb-8">
+            <div className="space-y-2.5">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-stone-900 tracking-tight">
+                Your next transformation starts here.
+              </h2>
+              <p className="text-stone-600 text-sm sm:text-base font-light">
+                Explore the artistry. Choose your experience. Make your appointment.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
               <Link
-                to="/book"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-700 to-rose-800 hover:from-rose-600 hover:to-rose-700 text-white text-xs font-bold shadow-md shadow-rose-950/20 transition-all active:scale-98"
+                to="/booking"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold tracking-wider uppercase transition-colors shadow-xs"
               >
-                Book Appointment
+                <Calendar className="w-4 h-4 mr-2" />
+                <span>BOOK AN APPOINTMENT</span>
               </Link>
-              <a
-                href="tel:+919667900313"
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 text-stone-800 text-xs font-semibold border border-stone-200 transition-colors"
+
+              <button
+                onClick={handleWhatsAppChat}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold tracking-wider uppercase transition-colors cursor-pointer shadow-xs"
               >
-                <Phone className="w-3.5 h-3.5 text-rose-600" />
-                <span>Call Desk</span>
-              </a>
+                <MessageCircle className="w-4 h-4 mr-2" />
+                <span>CHAT ON WHATSAPP</span>
+              </button>
             </div>
-          </div>
+          </section>
+
         </div>
       )}
 
-      {/* =========================================================================
-          MODALS & LIGHTBOX (PhotoLightbox & VideoModal)
-          ========================================================================= */}
+      {/* PHOTO LIGHTBOX MODAL */}
       {lightboxIndex !== null && (
         <PhotoLightbox
-          mediaList={lightboxPhotoList.length > 0 ? lightboxPhotoList : []}
+          mediaList={photoList}
           currentIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
           onNavigate={(newIdx) => setLightboxIndex(newIdx)}
         />
       )}
 
+      {/* VIDEO PLAYER CINEMA MODAL */}
       {activeVideo && (
         <VideoModal
           video={activeVideo}
-          videos={videoPlaylist}
+          videos={videoList}
           onSelectVideo={(v) => setActiveVideo(v)}
           onClose={() => setActiveVideo(null)}
         />
       )}
+
     </div>
   );
 }
