@@ -257,24 +257,7 @@ export default function HomeReelsSection({
             </p>
           </div>
 
-          {/* Interactive "More Reels" Option in Header */}
-          {allAvailableReels.length > 4 && (
-            <button
-              type="button"
-              onClick={() => setShowMore((prev) => !prev)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white hover:bg-rose-50 text-stone-800 hover:text-rose-800 text-xs font-bold border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all group shrink-0 cursor-pointer active:scale-95"
-              aria-expanded={showMore}
-              aria-label={showMore ? 'Show fewer reels' : 'Show more reels'}
-            >
-              <Film className="w-3.5 h-3.5 text-rose-600" />
-              <span>{showMore ? 'Show Top 4 Reels' : `More Reels (${allAvailableReels.length})`}</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-stone-400 group-hover:text-rose-600 transition-transform duration-300 ${
-                  showMore ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
-          )}
+          
         </div>
 
         {/* REELS GRID (4 or Expanded All Reels) */}
@@ -339,7 +322,7 @@ export default function HomeReelsSection({
               to="/gallery"
               className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-colors"
             >
-              Full Lookbook
+              View Complete Gallery
             </Link>
           </div>
         </div>

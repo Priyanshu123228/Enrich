@@ -478,7 +478,7 @@ export default function Home() {
                 Studio Portfolio
               </span>
               <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
-                Lookbook & Parlour Media
+                Salon Portfolio & Gallery
               </h2>
               <p className="text-xs sm:text-sm text-stone-600 max-w-2xl leading-relaxed">
                 Browse our real salon transformations, high-definition photo gallery, video tutorials, and bridal looks.
@@ -489,7 +489,7 @@ export default function Home() {
               to="/gallery"
               className="inline-flex items-center text-xs sm:text-sm font-bold text-rose-700 hover:text-rose-800 shrink-0 group transition-colors py-1"
             >
-              Full Media Archive
+              View Complete Gallery
               <ArrowRight className="w-4 h-4 ml-1.5 transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

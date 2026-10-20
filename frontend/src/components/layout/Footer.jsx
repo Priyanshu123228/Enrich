@@ -215,7 +215,7 @@ export default function Footer() {
                 { name: 'Cosmetics & Retail', path: '/cosmetics' },
                 { name: 'Stylists & Team', path: '/staff' },
                 { name: 'Offers & Packages', path: '/offers' },
-                { name: 'Lookbook & Media', path: '/gallery' },
+                { name: 'Salon Gallery & Media', path: '/gallery' },
                 { name: 'About Our Studio', path: '/about' },
                 { name: 'Contact Us', path: '/contact' }
               ].map((item) => (
