@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, Eye } from 'lucide-react';
+import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, ChevronDown, ChevronUp } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
 
 /**
@@ -196,18 +196,20 @@ function HomeReelCard({ video, onSelectVideo }) {
 /**
  * HomeReelsSection
  * 
- * Luminous Atelier Homepage Section with 4 Smartphone Video Reels.
- * Harmonizes with the salon's warm cream/rose aesthetic with 0 harsh dark bars.
+ * Luminous Atelier Homepage Section with Smartphone Video Reels.
+ * Features tight, comfortable section spacing and interactive "More Reels" toggle.
  */
 export default function HomeReelsSection({
   videos = [],
   onSelectVideo = () => {}
 }) {
-  // Select top 4 reels with smart fallback
-  const displayReels = useMemo(() => {
+  const [showMore, setShowMore] = useState(false);
+
+  // Normalize full list of reels
+  const allAvailableReels = useMemo(() => {
     const list = Array.isArray(videos) && videos.length > 0 ? videos : [];
     if (list.length >= 4) {
-      return list.slice(0, 4);
+      return list;
     }
     // Pad with fallback if fewer than 4
     const existingIds = new Set(list.map((v) => v._id || v.id));
@@ -216,19 +218,27 @@ export default function HomeReelsSection({
     return [...list, ...fillers];
   }, [videos]);
 
+  // Display top 4 by default, or all when showMore is true
+  const displayReels = useMemo(() => {
+    if (showMore) {
+      return allAvailableReels;
+    }
+    return allAvailableReels.slice(0, 4);
+  }, [allAvailableReels, showMore]);
+
   return (
     <section
       aria-label="Salon Video Reels and Transformations"
-      className="relative w-full bg-gradient-to-b from-[#F5EFEB] via-[#FAF7F2] to-[#FAF7F2] text-stone-900 py-16 sm:py-24 border-y border-stone-200/90 overflow-hidden"
+      className="relative w-full bg-gradient-to-b from-[#F5EFEB] via-[#FAF7F2] to-[#FAF7F2] text-stone-900 py-12 sm:py-16 border-b border-stone-200/90 overflow-hidden"
     >
       {/* Soft Ambient Radial Lights (Matching Homepage Luxury Palette) */}
       <div className="absolute top-1/3 -left-20 w-96 h-96 bg-rose-200/40 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 -right-20 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#1c1917_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 relative z-10">
         {/* SECTION HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b border-stone-200/90 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b border-stone-200/90 pb-5">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200/90 text-rose-800 text-xs font-bold tracking-widest uppercase shadow-2xs">
               <Sparkles className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
@@ -247,18 +257,28 @@ export default function HomeReelsSection({
             </p>
           </div>
 
-          {/* View All Stories Link */}
-          <Link
-            to="/gallery?type=video"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white hover:bg-stone-50 text-stone-800 hover:text-rose-700 text-xs font-semibold border border-stone-200/90 shadow-2xs hover:shadow-xs transition-all group shrink-0 cursor-pointer"
-          >
-            <span>View All 10+ Video Stories</span>
-            <ArrowRight className="w-3.5 h-3.5 text-rose-600 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          {/* Interactive "More Reels" Option in Header */}
+          {allAvailableReels.length > 4 && (
+            <button
+              type="button"
+              onClick={() => setShowMore((prev) => !prev)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white hover:bg-rose-50 text-stone-800 hover:text-rose-800 text-xs font-bold border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all group shrink-0 cursor-pointer active:scale-95"
+              aria-expanded={showMore}
+              aria-label={showMore ? 'Show fewer reels' : 'Show more reels'}
+            >
+              <Film className="w-3.5 h-3.5 text-rose-600" />
+              <span>{showMore ? 'Show Top 4 Reels' : `More Reels (${allAvailableReels.length})`}</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-stone-400 group-hover:text-rose-600 transition-transform duration-300 ${
+                  showMore ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+          )}
         </div>
 
-        {/* 4 SMARTPHONE REEL CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {/* REELS GRID (4 or Expanded All Reels) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-in fade-in duration-300">
           {displayReels.map((reel) => (
             <HomeReelCard
               key={reel._id || reel.id || reel.title}
@@ -267,6 +287,29 @@ export default function HomeReelsSection({
             />
           ))}
         </div>
+
+        {/* BOTTOM MORE REELS TOGGLE BUTTON */}
+        {allAvailableReels.length > 4 && (
+          <div className="flex justify-center pt-1">
+            <button
+              type="button"
+              onClick={() => setShowMore((prev) => !prev)}
+              className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white hover:bg-rose-50 text-stone-800 hover:text-rose-800 border border-stone-200/90 hover:border-rose-300 text-xs font-bold shadow-2xs hover:shadow-xs transition-all cursor-pointer active:scale-98 group"
+            >
+              <Film className="w-4 h-4 text-rose-600" />
+              <span>
+                {showMore
+                  ? 'Show Top 4 Reels'
+                  : `More Reels (+${allAvailableReels.length - 4} More Transformations)`}
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 text-stone-400 group-hover:text-rose-600 transition-transform duration-300 ${
+                  showMore ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+          </div>
+        )}
 
         {/* LUXURY CONSULTATION ACTION STRIP */}
         <div className="p-5 sm:p-7 rounded-3xl bg-white border border-stone-200/90 shadow-lg shadow-stone-900/5 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">

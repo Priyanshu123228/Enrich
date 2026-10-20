@@ -89,14 +89,16 @@ export default function Home() {
           offersRes,
           mediaRes,
           heroRes,
-          ownerRes
+          ownerRes,
+          allVideosRes
         ] = await Promise.allSettled([
           serviceService.getAllServices({ limit: 50 }),
           staffService.getStaff({ limit: 12 }),
           offerService.getActiveOffers(),
           mediaService.getFeaturedMedia(),
           mediaService.getHeroPhoto(),
-          mediaService.getOwnerPhoto()
+          mediaService.getOwnerPhoto(),
+          mediaService.getGalleryMedia({ type: 'video', limit: 20 })
         ]);
 
         if (!isMounted) return;
@@ -158,11 +160,20 @@ export default function Home() {
 
         let loadedMedia = null;
 
+        // Extract all gallery video reels
+        let fullVideoReels = [];
+        if (allVideosRes?.status === 'fulfilled' && allVideosRes.value?.data?.media) {
+          fullVideoReels = allVideosRes.value.data.media;
+        } else if (allVideosRes?.status === 'fulfilled' && Array.isArray(allVideosRes.value?.data)) {
+          fullVideoReels = allVideosRes.value.data;
+        }
+
         if (mediaRes.status === 'fulfilled' && mediaRes.value) {
           const raw = mediaRes.value;
           const data = raw.data || raw;
           const photos = data.photos || (Array.isArray(data.media) ? data.media.filter(m => m.type === 'photo') : []);
-          const videos = data.videos || (Array.isArray(data.media) ? data.media.filter(m => m.type === 'video') : []);
+          const featVideos = data.videos || (Array.isArray(data.media) ? data.media.filter(m => m.type === 'video') : []);
+          const videos = fullVideoReels.length > 0 ? fullVideoReels : featVideos;
           const transformations = data.transformations || data.beforeAfters || (Array.isArray(data.media) ? data.media.filter(m => m.category === 'Before & After') : []);
           const all = (Array.isArray(data.media) && data.media.length > 0) ? data.media : [...photos, ...videos, ...transformations];
 
@@ -306,7 +317,7 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-20 bg-stone-50/50 text-stone-900 font-sans">
+    <div className="pb-20 bg-stone-50/50 text-stone-900 font-sans">
       <SEO
         title="Enrich Ladies Beauty Parlor & Cosmetic Clinic | Best Salon in Sikar (4.9★)"
         description="Top-rated salon in Sikar with 512+ 5-star Google reviews. Specializing in HD bridal makeup, hydrafacial, hair styling, and clinical skincare at Sharda Heights."
@@ -317,7 +328,7 @@ export default function Home() {
       {/* =========================================================================
           SECTION 1: HERO SECTION (LUMINOUS LUXURY ATELIER)
           ========================================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 py-12 sm:py-20 lg:py-24 border-b border-stone-200/90">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 py-10 sm:py-16 lg:py-18 border-b border-stone-200/90">
         {/* Soft Ambient Radial Lights */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-200/35 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 -right-32 w-[30rem] h-[30rem] bg-amber-200/25 rounded-full blur-3xl pointer-events-none" />
@@ -458,7 +469,7 @@ export default function Home() {
       {/* =========================================================================
           SECTION 2: GALLERY / PARLOUR MEDIA (LUMINOUS STUDIO SHOWCASE)
           ========================================================================= */}
-      <section className="w-full bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-16 sm:py-24 lg:py-28 border-y border-stone-200/80">
+      <section className="w-full bg-gradient-to-b from-[#FAF7F2] via-[#F5EFE6] to-[#FAF7F2] text-stone-900 py-12 sm:py-16 lg:py-20 border-b border-stone-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
 
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-stone-200/90 pb-6 sm:pb-7">
@@ -619,7 +630,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================================================================
+      {/* CONTAINERIZED HOMEPAGE SECTIONS */}
+      <div className="space-y-16 sm:space-y-24 pt-14 sm:pt-20">
+        {/* =========================================================================
           SECTION 3: POPULAR SERVICES & CATEGORY FILTERING
           ========================================================================= */}
       <section id="services" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-10">
@@ -1293,6 +1306,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+            </div>
 
       {/* =========================================================================
           MODALS & LIGHTBOX (PhotoLightbox & VideoModal)
