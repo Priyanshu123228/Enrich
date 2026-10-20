@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, ChevronDown, ChevronUp, Volume2, VolumeX } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
 
 /**
@@ -61,7 +61,20 @@ const DEFAULT_FALLBACK_REELS = [
  */
 function HomeReelCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const videoPreviewRef = useRef(null);
+
+  const handleToggleMute = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!videoPreviewRef.current) return;
+    const nextMuted = !isMuted;
+    videoPreviewRef.current.muted = nextMuted;
+    setIsMuted(nextMuted);
+    if (!nextMuted) {
+      videoPreviewRef.current.play().catch(() => {});
+    }
+  };
 
   const videoSrc = resolveImageUrl(video?.url || video?.videoUrl);
   const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
@@ -123,7 +136,7 @@ function HomeReelCard({ video, onSelectVideo }) {
           <video
             ref={videoPreviewRef}
             src={videoSrc}
-            muted
+            muted={isMuted}
             playsInline
             loop
             preload="metadata"
@@ -145,16 +158,34 @@ function HomeReelCard({ video, onSelectVideo }) {
           <span className="truncate max-w-[100px]">{video.category || 'Transformation'}</span>
         </span>
 
-        {video.duration ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 text-stone-200 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-white/15 shadow-xs">
-            <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400" />
-            <span>{formatVideoDuration(video.duration)}</span>
-          </span>
-        ) : (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-950/80 text-rose-300 text-[10px] font-mono border border-rose-800/60">
-            4K
-          </span>
-        )}
+        <div className="flex items-center gap-1.5">
+          {video.duration ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 text-stone-200 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-white/15 shadow-xs">
+              <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400" />
+              <span>{formatVideoDuration(video.duration)}</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-950/80 text-rose-300 text-[10px] font-mono border border-rose-800/60">
+              4K
+            </span>
+          )}
+
+          {hasVideoUrl && (
+            <button
+              type="button"
+              onClick={handleToggleMute}
+              className="p-1.5 rounded-full bg-black/65 hover:bg-black/90 text-stone-200 hover:text-white border border-white/20 backdrop-blur-md transition-all shadow-xs cursor-pointer hover:scale-110 active:scale-95"
+              title={isMuted ? 'Unmute reel sound' : 'Mute reel sound'}
+              aria-label={isMuted ? 'Unmute reel' : 'Mute reel'}
+            >
+              {isMuted ? (
+                <VolumeX className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-stone-300" />
+              ) : (
+                <Volume2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-400 animate-pulse" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* CENTER GLOWING PLAY BUTTON */}

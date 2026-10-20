@@ -38,7 +38,9 @@ import {
   Car,
   Train,
   Award,
-  HeartHandshake
+  HeartHandshake,
+  Scissors,
+  Sparkle
 } from 'lucide-react';
 
 const ICON_MAP = {
@@ -340,18 +342,34 @@ export default function Home() {
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
 
-              {/* Location Masthead Kicker */}
-              <a
-                href={SALON_CONFIG.contact.googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="View Enrich Salon location on Google Maps"
-                className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-stone-200/90 hover:border-rose-300 text-stone-700 hover:text-stone-900 text-xs font-semibold tracking-wide transition-all shadow-2xs group cursor-pointer max-w-full"
-              >
-                <MapPin className="w-3.5 h-3.5 text-rose-700 shrink-0" />
-                <span className="truncate">Sharda Heights, Chandpol, Sikar</span>
-                <ArrowRight className="w-3 h-3 text-stone-400 group-hover:text-rose-700 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </a>
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                {/* Location Masthead Kicker */}
+                <a
+                  href={SALON_CONFIG.contact.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="View Enrich Salon location on Google Maps"
+                  className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-stone-200/90 hover:border-rose-300 text-stone-700 hover:text-stone-900 text-xs font-semibold tracking-wide transition-all shadow-2xs group cursor-pointer max-w-full"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-rose-700 shrink-0" />
+                  <span className="truncate">Sharda Heights, Chandpol, Sikar</span>
+                  <ArrowRight className="w-3 h-3 text-stone-400 group-hover:text-rose-700 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </a>
+
+                {/* Emergency Slot / Today's Availability Urgency Ticker */}
+                <Link
+                  to="/book"
+                  title="Book one of today's remaining appointment slots"
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-200/90 text-rose-900 text-xs font-bold tracking-wide transition-all shadow-2xs group cursor-pointer"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
+                  </span>
+                  <span>Today's Availability: <span className="underline decoration-rose-300 underline-offset-2">Only 3 slots left</span></span>
+                  <ArrowRight className="w-3 h-3 text-rose-600 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                </Link>
+              </div>
 
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-stone-900 leading-[1.08]">
@@ -422,32 +440,37 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Below Photo: Social Proof Review & Category Pills */}
+                {/* Below Photo: Social Proof Review & 1-Tap Deep Link Category Chips */}
                 <div className="space-y-3 pt-4 text-center">
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 border border-stone-200/90 shadow-2xs text-xs">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
                     <span className="font-bold text-stone-900">4.9 ★ Google Rated</span>
-                    <span className="text-stone-300">•</span>
+                    <span className="text-stone-300">·</span>
                     <span className="text-stone-500 text-[11px]">510+ Verified Client Reviews</span>
                   </div>
 
-                  {/* Lightweight Quick Category Pills */}
+                  {/* 1-Tap Service Deep Link Category Chips */}
                   <div className="flex flex-wrap items-center justify-center gap-2">
                     {[
-                      { label: '👰 Royal Bridal', cat: 'Bridal' },
-                      { label: '✨ Hydrafacial & Skin', cat: 'Skin' },
-                      { label: '💇 Hair Atelier', cat: 'Hair' },
-                      { label: '💅 Nail Artistry', cat: 'Nails' }
-                    ].map((item) => (
-                      <a
-                        key={item.label}
-                        href="#services"
-                        onClick={() => setActiveServiceCategory(item.cat)}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-rose-700 border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
-                      >
-                        {item.label}
-                      </a>
-                    ))}
+                      { label: 'Royal Bridal', cat: 'Bridal', link: '/services?category=Bridal', bookLink: '/book?service=Bridal', icon: Sparkles },
+                      { label: 'Hydrafacial & Skin', cat: 'Skin', link: '/services?category=Skin', bookLink: '/book?service=Skin', icon: Sparkle },
+                      { label: 'Balayage & Hair', cat: 'Hair', link: '/services?category=Hair', bookLink: '/book?service=Hair', icon: Scissors },
+                      { label: 'Nail Atelier', cat: 'Nails', link: '/services?category=Nails', bookLink: '/book?service=Nails', icon: Star }
+                    ].map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.label}
+                          to={item.bookLink}
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-rose-50 text-stone-800 hover:text-rose-800 border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
+                          title={`Book ${item.label} appointment`}
+                        >
+                          <Icon className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition-transform" />
+                          <span>{item.label}</span>
+                          <span className="text-[10px] text-rose-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
 
