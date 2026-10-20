@@ -1,4 +1,5 @@
 import SEO from '../components/common/SEO';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { serviceService } from '../services/service.service';
 import ServiceCard from '../components/services/ServiceCard';
@@ -7,7 +8,13 @@ import {
   SlidersHorizontal,
   AlertCircle,
   Database,
-  ArrowUpDown
+  ArrowUpDown,
+  Calendar,
+  Sparkles,
+  Plus,
+  ArrowRight,
+  Check,
+  X
 } from 'lucide-react';
 
 export default function Services() {
@@ -27,6 +34,18 @@ export default function Services() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSeeding, setIsSeeding] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [comboServices, setComboServices] = useState([]);
+
+  const toggleComboService = (service) => {
+    setComboServices((prev) => {
+      const exists = prev.some((s) => s._id === service._id);
+      if (exists) {
+        return prev.filter((s) => s._id !== service._id);
+      } else {
+        return [...prev, service];
+      }
+    });
+  };
 
   // Fetch Categories
   const fetchCategories = async () => {
@@ -196,6 +215,65 @@ export default function Services() {
         </div>
       )}
 
+{/* Sticky Multi-Service Combo Drawer (Mobile-Optimized Floating Tray) */}
+      {comboServices.length > 0 && (
+        <aside
+          aria-label="Multi-Service Combo Selection"
+          className="fixed bottom-16 md:bottom-6 left-0 right-0 z-40 px-3 sm:px-6 pointer-events-auto"
+        >
+          <div className="max-w-3xl mx-auto bg-stone-950 text-white rounded-2xl p-3.5 sm:p-4 shadow-2xl border border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="w-10 h-10 rounded-xl bg-rose-600/90 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <Sparkles className="w-5 h-5 text-rose-100" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-sm text-white">
+                    {comboServices.length} {comboServices.length === 1 ? 'Treatment' : 'Treatments'} in Combo
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-900/90 text-rose-200 font-bold border border-rose-700/60">
+                    Combo Bundle
+                  </span>
+                </div>
+                <p className="text-xs text-stone-300 font-light truncate">
+                  {comboServices.map((s) => s.name).join(' • ')}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 border-stone-800/80 pt-2.5 sm:pt-0">
+              <div className="text-left sm:text-right">
+                <div className="text-base font-bold text-white font-serif">
+                  ₹{comboServices.reduce((sum, s) => sum + (s.discountPrice > 0 ? s.discountPrice : (s.price || 0)), 0)}
+                </div>
+                <div className="text-[10px] text-stone-400">
+                  {comboServices.reduce((sum, s) => sum + (s.duration || 30), 0)} mins total
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setComboServices([])}
+                  className="text-xs text-stone-400 hover:text-white px-2.5 py-2 rounded-lg border border-stone-800 hover:border-stone-700 transition-colors cursor-pointer"
+                >
+                  Clear
+                </button>
+
+                <Link
+                  to={`/book?serviceId=${comboServices[0]._id}&combo=${encodeURIComponent(comboServices.map(s => s.name).join(' + '))}`}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md shadow-rose-950/30 transition-transform active:scale-95 whitespace-nowrap cursor-pointer"
+                >
+                  <Calendar className="w-3.5 h-3.5 text-rose-200" />
+                  <span>Book Combo</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </aside>
+      )}
+
       {/* Services Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -216,7 +294,12 @@ export default function Services() {
       ) : services.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service) => (
-            <ServiceCard key={service._id} service={service} />
+            <ServiceCard
+              key={service._id}
+              service={service}
+              isComboSelected={comboServices.some((s) => s._id === service._id)}
+              onToggleCombo={toggleComboService}
+            />
           ))}
         </div>
       ) : (

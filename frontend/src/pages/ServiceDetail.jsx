@@ -13,7 +13,11 @@ import {
   Loader2,
   AlertCircle,
   Users,
-  Heart
+  Heart,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  MessageCircle
 } from 'lucide-react';
 
 export default function ServiceDetail() {
@@ -22,6 +26,8 @@ export default function ServiceDetail() {
 
   const [service, setService] = useState(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [prepOpen, setPrepOpen] = useState(true);
+  const [aftercareOpen, setAftercareOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -166,15 +172,79 @@ export default function ServiceDetail() {
             )}
           </div>
 
+          {/* Pre-Booking Preparation & Aftercare Guidelines */}
+          <div className="bg-white rounded-2xl border border-stone-200/90 shadow-xs overflow-hidden">
+            <div className="p-6 border-b border-stone-100 flex items-center justify-between">
+              <div className="space-y-1">
+                <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
+                  Client Care Guidelines
+                </span>
+                <h3 className="text-xl font-serif font-bold text-stone-900">
+                  Preparation & Aftercare
+                </h3>
+              </div>
+              <Sparkles className="w-5 h-5 text-rose-600" />
+            </div>
+
+            <div className="divide-y divide-stone-100">
+              {/* Accordion 1: How to Prepare */}
+              <div className="p-5 sm:p-6 space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => setPrepOpen(!prepOpen)}
+                  className="w-full flex items-center justify-between text-left cursor-pointer group"
+                >
+                  <span className="text-sm font-bold text-stone-900 flex items-center gap-2 group-hover:text-rose-700 transition-colors">
+                    <Calendar className="w-4 h-4 text-rose-600" />
+                    How to Prepare for Your Appointment
+                  </span>
+                  {prepOpen ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+                </button>
+                {prepOpen && (
+                  <ul className="text-xs text-stone-600 space-y-2 pt-1 pl-6 list-disc font-light leading-relaxed">
+                    <li>Arrive 10 minutes prior to your scheduled slot to allow for an in-depth specialist consultation.</li>
+                    <li>For skin treatments & facials: Avoid active retinol, aggressive chemical exfoliants, or waxing 48 hours prior.</li>
+                    <li>For hair color, balayage & smoothing: Do not vigorously scrub scalp with nails on the morning of service.</li>
+                    <li>For bridal makeup trials: Wear a button-up shirt or blouse to easily change without disturbing styled hair.</li>
+                    <li>Inform your specialist of any known allergies or skin sensitivities during consultation.</li>
+                  </ul>
+                )}
+              </div>
+
+              {/* Accordion 2: Post-Treatment Care */}
+              <div className="p-5 sm:p-6 space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => setAftercareOpen(!aftercareOpen)}
+                  className="w-full flex items-center justify-between text-left cursor-pointer group"
+                >
+                  <span className="text-sm font-bold text-stone-900 flex items-center gap-2 group-hover:text-rose-700 transition-colors">
+                    <ShieldCheck className="w-4 h-4 text-rose-600" />
+                    Post-Treatment Care & Longevity
+                  </span>
+                  {aftercareOpen ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
+                </button>
+                {aftercareOpen && (
+                  <ul className="text-xs text-stone-600 space-y-2 pt-1 pl-6 list-disc font-light leading-relaxed">
+                    <li>For facials & peeling: Apply broad-spectrum SPF 50 daily and avoid heavy makeup or direct steam/sauna for 24 hours.</li>
+                    <li>For keratin & hair botox: Keep hair dry and avoid tight hair ties or washing for the recommended 48–72 hour curing window.</li>
+                    <li>Always use sulfate-free, salon-grade maintenance shampoo to protect color depth and keratin bonds.</li>
+                    <li>For gel nails: Apply nourishing cuticle oil daily and wear protective gloves when handling domestic cleaning detergents.</li>
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Hygiene & Salon Standards */}
-          <div className="bg-stone-900 text-white p-6 rounded-xl border border-stone-800 flex items-start space-x-4">
-            <div className="w-10 h-10 rounded-lg bg-stone-800 text-rose-300 flex items-center justify-center shrink-0">
+          <div className="bg-stone-900 text-white p-6 rounded-2xl border border-stone-800 flex items-start space-x-4 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-stone-800 text-rose-300 flex items-center justify-center shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-sm font-semibold font-serif">Sanitation Standards</h4>
-              <p className="text-xs text-stone-400 leading-relaxed">
-                All metal implements are sanitized in autoclaves between appointments. Single-use sanitary items are used for every client.
+              <h4 className="text-sm font-semibold font-serif">Hospital-Grade Sterilization</h4>
+              <p className="text-xs text-stone-400 leading-relaxed font-light">
+                All metal implements are sterilized in clinical autoclaves between each appointment. Disposable single-use towels and linens are used for every client.
               </p>
             </div>
           </div>
@@ -255,7 +325,7 @@ export default function ServiceDetail() {
               </a>
 
               <Link
-                to="/book"
+                to={`/book?serviceId=${service._id}`}
                 state={{ preSelectedServiceId: service._id }}
                 className="w-full flex items-center justify-center py-2.5 px-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs border border-stone-300 transition-colors cursor-pointer"
               >
