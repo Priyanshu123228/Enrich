@@ -88,17 +88,33 @@ export default function BookingWizard() {
 
         if (servicesRes?.data?.services) {
           setServices(servicesRes.data.services);
-          // Check if pre-selected service passed from location state
-          if (location.state?.preSelectedServiceId) {
+          // Pre-selection from location state OR URL Query Parameters (?service= / ?serviceId=)
+          const searchParams = new URLSearchParams(location.search);
+          const targetServiceId = location.state?.preSelectedServiceId || searchParams.get('serviceId') || searchParams.get('service');
+          if (targetServiceId) {
             const pre = servicesRes.data.services.find(
-              (s) => s._id === location.state.preSelectedServiceId
+              (s) => s._id === targetServiceId || s.slug === targetServiceId || s.name?.toLowerCase() === targetServiceId.toLowerCase()
             );
-            if (pre) setSelectedService(pre);
+            if (pre) {
+              setSelectedService(pre);
+              setCurrentStep(2); // Jump directly to Stylist / Date selection
+            }
           }
         }
 
         if (staffRes?.data) {
           setStaffMembers(staffRes.data);
+          // Check if pre-selected staff member passed from state or query parameter
+          const searchParams = new URLSearchParams(location.search);
+          const targetStaffId = location.state?.preSelectedStaffId || searchParams.get('staffId') || searchParams.get('staff');
+          if (targetStaffId) {
+            const staffMatch = staffRes.data.find(
+              (st) => st._id === targetStaffId || st.name?.toLowerCase() === targetStaffId.toLowerCase()
+            );
+            if (staffMatch) {
+              setSelectedStaff(staffMatch);
+            }
+          }
         }
       } catch (err) {
         setErrorMsg(err.message || 'Failed to load booking catalog');
@@ -108,7 +124,7 @@ export default function BookingWizard() {
     };
 
     fetchInitial();
-  }, [location.state]);
+  }, [location.state, location.search]);
 
   // Fetch live slots whenever Service, Staff, or Date changes
   useEffect(() => {

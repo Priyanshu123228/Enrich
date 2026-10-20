@@ -435,7 +435,7 @@ export default function Gallery() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
               <Link
-                to="/booking"
+                to="/book"
                 className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold tracking-wider uppercase transition-colors shadow-xs"
               >
                 <Calendar className="w-4 h-4 mr-2" />

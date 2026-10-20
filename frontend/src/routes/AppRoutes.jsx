@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import AdminLayout from '../components/admin/AdminLayout';
 import { Loader2 } from 'lucide-react';
@@ -109,6 +109,7 @@ export default function AppRoutes() {
               </ProtectedRoute>
             }
           />
+          <Route path="booking" element={<Navigate to="/book" replace />} />
           <Route
             path="book"
             element={
