@@ -28,9 +28,7 @@ import {
 
 export default function Gallery() {
   const [mediaList, setMediaList] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [selectedType, setSelectedType] = useState('all'); // 'all' | 'photo' | 'video' | 'before-after'
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -38,31 +36,17 @@ export default function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeVideo, setActiveVideo] = useState(null);
 
-  // Fetch categories & media
+  // Fetch gallery media based on selected type filter
   const fetchData = async () => {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      // 1. Fetch categories
-      try {
-        const catRes = await mediaService.getCategories();
-        if (catRes?.data) {
-          const rawCats = Array.isArray(catRes.data) ? catRes.data : catRes.data?.categories || [];
-          setCategories(rawCats.map((c) => (typeof c === 'string' ? c : c?.name)).filter(Boolean));
-        }
-      } catch (catErr) {
-        console.warn('Could not load categories:', catErr);
-      }
-
-      // 2. Fetch media with current filters
       const params = {};
       if (selectedType === 'photo' || selectedType === 'video') {
         params.type = selectedType;
       }
       if (selectedType === 'before-after') {
         params.category = 'Before & After';
-      } else if (selectedCategory !== 'all') {
-        params.category = selectedCategory;
       }
 
       let res = await mediaService.getGalleryMedia(params);
@@ -84,7 +68,7 @@ export default function Gallery() {
 
   useEffect(() => {
     fetchData();
-  }, [selectedType, selectedCategory]);
+  }, [selectedType]);
 
   const safeMediaList = Array.isArray(mediaList) ? mediaList : [];
   const photoList = useMemo(() => safeMediaList.filter((m) => m?.type === 'photo'), [safeMediaList]);
@@ -145,99 +129,58 @@ export default function Gallery() {
           A visual collection of salon transformations, artistry, interiors, bridal work, skincare, and behind-the-scenes moments at Enrich Beauty.
         </p>
 
-        {/* Streamlined Portfolio Filter Tabs */}
-        <div className="pt-4 flex flex-wrap items-center justify-center gap-2">
-          <div className="inline-flex p-1.5 bg-stone-100 rounded-2xl border border-stone-200/80 gap-1.5">
+        {/* Streamlined Curated Portfolio Filter Tabs */}
+        <div className="pt-3 flex items-center justify-center">
+          <div className="inline-flex p-1.5 bg-stone-100 rounded-2xl border border-stone-200/80 gap-1 sm:gap-1.5 max-w-full overflow-x-auto scrollbar-none shadow-xs">
             <button
-              onClick={() => {
-                setSelectedType('all');
-                setSelectedCategory('all');
-              }}
-              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+              onClick={() => setSelectedType('all')}
+              className={'px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer ' + (
                 selectedType === 'all'
-                  ? 'bg-white text-stone-900 shadow-xs ring-1 ring-stone-900/5 font-bold'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                  ? 'bg-stone-900 text-white shadow-sm font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
               )}
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>All Portfolio</span>
             </button>
 
             <button
-              onClick={() => {
-                setSelectedType('photo');
-                setSelectedCategory('all');
-              }}
-              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+              onClick={() => setSelectedType('photo')}
+              className={'px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer ' + (
                 selectedType === 'photo'
-                  ? 'bg-white text-stone-900 shadow-xs ring-1 ring-stone-900/5 font-bold'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                  ? 'bg-stone-900 text-white shadow-sm font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
               )}
             >
-              <Camera className="w-3.5 h-3.5" />
+              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>Photos</span>
             </button>
 
             <button
-              onClick={() => {
-                setSelectedType('video');
-                setSelectedCategory('all');
-              }}
-              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+              onClick={() => setSelectedType('video')}
+              className={'px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer ' + (
                 selectedType === 'video'
-                  ? 'bg-stone-900 text-white shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                  ? 'bg-stone-900 text-white shadow-sm font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
               )}
             >
-              <Video className="w-3.5 h-3.5" />
-              <span>Studio Videos & Reels</span>
+              <Video className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>Reels & Videos</span>
             </button>
 
             <button
-              onClick={() => {
-                setSelectedType('before-after');
-                setSelectedCategory('all');
-              }}
-              className={'px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 flex items-center space-x-2 cursor-pointer ' + (
+              onClick={() => setSelectedType('before-after')}
+              className={'px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer ' + (
                 selectedType === 'before-after'
-                  ? 'bg-white text-stone-900 shadow-xs ring-1 ring-stone-900/5 font-bold'
-                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                  ? 'bg-stone-900 text-white shadow-sm font-bold'
+                  : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
               )}
             >
-              <Sparkle className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>Before & After</span>
             </button>
           </div>
         </div>
-
-        {/* Secondary Category Filter Pills */}
-        {selectedType !== 'before-after' && categories.length > 0 && (
-          <div className="pt-2 flex items-center justify-center space-x-2 overflow-x-auto max-w-full pb-2 scrollbar-none">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={'px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
-                selectedCategory === 'all'
-                  ? 'bg-stone-900 text-white shadow-xs'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-              )}
-            >
-              All Categories
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={'px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ' + (
-                  selectedCategory === cat
-                    ? 'bg-stone-900 text-white shadow-xs'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                )}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        )}
       </section>
 
       {/* ERROR OR LOADING STATES */}
@@ -255,12 +198,9 @@ export default function Gallery() {
         <EmptyState
           icon={ImageIcon}
           title="No Media Found"
-          description="No photos or videos match this category filter. Try selecting All Categories."
-          actionText="Reset Filters"
-          onAction={() => {
-            setSelectedType('all');
-            setSelectedCategory('all');
-          }}
+          description="No items found for this selection. Try switching to All Portfolio."
+          actionText="Reset Filter"
+          onAction={() => setSelectedType('all')}
         />
       ) : (
         <div className="space-y-20 sm:space-y-28">
@@ -268,7 +208,7 @@ export default function Gallery() {
           {/* ========================================================================= */}
           {/* 2. FEATURED EXPERIENCE (MAIN 4K VISUAL ANCHOR) */}
           {/* ========================================================================= */}
-          {featuredVideo && selectedType !== 'photo' && (
+          {featuredVideo && (selectedType === 'all' || selectedType === 'video') && (
             <section className="space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-stone-200">
                 <div className="flex items-center gap-2 text-rose-700 text-xs font-bold uppercase tracking-widest">
@@ -288,7 +228,7 @@ export default function Gallery() {
           {/* ========================================================================= */}
           {/* 3. REELS & HIGHLIGHTS (NEXT / PREV CONTROLS & AUTO-NEXT SLIDER) */}
           {/* ========================================================================= */}
-          {secondaryReels.length > 0 && selectedType !== 'photo' && (
+          {secondaryReels.length > 0 && (selectedType === 'all' || selectedType === 'video') && (
             <section className="space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-stone-200">
                 <div className="space-y-0.5">
@@ -316,7 +256,7 @@ export default function Gallery() {
           {/* ========================================================================= */}
           {/* 4. PHOTO STORIES & TRANSFORMATIONS (HIGH-DEFINITION EDITORIAL MASONRY) */}
           {/* ========================================================================= */}
-          {photoList.length > 0 && selectedType !== 'video' && (
+          {photoList.length > 0 && (selectedType === 'all' || selectedType === 'photo') && (
             <section className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-2 border-b border-stone-200 gap-2">
                 <div className="space-y-1">
@@ -407,7 +347,7 @@ export default function Gallery() {
           {/* ========================================================================= */}
           {/* 5. BEFORE & AFTER (DEDICATED SECTION) */}
           {/* ========================================================================= */}
-          {transformationList.length > 0 && (
+          {transformationList.length > 0 && (selectedType === 'all' || selectedType === 'before-after') && (
             <section className="space-y-6 pt-4">
               <div className="text-center max-w-2xl mx-auto space-y-2">
                 <div className="inline-flex items-center gap-1.5 text-rose-700 text-xs font-bold uppercase tracking-widest">
