@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle } from 'lucide-react';
+import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, Eye } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
 
 /**
@@ -21,7 +21,7 @@ const DEFAULT_FALLBACK_REELS = [
   {
     _id: 'fallback_reel_1',
     title: 'Couture Bridal Hair & Veil Placement',
-    category: 'Bridal',
+    category: 'Bridal Artistry',
     url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226953/enrich/direct_uploads/qkdiswgerwtf7heyyamp.mp4',
     thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226953/enrich/direct_uploads/qkdiswgerwtf7heyyamp.mp4',
     duration: 45,
@@ -39,7 +39,7 @@ const DEFAULT_FALLBACK_REELS = [
   {
     _id: 'fallback_reel_3',
     title: 'Artisan Chrome Ombre Nail Process',
-    category: 'Nail Art',
+    category: 'Nail Atelier',
     url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226670/enrich/direct_uploads/y96ogvxcfdc6iqbqs35j.mp4',
     thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226670/enrich/direct_uploads/y96ogvxcfdc6iqbqs35j.mp4',
     duration: 75,
@@ -48,7 +48,7 @@ const DEFAULT_FALLBACK_REELS = [
   {
     _id: 'fallback_reel_4',
     title: 'Client Experience & Joyful Glow',
-    category: 'Customer Experience',
+    category: 'Transformations',
     url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226785/enrich/direct_uploads/vw13ercmaiu47gvomdxb.mp4',
     thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226785/enrich/direct_uploads/vw13ercmaiu47gvomdxb.mp4',
     duration: 20,
@@ -57,7 +57,7 @@ const DEFAULT_FALLBACK_REELS = [
 ];
 
 /**
- * Individual 9:16 Vertical Reel Card
+ * Individual Smartphone Reel Card
  */
 function HomeReelCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -98,8 +98,11 @@ function HomeReelCard({ video, onSelectVideo }) {
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="group relative rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-lg hover:shadow-2xl hover:border-rose-500/80 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between aspect-[9/15.5] cursor-pointer select-none active:scale-[0.98]"
+      className="group relative rounded-3xl overflow-hidden bg-stone-950 border border-stone-800/80 hover:border-rose-500 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-rose-950/25 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between aspect-[9/16] cursor-pointer select-none active:scale-[0.98] ring-1 ring-black/5"
     >
+      {/* Smartphone Dynamic Island / Speaker Pill */}
+      <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full bg-white/25 z-20 pointer-events-none transition-opacity group-hover:bg-white/40" />
+
       {/* Background Media Container */}
       <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
         {/* High-Res Static Poster Thumbnail */}
@@ -109,7 +112,7 @@ function HomeReelCard({ video, onSelectVideo }) {
             alt={video.title || 'Salon Reel Poster'}
             loading="lazy"
             className={`w-full h-full object-cover object-top transition-transform duration-700 ${
-              isHovered ? 'scale-110 opacity-30' : 'scale-100 opacity-90'
+              isHovered ? 'scale-108 opacity-40' : 'scale-100 opacity-95'
             }`}
             onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
           />
@@ -125,30 +128,31 @@ function HomeReelCard({ video, onSelectVideo }) {
             loop
             preload="metadata"
             className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 ${
-              isHovered || !isImageThumb ? 'opacity-90' : 'opacity-0'
+              isHovered || !isImageThumb ? 'opacity-95' : 'opacity-0'
             }`}
           />
         ) : null}
 
-        {/* Multi-tier Cinematic Gradients for Crisp Overlay Readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-black/60 pointer-events-none" />
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-stone-950/20 to-stone-950/80 pointer-events-none" />
+        {/* Cinematic Vignettes: Keep video center clear while enhancing text legibility */}
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-stone-950/80 via-stone-950/30 to-transparent pointer-events-none z-10" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-stone-950 via-stone-950/75 to-transparent pointer-events-none z-10" />
       </div>
 
       {/* TOP OVERLAY BAR: Category Badge & Duration */}
-      <div className="relative p-3 sm:p-4 flex items-center justify-between gap-2 z-10">
-        <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-stone-900/85 text-stone-200 border border-stone-700/60 text-[10px] sm:text-xs font-semibold backdrop-blur-md shadow-xs">
-          {video.category || 'Transformation'}
+      <div className="relative p-3.5 sm:p-4 pt-5 flex items-center justify-between gap-2 z-10">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 text-stone-200 border border-white/15 text-[10px] sm:text-xs font-semibold backdrop-blur-md shadow-xs">
+          <Film className="w-3 h-3 text-rose-400" />
+          <span className="truncate max-w-[100px]">{video.category || 'Transformation'}</span>
         </span>
 
         {video.duration ? (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-black/75 text-stone-300 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-stone-800">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 text-stone-200 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-white/15 shadow-xs">
             <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400" />
             <span>{formatVideoDuration(video.duration)}</span>
           </span>
         ) : (
           <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-950/80 text-rose-300 text-[10px] font-mono border border-rose-800/60">
-            HD
+            4K
           </span>
         )}
       </div>
@@ -156,8 +160,8 @@ function HomeReelCard({ video, onSelectVideo }) {
       {/* CENTER GLOWING PLAY BUTTON */}
       <div className="relative flex items-center justify-center z-10 my-auto py-2">
         <div className="relative flex items-center justify-center">
-          <div className="absolute -inset-3 rounded-full bg-rose-600/30 blur-md group-hover:scale-125 transition-transform duration-300" />
-          <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-stone-900/90 text-white border-2 border-rose-500/80 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-700 group-hover:border-white backdrop-blur-md">
+          <div className="absolute -inset-3.5 rounded-full bg-rose-600/35 blur-lg group-hover:scale-130 transition-transform duration-300" />
+          <div className="relative w-13 h-13 sm:w-15 sm:h-15 rounded-full bg-rose-600/90 text-white border-2 border-white/90 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-500 backdrop-blur-md">
             <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5 text-white" />
           </div>
         </div>
@@ -169,13 +173,19 @@ function HomeReelCard({ video, onSelectVideo }) {
           {video.title || 'Studio Transformation'}
         </h4>
 
-        <div className="flex items-center justify-between pt-0.5 text-[11px] text-rose-300 font-medium">
-          <span className="flex items-center gap-1 group-hover:underline">
-            <span>Tap to watch</span>
-            <Play className="w-2.5 h-2.5 fill-current" />
+        {video.description && (
+          <p className="text-[11px] text-stone-300 font-light line-clamp-1 leading-snug">
+            {video.description}
+          </p>
+        )}
+
+        <div className="flex items-center justify-between pt-1 text-[11px] text-rose-300 font-medium">
+          <span className="inline-flex items-center gap-1 group-hover:text-white transition-colors">
+            <span>Watch Full Reel</span>
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
           </span>
-          <span className="text-[10px] text-stone-400 uppercase tracking-wider font-mono">
-            4K Story
+          <span className="text-[10px] text-stone-400 font-mono tracking-wider">
+            HD STORY
           </span>
         </div>
       </div>
@@ -186,8 +196,8 @@ function HomeReelCard({ video, onSelectVideo }) {
 /**
  * HomeReelsSection
  * 
- * High-engagement homepage section featuring 4 short video reels.
- * Allows visitors to see real transformations within 3 seconds of landing.
+ * Luminous Atelier Homepage Section with 4 Smartphone Video Reels.
+ * Harmonizes with the salon's warm cream/rose aesthetic with 0 harsh dark bars.
  */
 export default function HomeReelsSection({
   videos = [],
@@ -209,42 +219,46 @@ export default function HomeReelsSection({
   return (
     <section
       aria-label="Salon Video Reels and Transformations"
-      className="w-full bg-gradient-to-b from-stone-900 via-stone-950 to-stone-900 text-white py-14 sm:py-20 border-y border-stone-800 shadow-inner relative overflow-hidden"
+      className="relative w-full bg-gradient-to-b from-[#F5EFEB] via-[#FAF7F2] to-[#FAF7F2] text-stone-900 py-16 sm:py-24 border-y border-stone-200/90 overflow-hidden"
     >
-      {/* Background Ambience Lights */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-rose-900/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-900/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Soft Ambient Radial Lights (Matching Homepage Luxury Palette) */}
+      <div className="absolute top-1/3 -left-20 w-96 h-96 bg-rose-200/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 -right-20 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#1c1917_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 relative z-10">
         {/* SECTION HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-800/80 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b border-stone-200/90 pb-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/80 text-rose-300 border border-rose-700/50 text-[11px] font-bold uppercase tracking-widest backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200/90 text-rose-800 text-xs font-bold tracking-widest uppercase shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
               <span>Studio Reels &bull; 4K Transformations</span>
             </div>
 
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-white tracking-tight">
-              Watch the Transformations
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-[1.12]">
+              Real Transformations,{' '}
+              <span className="font-normal font-serif text-rose-900 italic">
+                Filmed Live
+              </span>
             </h2>
 
-            <p className="text-xs sm:text-sm text-stone-300 font-light max-w-2xl leading-relaxed">
-              Tap any reel to watch real salon makeovers, bridal artistry, and clinical treatments filmed live in our Sikar studio.
+            <p className="text-xs sm:text-sm text-stone-600 font-light max-w-2xl leading-relaxed">
+              Tap any reel to preview bridal masterclasses, hair transformations, and clinical skincare procedures filmed inside our Sikar salon.
             </p>
           </div>
 
           {/* View All Stories Link */}
           <Link
             to="/gallery?type=video"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-rose-400 hover:text-rose-300 shrink-0 group transition-colors py-1 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white hover:bg-stone-50 text-stone-800 hover:text-rose-700 text-xs font-semibold border border-stone-200/90 shadow-2xs hover:shadow-xs transition-all group shrink-0 cursor-pointer"
           >
-            <span>Explore All Video Stories</span>
-            <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+            <span>View All 10+ Video Stories</span>
+            <ArrowRight className="w-3.5 h-3.5 text-rose-600 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        {/* 4 SHORT VIDEO REELS GRID */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5 lg:gap-6">
+        {/* 4 SMARTPHONE REEL CARDS */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {displayReels.map((reel) => (
             <HomeReelCard
               key={reel._id || reel.id || reel.title}
@@ -254,30 +268,35 @@ export default function HomeReelsSection({
           ))}
         </div>
 
-        {/* FOOTER CALL-TO-ACTION STRIP */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="space-y-0.5">
-            <p className="text-xs sm:text-sm font-medium text-stone-200">
-              Inspired by a look? Book your consultation with our master stylists.
-            </p>
-            <p className="text-[11px] text-stone-400">
-              Every appointment includes a personalized skin & hair consultation.
+        {/* LUXURY CONSULTATION ACTION STRIP */}
+        <div className="p-5 sm:p-7 rounded-3xl bg-white border border-stone-200/90 shadow-lg shadow-stone-900/5 flex flex-col sm:flex-row items-center justify-between gap-5 text-center sm:text-left">
+          <div className="space-y-1">
+            <div className="flex items-center justify-center sm:justify-start gap-2 text-rose-700 text-xs font-bold uppercase tracking-wider">
+              <Sparkle className="w-3.5 h-3.5 fill-rose-600 text-rose-600" />
+              <span>Expert Bridal & Beauty Care</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900">
+              Inspired by a look in our studio reels?
+            </h3>
+            <p className="text-xs sm:text-sm text-stone-600 font-light max-w-xl">
+              Schedule a personalized consultation with our senior stylists at Sharda Heights, Sikar.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
             <Link
               to="/book"
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white text-xs font-bold shadow-md shadow-rose-950/40 transition-all active:scale-98"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-rose-700 via-rose-800 to-rose-900 hover:from-rose-600 hover:to-rose-800 text-white text-xs font-bold shadow-md shadow-rose-950/20 transition-all active:scale-98"
             >
-              Book Transformation
+              <span>Book Consultation</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
             <Link
-              to="/gallery?type=video"
-              className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-stone-300 hover:text-white text-xs font-medium transition-colors"
+              to="/gallery"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-colors"
             >
-              More Reels
+              Full Lookbook
             </Link>
           </div>
         </div>
