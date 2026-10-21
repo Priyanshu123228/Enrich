@@ -10,7 +10,6 @@ import {
   ShoppingBag, 
   Eye, 
   Check, 
-  ShieldCheck, 
   Leaf, 
   Heart, 
   RefreshCw, 
@@ -18,7 +17,6 @@ import {
   Phone, 
   MessageCircle, 
   ChevronRight, 
-  SlidersHorizontal,
   Package,
   Award,
   Zap,
@@ -36,19 +34,6 @@ const CATEGORIES = [
   { id: 'Serums & Treatments', label: 'Serums & Treatments', icon: Award },
   { id: 'Organic & Ayurvedic', label: 'Organic & Ayurvedic', icon: Leaf },
   { id: 'Body & Spa', label: 'Body & Spa', icon: Package }
-];
-
-const SKIN_TYPES = [
-  'All Skin Types',
-  'Anti-Aging',
-  'Dull Skin',
-  'Dry',
-  'Sensitive',
-  'All Hair Types',
-  'Frizzy Hair',
-  'Fine Hair',
-  'Pigmentation',
-  'All Skin Tones'
 ];
 
 // Authentic Enrich Clinical Luxury Cosmetics Catalog (Ensures zero placeholder records)
@@ -447,44 +432,6 @@ export default function Cosmetics() {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 tracking-tight max-w-4xl mx-auto leading-tight">
             Clinical Aesthetics & <span className="text-rose-700 italic font-serif">Salon Formulations</span>
           </h1>
-          <p className="mt-4 text-stone-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-light">
-            Dermatologically tested facial elixirs, organic Kashmiri saffron oils, and salon-grade hair rituals formulated for high-performance beauty care.
-          </p>
-
-          {/* Trust Pillars - Issue #2: All body text standardized to text-xs or above */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto text-left">
-            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
-              <ShieldCheck className="w-5 h-5 text-rose-600 shrink-0" />
-              <div>
-                <div className="text-xs font-bold text-stone-900">100% Authentic</div>
-                <div className="text-xs text-stone-500">Clinical Formulation</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
-              <Award className="w-5 h-5 text-rose-600 shrink-0" />
-              <div>
-                <div className="text-xs font-bold text-stone-900">Pure Extracts</div>
-                <div className="text-xs text-stone-500">Paraben & Toxin Free</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
-              <Leaf className="w-5 h-5 text-rose-600 shrink-0" />
-              <div>
-                <div className="text-xs font-bold text-stone-900">Ayurvedic Roots</div>
-                <div className="text-xs text-stone-500">Ethically Sourced</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-xs backdrop-blur-xs">
-              <Package className="w-5 h-5 text-rose-600 shrink-0" />
-              <div>
-                <div className="text-xs font-bold text-stone-900">Fresh Stock</div>
-                <div className="text-xs text-stone-500">Salon Pickup & Delivery</div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -567,36 +514,6 @@ export default function Cosmetics() {
             </div>
           </div>
 
-          {/* Bottom Row: Skin / Hair Concerns Pills */}
-          <div className="pt-2 border-t border-stone-100 flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-bold text-stone-500 mr-2 flex items-center gap-1">
-              <SlidersHorizontal className="w-3 h-3 text-stone-400" />
-              Target Concern:
-            </span>
-            <button
-              onClick={() => setSelectedSkinType('all')}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 ${
-                selectedSkinType === 'all'
-                  ? 'bg-stone-900 text-white shadow-xs'
-                  : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
-              }`}
-            >
-              All Concerns
-            </button>
-            {SKIN_TYPES.map((st) => (
-              <button
-                key={st}
-                onClick={() => setSelectedSkinType(selectedSkinType === st ? 'all' : st)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-600 ${
-                  selectedSkinType === st
-                    ? 'bg-stone-900 text-white shadow-xs'
-                    : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
-                }`}
-              >
-                {st}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* 3. Product Catalog Grid */}
