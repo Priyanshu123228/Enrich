@@ -295,7 +295,7 @@ export default function AdminOffers() {
           </div>
         ) : filteredOffers.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-xs min-w-[720px]">
               <thead>
                 <tr className="bg-stone-50 border-b border-stone-200 text-[11px] font-bold uppercase tracking-wider text-stone-600">
                   <th className="py-3.5 px-6">Coupon Code</th>

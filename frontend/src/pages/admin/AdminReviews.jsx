@@ -444,7 +444,7 @@ export default function AdminReviews() {
           ) : filteredInternalReviews.length > 0 ? (
             <div className="bg-white rounded-xl border border-stone-200 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-stone-600">
+                <table className="w-full text-left text-xs text-stone-600 min-w-[720px]">
                   <thead className="bg-stone-50 text-[11px] uppercase tracking-wider text-stone-400 font-semibold border-b border-stone-200">
                     <tr>
                       <th className="px-6 py-3.5">Client & Visit</th>

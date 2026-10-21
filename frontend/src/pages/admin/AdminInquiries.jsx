@@ -593,7 +593,7 @@ export default function AdminInquiries() {
         /* Table View */
         <div className="bg-white rounded-2xl border border-stone-200/80 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-stone-600">
+            <table className="w-full text-left text-xs text-stone-600 min-w-[720px]">
               <thead className="bg-stone-50/90 text-[11px] uppercase font-bold text-stone-500 border-b border-stone-200/80 tracking-wider">
                 <tr>
                   <th className="py-3.5 px-5">Customer</th>

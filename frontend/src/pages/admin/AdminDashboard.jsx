@@ -55,7 +55,7 @@ export default function AdminDashboard() {
     <div className="space-y-8 max-w-7xl mx-auto">
       
       {/* Dashboard Top Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 sm:p-8 rounded-xl border border-stone-200 shadow-xs">
         <div>
           <span className="text-xs font-bold tracking-widest text-stone-500 uppercase">
             Executive Summary
@@ -68,17 +68,17 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           <Link
             to="/admin/appointments"
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors"
           >
             <CalendarCheck className="w-3.5 h-3.5 mr-1.5" />
             Manage Bookings
           </Link>
           <Link
             to="/admin/services"
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs border border-stone-200 transition-colors"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs border border-stone-200 transition-colors"
           >
             <Scissors className="w-3.5 h-3.5 mr-1.5" />
             Update Menu
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Total Revenue */}
-        <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
               Total Revenue
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Bookings */}
-        <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
               Total Appointments
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Customers */}
-        <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
               Registered Clients
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Completed Visits */}
-        <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-stone-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
               Completed Visits
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left: Monthly Revenue Trend Bar Chart */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-6">
+        <div className="lg:col-span-7 bg-white p-4 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-6">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-lg font-serif font-bold text-stone-900">
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Right: Popular Services Ranking */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-5">
+        <div className="lg:col-span-5 bg-white p-4 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-5">
           <div className="flex justify-between items-center pb-2 border-b border-stone-100">
             <div>
               <h3 className="text-lg font-serif font-bold text-stone-900">
@@ -230,18 +230,18 @@ export default function AdminDashboard() {
           {topServices && topServices.length > 0 ? (
             <div className="space-y-4">
               {topServices.map((service, idx) => (
-                <div key={service._id} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-3">
-                    <span className="w-6 h-6 rounded bg-stone-100 font-bold text-stone-700 flex items-center justify-center text-[10px]">
+                <div key={service._id} className="flex items-center justify-between text-xs gap-3">
+                  <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
+                    <span className="w-6 h-6 rounded bg-stone-100 font-bold text-stone-700 flex items-center justify-center text-[10px] shrink-0">
                       #{idx + 1}
                     </span>
-                    <div>
-                      <p className="font-semibold text-stone-900 line-clamp-1">{service.name}</p>
-                      <span className="text-[10px] text-stone-400">{service.category}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-stone-900 truncate">{service.name}</p>
+                      <span className="text-[10px] text-stone-400 truncate block">{service.category}</span>
                     </div>
                   </div>
 
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <span className="font-bold text-stone-900">${service.totalRevenue}</span>
                     <span className="text-[10px] text-stone-400 block">{service.bookingsCount} booked</span>
                   </div>
@@ -275,38 +275,64 @@ export default function AdminDashboard() {
         </div>
 
         {recentBookings && recentBookings.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-stone-100 text-stone-400 uppercase text-[10px] font-bold">
-                  <th className="py-2.5">Reference</th>
-                  <th className="py-2.5">Client</th>
-                  <th className="py-2.5">Treatment</th>
-                  <th className="py-2.5">Stylist</th>
-                  <th className="py-2.5">Date & Slot</th>
-                  <th className="py-2.5">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100 text-stone-700">
-                {recentBookings.map((b) => (
-                  <tr key={b._id} className="hover:bg-stone-50">
-                    <td className="py-3 font-mono font-bold text-stone-900">{b.bookingId}</td>
-                    <td className="py-3 font-semibold text-stone-900">{b.customer?.name || 'Client'}</td>
-                    <td className="py-3">{b.service?.name}</td>
-                    <td className="py-3">{b.staff?.name}</td>
-                    <td className="py-3">
-                      {b.date} ({b.startTime})
-                    </td>
-                    <td className="py-3">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
-                        {b.status}
-                      </span>
-                    </td>
+          <>
+            {/* Mobile Cards View (< 640px) */}
+            <div className="block sm:hidden divide-y divide-stone-100">
+              {recentBookings.map((b) => (
+                <div key={b._id} className="py-3 space-y-1.5 first:pt-0 last:pb-0">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-mono font-bold text-stone-900">{b.bookingId}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      {b.status}
+                    </span>
+                  </div>
+                  <div className="text-xs">
+                    <p className="font-semibold text-stone-800">{b.service?.name}</p>
+                    <p className="text-[11px] text-stone-500">
+                      {b.customer?.name || 'Client'} • Stylist: {b.staff?.name}
+                    </p>
+                    <p className="text-[11px] text-stone-400">
+                      {b.date} at {b.startTime}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop / Scrollable Table (>= 640px) */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="min-w-[640px] w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-stone-100 text-stone-400 uppercase text-[10px] font-bold">
+                    <th className="py-2.5 px-3">Reference</th>
+                    <th className="py-2.5 px-3">Client</th>
+                    <th className="py-2.5 px-3">Treatment</th>
+                    <th className="py-2.5 px-3">Stylist</th>
+                    <th className="py-2.5 px-3">Date & Slot</th>
+                    <th className="py-2.5 px-3 text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-stone-100 text-stone-700">
+                  {recentBookings.map((b) => (
+                    <tr key={b._id} className="hover:bg-stone-50">
+                      <td className="py-3 px-3 font-mono font-bold text-stone-900 whitespace-nowrap">{b.bookingId}</td>
+                      <td className="py-3 px-3 font-semibold text-stone-900 whitespace-nowrap">{b.customer?.name || 'Client'}</td>
+                      <td className="py-3 px-3 whitespace-nowrap">{b.service?.name}</td>
+                      <td className="py-3 px-3 whitespace-nowrap">{b.staff?.name}</td>
+                      <td className="py-3 px-3 whitespace-nowrap">
+                        {b.date} ({b.startTime})
+                      </td>
+                      <td className="py-3 px-3 text-right whitespace-nowrap">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          {b.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <p className="text-xs text-stone-400 italic">No bookings recorded yet.</p>
         )}

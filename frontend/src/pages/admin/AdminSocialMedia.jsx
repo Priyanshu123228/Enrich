@@ -452,7 +452,7 @@ export default function AdminSocialMedia() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-xs min-w-[650px]">
               <thead>
                 <tr className="border-b border-stone-100 text-stone-400 uppercase text-[10px] font-bold bg-stone-50/30">
                   <th className="py-3 px-4 w-16 text-center">Order</th>

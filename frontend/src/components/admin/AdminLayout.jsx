@@ -72,10 +72,19 @@ export default function AdminLayout() {
         </button>
       </div>
 
+      {/* Mobile Backdrop Overlay */}
+      {mobileNavOpen && (
+        <div
+          className="fixed inset-0 bg-stone-950/50 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+          onClick={() => setMobileNavOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Desktop & Mobile Sidebar */}
       <aside
-        className={`fixed md:sticky top-0 left-0 z-50 h-screen w-64 bg-white border-r border-stone-200 p-6 flex flex-col justify-between transition-transform duration-300 md:translate-x-0 ${
-          mobileNavOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        className={`fixed md:sticky top-0 left-0 z-50 h-screen w-72 sm:w-64 bg-white border-r border-stone-200 p-5 sm:p-6 flex flex-col justify-between overflow-y-auto transition-transform duration-300 md:translate-x-0 ${
+          mobileNavOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div className="space-y-6">
@@ -135,7 +144,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Admin Content Container */}
-      <main className="flex-1 min-w-0 p-4 sm:p-8 lg:p-10">
+      <main className="flex-1 min-w-0 p-3 sm:p-6 lg:p-8 max-w-full overflow-x-hidden">
         <Outlet />
       </main>
 

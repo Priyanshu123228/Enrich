@@ -15,6 +15,12 @@ function WhatsAppIcon({ className = "w-6 h-6" }) {
 export default function WhatsAppWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+
+  // Hide on admin and staff portals so it doesn't block operational UI
+  if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/staff')) {
+    return null;
+  }
+
   const isBookingPage = location.pathname.startsWith('/book');
   const phoneNumber = '919667900313'; // Enrich official WhatsApp number
 

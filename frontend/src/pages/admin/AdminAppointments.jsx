@@ -74,7 +74,7 @@ export default function AdminAppointments() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8 pb-10">
       
       {/* Top Header */}
       <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -187,9 +187,9 @@ export default function AdminAppointments() {
           </div>
         ) : filteredAppointments.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[880px]">
               <thead>
-                <tr className="bg-stone-50 border-b border-stone-200 text-[11px] font-bold uppercase tracking-wider text-stone-600">
+                <tr className="bg-stone-50 border-b border-stone-200 text-[11px] font-bold uppercase tracking-wider text-stone-600 whitespace-nowrap">
                   <th className="py-3.5 px-6">Reference ID</th>
                   <th className="py-3.5 px-4">Client</th>
                   <th className="py-3.5 px-4">Service</th>
