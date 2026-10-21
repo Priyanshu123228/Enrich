@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, Phone, Lock, Eye, EyeOff, ArrowRight, Check, X as XIcon, ShieldCheck } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Check, X as XIcon } from 'lucide-react';
 import LoadingButton from '../components/auth/LoadingButton';
 import AlertMessage from '../components/auth/AlertMessage';
 import GoogleAuthButton from '../components/auth/GoogleAuthButton';
@@ -10,7 +10,6 @@ export default function Signup() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: ''
   });
@@ -39,7 +38,6 @@ export default function Signup() {
 
     const cleanName = formData.name.trim();
     const cleanEmail = formData.email.trim();
-    const cleanPhone = formData.phone.replace(/\D/g, '');
 
     // Client-side validations
     if (!cleanName) {
@@ -51,11 +49,6 @@ export default function Signup() {
     if (!cleanEmail || !/^\S+@\S+\.\S+$/.test(cleanEmail)) {
       setErrorMsg('Please enter a valid email address.');
       emailInputRef.current?.focus();
-      return;
-    }
-
-    if (cleanPhone.length < 10) {
-      setErrorMsg('Please enter a valid 10-digit mobile number.');
       return;
     }
 
@@ -74,7 +67,6 @@ export default function Signup() {
     const result = await signup({
       name: cleanName,
       email: cleanEmail,
-      phone: cleanPhone,
       password: formData.password,
       confirmPassword: formData.confirmPassword
     });
@@ -114,12 +106,11 @@ export default function Signup() {
           </p>
         </div>
 
-        {/* Google Authentication Option */}
+        {/* Google Authentication Option - Direct One-Click Button */}
         <div className="space-y-4">
           <GoogleAuthButton
             mode="signup"
             onError={(msg) => setErrorMsg(msg)}
-            onSwitchToEmail={() => nameInputRef.current?.focus()}
           />
 
           <div className="relative flex items-center justify-center">
@@ -177,33 +168,6 @@ export default function Signup() {
                 placeholder="priyanshi@example.com"
                 className="w-full h-11 pl-10 pr-4 rounded-xl border border-stone-300 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800/15 focus:border-rose-800 transition-colors disabled:bg-stone-50"
               />
-            </div>
-          </div>
-
-          {/* Mobile Phone */}
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1 uppercase tracking-wide">
-              Mobile Phone <span className="text-rose-800">*</span>
-            </label>
-            <div className="relative flex">
-              <div className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-stone-300 bg-stone-100 text-stone-700 text-xs font-semibold">
-                +91
-              </div>
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-400">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <input
-                  type="tel"
-                  required
-                  maxLength={10}
-                  disabled={isSubmitting}
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
-                  placeholder="9876543210"
-                  className="w-full h-11 pl-9 pr-4 rounded-r-xl border border-stone-300 font-mono text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800/15 focus:border-rose-800 transition-colors disabled:bg-stone-50"
-                />
-              </div>
             </div>
           </div>
 

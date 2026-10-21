@@ -14,7 +14,7 @@ export const validateSignup = (req, res, next) => {
   if (!email || !EMAIL_REGEX.test(email.trim())) {
     errors.push('Valid email address is required');
   }
-  if (!phone || phone.trim().length < 7) {
+  if (phone && phone.trim().length > 0 && phone.trim().length < 7) {
     errors.push('Valid phone number is required (min 7 digits)');
   }
   if (!password || password.length < 6) {

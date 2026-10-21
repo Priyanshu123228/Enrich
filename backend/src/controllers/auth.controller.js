@@ -39,11 +39,14 @@ const formatUserResponse = (user) => {
 export const signup = asyncHandler(async (req, res) => {
   const { name, email, phone, password } = req.body;
   const normalizedEmail = email.toLowerCase().trim();
-  const trimmedPhone = phone.trim();
+  const trimmedPhone = phone ? phone.trim() : undefined;
 
   // 1. Check if an active account already exists with this email or phone
   const existingUser = await User.findOne({
-    $or: [{ email: normalizedEmail }, { phone: trimmedPhone }]
+    $or: [
+      { email: normalizedEmail },
+      ...(trimmedPhone ? [{ phone: trimmedPhone }] : [])
+    ]
   });
 
   if (existingUser) {
@@ -52,7 +55,7 @@ export const signup = asyncHandler(async (req, res) => {
       if (existingUser.email === normalizedEmail) {
         throw new ApiError(409, 'An account with this email address already exists');
       }
-      if (existingUser.phone === trimmedPhone) {
+      if (trimmedPhone && existingUser.phone === trimmedPhone) {
         throw new ApiError(409, 'An account with this phone number already exists');
       }
     }
@@ -60,7 +63,7 @@ export const signup = asyncHandler(async (req, res) => {
     // If an unverified pending account exists with this email, update its details and resend OTP
     if (existingUser.email === normalizedEmail && !existingUser.isEmailVerified) {
       existingUser.name = name.trim();
-      existingUser.phone = trimmedPhone;
+      if (trimmedPhone) existingUser.phone = trimmedPhone;
       existingUser.password = password; // Pre-save hook will hash it
       await existingUser.save();
 
@@ -90,7 +93,7 @@ export const signup = asyncHandler(async (req, res) => {
   const user = await User.create({
     name: name.trim(),
     email: normalizedEmail,
-    phone: trimmedPhone,
+    ...(trimmedPhone ? { phone: trimmedPhone } : {}),
     password,
     role: 'customer',
     status: 'pending_verification',

@@ -36,13 +36,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       sparse: true,
       trim: true,
-      index: true,
-      required: [
-        function () {
-          return !this.googleId;
-        },
-        'Phone number is required'
-      ]
+      index: true
     },
     password: {
       type: String,
