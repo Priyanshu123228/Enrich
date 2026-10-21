@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { resolveImageUrl, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
 import { getTodayDateString, isSlotPassed } from '../../utils/dateUtils';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
@@ -9,9 +9,14 @@ import { appointmentService } from '../../services/appointment.service';
 import { paymentService } from '../../services/payment.service';
 import { offerService } from '../../services/offer.service';
 import { authService } from '../../services/auth.service';
-import { schedule2HourReminder, requestPushPermission, registerPushSubscription, showLocalNotification } from '../../utils/pushNotifications';
 import { loadRazorpayScript } from '../../utils/loadRazorpay';
 import { useAuth } from '../../context/AuthContext';
+import {
+  schedule2HourReminder,
+  requestPushPermission,
+  registerPushSubscription,
+  showLocalNotification
+} from '../../utils/pushNotifications';
 import {
   Calendar,
   Clock,
@@ -19,6 +24,7 @@ import {
   Sparkles,
   Scissors,
   Users,
+  User,
   Star,
   ChevronRight,
   ChevronLeft,
@@ -39,21 +45,37 @@ import {
   PhoneCall,
   Bell,
   BellRing,
-  Wifi
+  Wifi,
+  Search,
+  Filter,
+  ArrowRight
 } from 'lucide-react';
 
 export default function BookingWizard() {
   const { user, refreshUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const topRef = useRef(null);
 
   // Step 1 to 5
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Auto-scroll smoothly to top whenever step changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (topRef.current) {
+      topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [currentStep]);
 
   // Data states
   const [services, setServices] = useState([]);
   const [staffMembers, setStaffMembers] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
+
+  // Step 1 Filters
+  const [serviceSearch, setServiceSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Selection states
   const [selectedService, setSelectedService] = useState(null);
@@ -74,6 +96,12 @@ export default function BookingWizard() {
   const [devOtpHint, setDevOtpHint] = useState('');
   const [otpCountdown, setOtpCountdown] = useState(0);
   const [isMobileVerified, setIsMobileVerified] = useState(Boolean(user?.isPhoneVerified));
+
+  // 2-Hour Reminder State
+  const [reminderActive, setReminderActive] = useState(() => {
+    return localStorage.getItem('enrich_push_enabled') === 'true';
+  });
+  const [reminderFeedback, setReminderFeedback] = useState('');
 
   // Sync state if user logs in or profile refreshes
   useEffect(() => {
@@ -113,10 +141,6 @@ export default function BookingWizard() {
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmedBooking, setConfirmedBooking] = useState(null);
   const [copiedVoucher, setCopiedVoucher] = useState(false);
-  const [reminderActive, setReminderActive] = useState(() => {
-    return localStorage.getItem('enrich_push_enabled') === 'true';
-  });
-  const [reminderFeedback, setReminderFeedback] = useState('');
 
   // Clear selected slot if it has passed
   useEffect(() => {
@@ -153,7 +177,6 @@ export default function BookingWizard() {
 
         if (staffRes?.data) {
           setStaffMembers(staffRes.data);
-          // Check if pre-selected staff member passed from state or query parameter
           const searchParams = new URLSearchParams(location.search);
           const targetStaffId = location.state?.preSelectedStaffId || searchParams.get('staffId') || searchParams.get('staff');
           if (targetStaffId) {
@@ -206,15 +229,58 @@ export default function BookingWizard() {
     fetchSlots();
   }, [selectedService, selectedStaff, selectedDate]);
 
-  // Payment states
-  const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' | 'counter'
-
   // Filter staff offering the selected service
   const qualifiedStaff = selectedService
     ? staffMembers.filter((st) =>
         st.services?.some((s) => (s._id ? s._id === selectedService._id : s === selectedService._id))
       )
     : staffMembers;
+
+  // Extract unique categories from services
+  const categories = useMemo(() => {
+    const list = services
+      .map((s) => s.category?.name)
+      .filter((c) => Boolean(c) && typeof c === 'string');
+    return ['all', ...new Set(list)];
+  }, [services]);
+
+  // Filtered services based on search and category
+  const filteredServices = useMemo(() => {
+    return services.filter((s) => {
+      const matchesCat =
+        selectedCategory === 'all' ||
+        (s.category?.name && s.category.name.toLowerCase() === selectedCategory.toLowerCase());
+      const query = serviceSearch.trim().toLowerCase();
+      const matchesQuery =
+        !query ||
+        s.name?.toLowerCase().includes(query) ||
+        s.description?.toLowerCase().includes(query) ||
+        s.category?.name?.toLowerCase().includes(query);
+      return matchesCat && matchesQuery;
+    });
+  }, [services, selectedCategory, serviceSearch]);
+
+  // Quick Date presets
+  const datePresets = useMemo(() => {
+    const today = new Date();
+    const presets = [];
+    for (let i = 0; i < 4; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      const iso = d.toISOString().split('T')[0];
+      const label =
+        i === 0
+          ? 'Today'
+          : i === 1
+          ? 'Tomorrow'
+          : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      presets.push({ iso, label });
+    }
+    return presets;
+  }, []);
+
+  // Payment states
+  const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' | 'counter'
 
   // Handle Promo Code Validation
   const handleApplyPromo = async () => {
@@ -338,6 +404,50 @@ export default function BookingWizard() {
     }
   };
 
+  // Helper: Save booking to offline storage and schedule 2-hour reminder
+  const saveAndScheduleBooking = (booking) => {
+    setConfirmedBooking(booking);
+    try {
+      localStorage.setItem('lastBooking', JSON.stringify(booking));
+      const raw = localStorage.getItem('enrich_offline_appointments');
+      const list = raw ? JSON.parse(raw) : [];
+      const updated = [booking, ...list.filter((b) => b.bookingId !== booking.bookingId)].slice(0, 5);
+      localStorage.setItem('enrich_offline_appointments', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Offline cache notice:', e);
+    }
+    schedule2HourReminder(booking);
+  };
+
+  const handleEnablePushReminder = async () => {
+    const granted = await requestPushPermission();
+    if (granted) {
+      setReminderActive(true);
+      await registerPushSubscription(user?.phone || guestPhone);
+      if (confirmedBooking) {
+        schedule2HourReminder(confirmedBooking);
+      }
+      setReminderFeedback('2-hour appointment reminder active on this device!');
+      setTimeout(() => setReminderFeedback(''), 4000);
+    } else {
+      setReminderFeedback('Push notification permission was denied or dismissed.');
+      setTimeout(() => setReminderFeedback(''), 4000);
+    }
+  };
+
+  const handleTestReminder = async () => {
+    if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
+      const granted = await requestPushPermission();
+      if (!granted) return;
+    }
+    const serviceName = confirmedBooking?.service?.name || 'Salon Treatment';
+    const timeStr = confirmedBooking?.startTime || '11:00';
+    await showLocalNotification(
+      '⏰ Reminder: Your Salon Appointment is in 2 Hours!',
+      `Your ${serviceName} session starts at ${timeStr}. Enrich Salon, Sikar.`
+    );
+  };
+
   // Final Appointment Submission
   const handleConfirmAppointment = async () => {
     setErrorMsg('');
@@ -425,11 +535,12 @@ export default function BookingWizard() {
             setCurrentStep(5);
           } catch (verErr) {
             setErrorMsg(verErr.message || 'Payment verification failed on server');
-            setConfirmedBooking({
+            const failedApp = {
               ...newApp,
               paymentStatus: 'failed',
               status: 'pending'
-            });
+            };
+            saveAndScheduleBooking(failedApp);
             setCurrentStep(5);
           } finally {
             setIsSubmitting(false);
@@ -442,11 +553,12 @@ export default function BookingWizard() {
               razorpay_order_id: orderRes.data.orderId,
               error_description: 'Payment popup closed by customer'
             });
-            setConfirmedBooking({
+            const pendingApp = {
               ...newApp,
               paymentStatus: 'pending',
               status: 'pending'
-            });
+            };
+            saveAndScheduleBooking(pendingApp);
             setCurrentStep(5);
             setIsSubmitting(false);
           }
@@ -475,50 +587,6 @@ export default function BookingWizard() {
       }
       setIsSubmitting(false);
     }
-  };
-
-
-  const saveAndScheduleBooking = (booking) => {
-    setConfirmedBooking(booking);
-    try {
-      localStorage.setItem('lastBooking', JSON.stringify(booking));
-      const raw = localStorage.getItem('enrich_offline_appointments');
-      const list = raw ? JSON.parse(raw) : [];
-      const updated = [booking, ...list.filter((b) => b.bookingId !== booking.bookingId)].slice(0, 5);
-      localStorage.setItem('enrich_offline_appointments', JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Offline cache notice:', e);
-    }
-    schedule2HourReminder(booking);
-  };
-
-  const handleEnablePushReminder = async () => {
-    const granted = await requestPushPermission();
-    if (granted) {
-      setReminderActive(true);
-      await registerPushSubscription(user?.phone || guestPhone);
-      if (confirmedBooking) {
-        schedule2HourReminder(confirmedBooking);
-      }
-      setReminderFeedback('2-hour appointment reminder active on this device!');
-      setTimeout(() => setReminderFeedback(''), 4000);
-    } else {
-      setReminderFeedback('Push notification permission was denied or dismissed.');
-      setTimeout(() => setReminderFeedback(''), 4000);
-    }
-  };
-
-  const handleTestReminder = async () => {
-    if (Notification.permission !== 'granted') {
-      const granted = await requestPushPermission();
-      if (!granted) return;
-    }
-    const serviceName = confirmedBooking?.service?.name || 'Salon Treatment';
-    const timeStr = confirmedBooking?.startTime || '11:00';
-    await showLocalNotification(
-      '⏰ Reminder: Your Salon Appointment is in 2 Hours!',
-      `Your ${serviceName} session starts at ${timeStr}. Enrich Salon, Sikar.`
-    );
   };
 
   // Helper 1: Google Calendar Link Generator
@@ -622,11 +690,26 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
   };
 
   const steps = [
-    { num: 1, title: 'Service' },
-    { num: 2, title: 'Stylist' },
-    { num: 3, title: 'Date & Time' },
-    { num: 4, title: 'Review & Book' }
+    { num: 1, title: 'Service', icon: Scissors },
+    { num: 2, title: 'Stylist', icon: User },
+    { num: 3, title: 'Date & Slot', icon: Calendar },
+    { num: 4, title: 'Review & Confirm', icon: CheckCircle2 }
   ];
+
+  // Helper: check if a step is accessible by the user
+  const canAccessStep = (stepNum) => {
+    if (stepNum === 1) return true;
+    if (stepNum === 2) return Boolean(selectedService);
+    if (stepNum === 3) return Boolean(selectedService);
+    if (stepNum === 4) return Boolean(selectedService && selectedSlot);
+    return false;
+  };
+
+  const goToStep = (stepNum) => {
+    if (canAccessStep(stepNum)) {
+      setCurrentStep(stepNum);
+    }
+  };
 
   if (isLoadingData) {
     return (
@@ -637,113 +720,243 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
     );
   }
 
+  // Current calculation for final payable
+  const currentBasePrice = selectedService?.discountPrice > 0 ? selectedService.discountPrice : selectedService?.price || 0;
+  const currentFinalPayable = Math.max(0, currentBasePrice - discountAmount);
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div ref={topRef} className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 pb-36">
       
-      {/* Top Header & Wizard Progress */}
+      {/* Top Header & Interactive Wizard Step Bar */}
       {currentStep < 5 && (
-        <div className="space-y-6">
-          <div className="text-center space-y-1.5">
-            <span className="text-xs font-bold tracking-widest text-stone-500 uppercase">
+        <div className="space-y-4">
+          <div className="text-center space-y-1">
+            <span className="text-[11px] font-bold tracking-widest text-stone-500 uppercase">
               Online Booking
             </span>
-            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900">
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
               Schedule Your Appointment
             </h1>
           </div>
 
-          {/* Progress Step Bar */}
-          <div className="grid grid-cols-4 gap-2 max-w-2xl mx-auto">
-            {steps.map((s) => (
-              <div
-                key={s.num}
-                className={`py-2 px-3 rounded-lg text-center border transition-all ${
-                  currentStep === s.num
-                    ? 'bg-stone-900 text-white border-stone-900 shadow-xs'
-                    : currentStep > s.num
-                    ? 'bg-stone-100 text-stone-800 border-stone-300 font-semibold'
-                    : 'bg-white text-stone-400 border-stone-200'
-                }`}
-              >
-                <div className="text-[10px] uppercase tracking-wider font-bold">Step {s.num}</div>
-                <div className="text-xs font-semibold truncate">{s.title}</div>
-              </div>
-            ))}
+          {/* Interactive Clickable Step Bar */}
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-3 max-w-2xl mx-auto">
+            {steps.map((s) => {
+              const isCurrent = currentStep === s.num;
+              const isPast = currentStep > s.num;
+              const isAccessible = canAccessStep(s.num);
+              const StepIcon = s.icon;
+
+              return (
+                <button
+                  key={s.num}
+                  type="button"
+                  onClick={() => goToStep(s.num)}
+                  disabled={!isAccessible}
+                  className={`py-2 px-1.5 sm:px-3 rounded-xl text-center border transition-all cursor-pointer ${
+                    isCurrent
+                      ? 'bg-stone-900 text-white border-stone-900 shadow-sm ring-1 ring-stone-900'
+                      : isPast
+                      ? 'bg-emerald-50/80 text-emerald-950 border-emerald-300 hover:bg-emerald-100/70 font-semibold'
+                      : isAccessible
+                      ? 'bg-white text-stone-700 border-stone-300 hover:border-stone-400'
+                      : 'bg-stone-50 text-stone-300 border-stone-200 cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-1 text-[10px] uppercase font-bold tracking-wider">
+                    {isPast ? (
+                      <Check className="w-3 h-3 text-emerald-600 shrink-0" />
+                    ) : (
+                      <StepIcon className={`w-3 h-3 shrink-0 ${isCurrent ? 'text-white' : 'text-stone-400'}`} />
+                    )}
+                    <span>Step {s.num}</span>
+                  </div>
+                  <div className="text-xs font-semibold truncate mt-0.5">{s.title}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm flex items-center space-x-3">
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center space-x-3 shadow-xs">
           <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      {/* STEP 1: SELECT SERVICE */}
+      {/* STEP 1: SELECT SERVICE WITH SEARCH & CATEGORY FILTER */}
       {currentStep === 1 && (
-        <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">
-              1. Choose a Service
-            </h2>
-            <p className="text-xs text-stone-500">
-              Select the treatment you would like to book today.
-            </p>
+        <div className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-stone-100 pb-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                1. Choose a Service
+              </h2>
+              <p className="text-xs text-stone-500 mt-0.5">
+                Select your desired treatment. You can change your choice anytime.
+              </p>
+            </div>
+
+            {/* Selected quick preview if already chosen */}
+            {selectedService && (
+              <div className="inline-flex items-center gap-2 bg-stone-900 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium self-start sm:self-auto">
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="truncate max-w-[200px]">{selectedService.name}</span>
+                <span className="text-stone-300 font-bold">₹{selectedService.discountPrice || selectedService.price}</span>
+              </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {services.map((service) => {
-              const isSelected = selectedService?._id === service._id;
-              return (
-                <div
-                  key={service._id}
-                  onClick={() => setSelectedService(service)}
-                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all flex items-start space-x-4 ${
-                    isSelected
-                      ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
-                      : 'border-stone-200 hover:border-stone-400 bg-white hover:bg-stone-50/60'
-                  }`}
+          {/* Search Box & Quick Category Filter */}
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+              <input
+                type="text"
+                value={serviceSearch}
+                onChange={(e) => setServiceSearch(e.target.value)}
+                placeholder="Search treatments (e.g. hair, facial, bridal, nails, glow)..."
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 bg-stone-50/50 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-stone-500 focus:bg-white transition-all font-medium"
+              />
+              {serviceSearch && (
+                <button
+                  type="button"
+                  onClick={() => setServiceSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-xs px-1"
                 >
-                  <img
-                    src={resolveImageUrl(service.images?.[0]?.url || service.images?.[0], DEFAULT_SALON_PLACEHOLDER)}
-                    alt={service.name}
-                    className="w-16 h-16 rounded-md object-cover shrink-0 border border-stone-200"
-                  />
-                  <div className="space-y-1 flex-1">
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-700">
-                        {service.category?.name || 'Treatment'}
-                      </span>
-                      <div className="text-right">
-                        {service.discountPrice > 0 ? (
-                          <div className="flex items-center space-x-1.5">
-                            <span className="text-xs text-stone-400 line-through">₹{service.price}</span>
-                            <span className="text-sm font-bold text-stone-900">₹{service.discountPrice}</span>
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Category Pills (if more than 1 category exists) */}
+            {categories.length > 2 && (
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-3 py-1.5 rounded-lg font-semibold text-xs whitespace-nowrap transition-all cursor-pointer ${
+                      selectedCategory === cat
+                        ? 'bg-stone-900 text-white shadow-xs'
+                        : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
+                    }`}
+                  >
+                    {cat === 'all' ? 'All Treatments' : cat}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Service Cards Grid */}
+          {filteredServices.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {filteredServices.map((service) => {
+                const isSelected = selectedService?._id === service._id;
+                return (
+                  <div
+                    key={service._id}
+                    onClick={() => setSelectedService(service)}
+                    className={`p-4 sm:p-5 rounded-xl border-2 cursor-pointer transition-all flex flex-col justify-between space-y-3 ${
+                      isSelected
+                        ? 'border-stone-900 bg-stone-50/90 shadow-md ring-2 ring-stone-900'
+                        : 'border-stone-200 hover:border-stone-400 bg-white hover:bg-stone-50/50'
+                    }`}
+                  >
+                    <div className="flex items-start space-x-3.5">
+                      <img
+                        src={resolveImageUrl(service.images?.[0]?.url || service.images?.[0], DEFAULT_SALON_PLACEHOLDER)}
+                        alt={service.name}
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover shrink-0 border border-stone-200"
+                      />
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-stone-100 text-stone-700 truncate">
+                            {service.category?.name || 'Treatment'}
+                          </span>
+                          <div className="text-right shrink-0">
+                            {service.discountPrice > 0 ? (
+                              <div className="flex items-baseline space-x-1.5">
+                                <span className="text-xs text-stone-400 line-through">₹{service.price}</span>
+                                <span className="text-sm sm:text-base font-bold text-stone-900">₹{service.discountPrice}</span>
+                              </div>
+                            ) : (
+                              <span className="text-sm sm:text-base font-bold text-stone-900">₹{service.price}</span>
+                            )}
                           </div>
-                        ) : (
-                          <span className="text-sm font-bold text-stone-900">₹{service.price}</span>
-                        )}
+                        </div>
+
+                        <h3 className="font-bold text-sm sm:text-base text-stone-900 leading-snug">
+                          {service.name}
+                        </h3>
+                        <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
+                          {service.description}
+                        </p>
+                        <div className="text-[11px] text-stone-600 font-medium flex items-center pt-1">
+                          <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
+                          {service.duration} mins session
+                        </div>
                       </div>
                     </div>
-                    <h3 className="font-bold text-base text-stone-900">{service.name}</h3>
-                    <p className="text-xs text-stone-500 line-clamp-1">{service.description}</p>
-                    <div className="text-[11px] text-stone-600 font-medium flex items-center pt-1">
-                      <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
-                      {service.duration} mins session
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
 
-          <div className="pt-4 flex justify-end border-t border-stone-100">
+                    {/* Inline Instant CTA button when selected */}
+                    {isSelected && (
+                      <div className="pt-2 border-t border-stone-200/70 flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-emerald-800 flex items-center">
+                          <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                          Selected
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentStep(2);
+                          }}
+                          className="px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center gap-1 cursor-pointer shadow-xs"
+                        >
+                          Continue to Stylist
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-8 text-center border border-dashed border-stone-200 rounded-xl space-y-2">
+              <p className="text-xs text-stone-500">No treatments found matching "{serviceSearch}".</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setServiceSearch('');
+                  setSelectedCategory('all');
+                }}
+                className="text-xs font-bold text-stone-900 underline"
+              >
+                Clear Search & Filters
+              </button>
+            </div>
+          )}
+
+          {/* Bottom static bar (backup for desktop) */}
+          <div className="pt-4 flex justify-between items-center border-t border-stone-100">
+            <span className="text-xs text-stone-500">
+              {selectedService ? (
+                <span>Selected: <strong className="text-stone-900">{selectedService.name}</strong></span>
+              ) : (
+                'Please select a treatment above to continue'
+              )}
+            </span>
             <button
               onClick={() => setCurrentStep(2)}
               disabled={!selectedService}
-              className="inline-flex items-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
             >
               Continue to Stylist
               <ChevronRight className="w-4 h-4 ml-1.5" />
@@ -754,14 +967,23 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
       {/* STEP 2: SELECT STYLIST */}
       {currentStep === 2 && (
-        <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">
-              2. Select Your Preferred Stylist
-            </h2>
-            <p className="text-xs text-stone-500">
-              Choose a specific specialist for <strong className="text-stone-800">{selectedService?.name}</strong> or select any available stylist.
-            </p>
+        <div className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-stone-100 pb-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                2. Select Your Preferred Stylist
+              </h2>
+              <p className="text-xs text-stone-500 mt-0.5">
+                For treatment: <strong className="text-stone-800 font-semibold">{selectedService?.name}</strong>
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentStep(1)}
+              className="text-xs text-stone-600 hover:text-stone-900 underline font-semibold self-start sm:self-auto cursor-pointer"
+            >
+              Change Treatment
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -769,26 +991,35 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             {/* Option: Any Available Stylist */}
             <div
               onClick={() => setSelectedStaff('any')}
-              className={`p-5 rounded-lg border-2 cursor-pointer transition-all flex flex-col justify-between ${
+              className={`p-5 rounded-xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
                 selectedStaff === 'any'
-                  ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
-                  : 'border-stone-200 hover:border-stone-400 bg-white'
+                  ? 'border-stone-900 bg-stone-50/90 shadow-md ring-2 ring-stone-900'
+                  : 'border-stone-200 hover:border-stone-400 bg-white hover:bg-stone-50/50'
               }`}
             >
-              <div className="space-y-2">
-                <div className="w-12 h-12 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center">
+              <div className="space-y-2.5">
+                <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center">
                   <Users className="w-6 h-6" />
                 </div>
                 <h4 className="font-bold text-base text-stone-900 font-serif">
                   Any Available Stylist
                 </h4>
                 <p className="text-xs text-stone-500 leading-relaxed">
-                  We will assign the first available qualified specialist to give you the most flexible schedule options.
+                  Fastest booking! We assign the first available qualified specialist for your chosen date and slot.
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-stone-700 mt-4 block">
-                First available appointment
-              </span>
+
+              <div className="pt-3 border-t border-stone-100 mt-3 flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-stone-700">
+                  Maximum Flexibility
+                </span>
+                {selectedStaff === 'any' && (
+                  <span className="text-xs font-bold text-emerald-800 flex items-center">
+                    <Check className="w-3.5 h-3.5 mr-0.5 text-emerald-600" />
+                    Selected
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Qualified Staff Cards */}
@@ -798,36 +1029,48 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                 <div
                   key={staff._id}
                   onClick={() => setSelectedStaff(staff)}
-                  className={`p-5 rounded-lg border-2 cursor-pointer transition-all flex flex-col justify-between ${
+                  className={`p-5 rounded-xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
                     isSelected
-                      ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
-                      : 'border-stone-200 hover:border-stone-400 bg-white'
+                      ? 'border-stone-900 bg-stone-50/90 shadow-md ring-2 ring-stone-900'
+                      : 'border-stone-200 hover:border-stone-400 bg-white hover:bg-stone-50/50'
                   }`}
                 >
                   <div className="space-y-3">
                     <img
                       src={resolveImageUrl(staff.avatar?.url || staff.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
                       alt={staff.name}
-                      className="w-14 h-14 rounded-lg object-cover border border-stone-200"
+                      className="w-14 h-14 rounded-xl object-cover border border-stone-200 shadow-xs"
                     />
                     <div>
                       <h4 className="font-bold text-base text-stone-900 font-serif">
                         {staff.name}
                       </h4>
                       {staff.experience > 0 && (
-                        <p className="text-[11px] text-stone-500 mt-0.5">
+                        <p className="text-[11px] text-stone-500 mt-0.5 font-medium">
                           {staff.experience} years experience
                         </p>
                       )}
                       {staff.ratingCount > 0 && (
-                        <p className="text-[11px] text-amber-700 flex items-center mt-0.5">
+                        <p className="text-[11px] text-amber-700 flex items-center mt-0.5 font-bold">
                           <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 mr-1" />
                           {staff.ratingAverage?.toFixed(1)} ({staff.ratingCount} reviews)
                         </p>
                       )}
                     </div>
                     {staff.bio && (
-                      <p className="text-xs text-stone-600 line-clamp-2">{staff.bio}</p>
+                      <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">{staff.bio}</p>
+                    )}
+                  </div>
+
+                  <div className="pt-3 border-t border-stone-100 mt-3 flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-stone-500">
+                      Salon Specialist
+                    </span>
+                    {isSelected && (
+                      <span className="text-xs font-bold text-emerald-800 flex items-center">
+                        <Check className="w-3.5 h-3.5 mr-0.5 text-emerald-600" />
+                        Selected
+                      </span>
                     )}
                   </div>
                 </div>
@@ -839,14 +1082,14 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
           <div className="pt-4 flex justify-between items-center border-t border-stone-100">
             <button
               onClick={() => setCurrentStep(1)}
-              className="inline-flex items-center px-5 py-2.5 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
+              className="inline-flex items-center px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4 mr-1.5" />
               Back
             </button>
             <button
               onClick={() => setCurrentStep(3)}
-              className="inline-flex items-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer"
+              className="inline-flex items-center px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs"
             >
               Continue to Date & Slot
               <ChevronRight className="w-4 h-4 ml-1.5" />
@@ -857,49 +1100,87 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
       {/* STEP 3: DATE PICKER & LIVE SLOTS */}
       {currentStep === 3 && (
-        <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">
-              3. Select Date & Time Slot
-            </h2>
-            <p className="text-xs text-stone-500">
-              Available slots are calculated in real time according to stylist shifts, existing appointments, and duration.
-            </p>
+        <div className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-stone-100 pb-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
+                3. Select Date & Time Slot
+              </h2>
+              <p className="text-xs text-stone-500 mt-0.5">
+                Session duration: <strong className="text-stone-800 font-semibold">{selectedService?.duration} mins</strong> • Stylist: <strong className="text-stone-800 font-semibold">{selectedStaff === 'any' ? 'Any Available' : selectedStaff?.name}</strong>
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentStep(2)}
+              className="text-xs text-stone-600 hover:text-stone-900 underline font-semibold self-start sm:self-auto cursor-pointer"
+            >
+              Change Stylist
+            </button>
           </div>
 
-          {/* Date Picker Row */}
-          <div className="p-4 bg-stone-50 rounded-lg border border-stone-200 max-w-md">
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
-              Appointment Date
+          {/* Quick Date Presets + Calendar Input */}
+          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-3">
+            <label className="block text-xs font-bold uppercase tracking-wider text-stone-700">
+              Select Appointment Date
             </label>
-            <input
-              type="date"
-              min={getTodayDateString()}
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-stone-300 bg-white text-sm font-medium focus:outline-stone-500 cursor-pointer"
-            />
+            
+            {/* Quick Presets */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {datePresets.map((preset) => (
+                <button
+                  key={preset.iso}
+                  type="button"
+                  onClick={() => setSelectedDate(preset.iso)}
+                  className={`py-2 px-2.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer truncate ${
+                    selectedDate === preset.iso
+                      ? 'bg-stone-900 text-white border-stone-900 shadow-xs'
+                      : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-100'
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider">
+                Or pick calendar date:
+              </span>
+              <input
+                type="date"
+                min={getTodayDateString()}
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-stone-300 bg-white text-xs font-medium focus:outline-stone-500 cursor-pointer"
+              />
+            </div>
           </div>
 
           {/* Slot Grid Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-stone-800">
-                Available Openings ({availableSlots.filter(s => !isSlotPassed(selectedDate, s.time) && !s.isPassed).length})
+              <h4 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
+                <span>Available Openings</span>
+                <span className="px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 text-xs font-mono">
+                  {availableSlots.filter((s) => !isSlotPassed(selectedDate, s.time) && !s.isPassed).length}
+                </span>
               </h4>
-              <span className="text-xs text-stone-500 flex items-center">
-                <Clock className="w-3.5 h-3.5 mr-1" />
-                Session duration: {selectedService?.duration} mins
-              </span>
+              {selectedSlot && (
+                <span className="text-xs font-bold text-emerald-800 flex items-center bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                  <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                  Selected Slot: {selectedSlot}
+                </span>
+              )}
             </div>
 
             {isLoadingSlots ? (
               <div className="p-12 flex flex-col items-center justify-center">
                 <Loader2 className="w-8 h-8 text-stone-700 animate-spin mb-2" />
-                <p className="text-xs text-stone-500">Checking stylist schedule and booked openings...</p>
+                <p className="text-xs text-stone-500">Checking live beautician schedules...</p>
               </div>
             ) : availableSlots.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-3">
                 {availableSlots.map((slot) => {
                   const isPassed = isSlotPassed(selectedDate, slot.time) || slot.isPassed;
                   const isSelected = selectedSlot === slot.time;
@@ -913,22 +1194,22 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                       }}
                       aria-disabled={isPassed}
                       title={isPassed ? 'This time slot has already passed' : `Select ${slot.time}`}
-                      className={`py-2.5 px-2 rounded-lg text-center border transition-all ${
+                      className={`py-2.5 px-2 rounded-xl text-center border transition-all ${
                         isPassed
                           ? 'opacity-35 bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed select-none line-through'
                           : isSelected
-                          ? 'bg-stone-900 text-white border-stone-900 shadow-xs font-bold cursor-pointer ring-2 ring-stone-900 ring-offset-1'
+                          ? 'bg-stone-900 text-white border-stone-900 shadow-md font-bold cursor-pointer ring-2 ring-stone-900'
                           : 'bg-white text-stone-800 border-stone-200 hover:border-stone-400 hover:bg-stone-50 font-medium cursor-pointer'
                       }`}
                     >
-                      <span className="text-xs">{slot.time}</span>
+                      <span className="text-xs sm:text-sm font-semibold">{slot.time}</span>
                     </button>
                   );
                 })}
               </div>
             ) : (
-              <div className="p-8 text-center border border-dashed border-stone-300 rounded-lg text-stone-500 text-xs">
-                No slots available on this date for the selected stylist. Please try another date or select "Any Available Stylist".
+              <div className="p-8 text-center border border-dashed border-stone-300 rounded-xl text-stone-500 text-xs">
+                No slots available on this date for the selected stylist. Please try another date or switch to "Any Available Stylist".
               </div>
             )}
           </div>
@@ -936,7 +1217,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
           <div className="pt-4 flex justify-between items-center border-t border-stone-100">
             <button
               onClick={() => setCurrentStep(2)}
-              className="inline-flex items-center px-5 py-2.5 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
+              className="inline-flex items-center px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4 mr-1.5" />
               Back
@@ -944,7 +1225,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             <button
               onClick={() => setCurrentStep(4)}
               disabled={!selectedSlot}
-              className="inline-flex items-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
             >
               Review Details
               <ChevronRight className="w-4 h-4 ml-1.5" />
@@ -955,9 +1236,9 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
       {/* STEP 4: REVIEW, GUEST MOBILE OTP & CONFIRM */}
       {currentStep === 4 && (
-        <div className="bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-xs space-y-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">
+        <div className="bg-white p-5 sm:p-8 rounded-2xl border border-stone-200 shadow-xs space-y-6">
+          <div className="space-y-1 border-b border-stone-100 pb-4">
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">
               4. Review & Confirm Booking
             </h2>
             <p className="text-xs text-stone-500">
@@ -968,7 +1249,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Left Column: Summary Details Card */}
-            <div className="p-6 bg-stone-50 rounded-lg border border-stone-200 space-y-4 text-xs text-stone-700">
+            <div className="p-5 sm:p-6 bg-stone-50 rounded-xl border border-stone-200 space-y-4 text-xs text-stone-700">
               <h4 className="text-sm font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2 flex items-center justify-between">
                 <span>Booking Summary</span>
                 <span className="text-[11px] font-normal text-stone-500 font-sans">
@@ -984,7 +1265,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
               <div className="flex justify-between">
                 <span className="text-stone-500">Stylist:</span>
                 <span className="font-semibold text-stone-900">
-                  {selectedStaff === 'any' ? 'Any Available Stylist' : selectedStaff.name}
+                  {selectedStaff === 'any' ? 'Any Available Stylist' : selectedStaff?.name}
                 </span>
               </div>
 
@@ -1057,33 +1338,26 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
               </div>
 
               {/* Price Calculation Breakdown */}
-              {(() => {
-                const basePrice = selectedService?.discountPrice > 0 ? selectedService.discountPrice : selectedService?.price;
-                const finalPayable = Math.max(0, basePrice - discountAmount);
+              <div className="pt-3 border-t border-stone-200 space-y-1.5">
+                <div className="flex justify-between text-stone-500">
+                  <span>Treatment Price:</span>
+                  <span className="font-semibold text-stone-800">₹{currentBasePrice}</span>
+                </div>
 
-                return (
-                  <div className="pt-3 border-t border-stone-200 space-y-1.5">
-                    <div className="flex justify-between text-stone-500">
-                      <span>Treatment Price:</span>
-                      <span className="font-semibold text-stone-800">₹{basePrice}</span>
-                    </div>
-
-                    {discountAmount > 0 && (
-                      <div className="flex justify-between text-emerald-700 font-semibold">
-                        <span>Promo Discount ({appliedOffer?.code}):</span>
-                        <span>-₹{discountAmount}</span>
-                      </div>
-                    )}
-
-                    <div className="pt-2 border-t border-stone-200/60 flex justify-between items-baseline">
-                      <span className="text-sm font-bold text-stone-900">Total Payable:</span>
-                      <span className="text-2xl font-bold font-serif text-stone-900">
-                        ₹{finalPayable}
-                      </span>
-                    </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-emerald-700 font-semibold">
+                    <span>Promo Discount ({appliedOffer?.code}):</span>
+                    <span>-₹{discountAmount}</span>
                   </div>
-                );
-              })()}
+                )}
+
+                <div className="pt-2 border-t border-stone-200/60 flex justify-between items-baseline">
+                  <span className="text-sm font-bold text-stone-900">Total Payable:</span>
+                  <span className="text-2xl font-bold font-serif text-stone-900">
+                    ₹{currentFinalPayable}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Right Column: Guest Mobile OTP Verification & Payment Preference */}
@@ -1198,7 +1472,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                           type="button"
                           onClick={handleSendOtp}
                           disabled={isSendingOtp || guestPhone.replace(/\D/g, '').length < 10}
-                          className="ml-auto px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
+                          className="ml-auto px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
                         >
                           {isSendingOtp ? (
                             <>
@@ -1242,7 +1516,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                             type="button"
                             onClick={handleVerifyOtp}
                             disabled={isVerifyingOtp || otpInput.trim().length !== 4}
-                            className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1"
+                            className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1 shadow-xs"
                           >
                             {isVerifyingOtp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Verify Code'}
                           </button>
@@ -1289,7 +1563,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('online')}
-                    className={`p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+                    className={`p-3.5 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
                       paymentMethod === 'online'
                         ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
                         : 'border-stone-200 bg-white hover:border-stone-300'
@@ -1315,7 +1589,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('counter')}
-                    className={`p-3.5 rounded-lg border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+                    className={`p-3.5 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
                       paymentMethod === 'counter'
                         ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
                         : 'border-stone-200 bg-white hover:border-stone-300'
@@ -1349,7 +1623,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                 />
               </div>
 
-              <div className="p-3 rounded-lg bg-stone-50 border border-stone-200 text-stone-700 text-xs flex items-center space-x-2">
+              <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 text-stone-700 text-xs flex items-center space-x-2">
                 <ShieldCheck className="w-4 h-4 text-stone-600 shrink-0" />
                 <span className="text-[11px] text-stone-600">
                   Zero cancellation fee up to 4 hours prior to appointment.
@@ -1362,7 +1636,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
           <div className="pt-4 flex justify-between items-center border-t border-stone-100">
             <button
               onClick={() => setCurrentStep(3)}
-              className="inline-flex items-center px-5 py-2.5 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
+              className="inline-flex items-center px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4 mr-1.5" />
               Back
@@ -1370,7 +1644,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             <button
               onClick={handleConfirmAppointment}
               disabled={isSubmitting}
-              className="inline-flex items-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-70 shadow-sm"
+              className="inline-flex items-center px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-70 shadow-sm"
             >
               {isSubmitting ? (
                 <>
@@ -1388,10 +1662,10 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
         </div>
       )}
 
-      {/* STEP 5: SUCCESS CONFIRMATION + CALENDAR (.ICS) + WHATSAPP VOUCHER */}
+      {/* STEP 5: SUCCESS CONFIRMATION + 2-HOUR REMINDER + CALENDAR (.ICS) + WHATSAPP VOUCHER */}
       {currentStep === 5 && confirmedBooking && (
-        <div className="bg-white p-8 sm:p-12 rounded-xl border border-stone-200 shadow-xs max-w-2xl mx-auto text-center space-y-6">
-          <div className="w-16 h-16 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-xs">
+        <div className="bg-white p-6 sm:p-12 rounded-2xl border border-stone-200 shadow-xs max-w-2xl mx-auto text-center space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-xs">
             <CheckCircle2 className="w-10 h-10" />
           </div>
 
@@ -1399,16 +1673,16 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             <span className="text-xs font-bold tracking-widest text-emerald-800 uppercase">
               Reservation Confirmed
             </span>
-            <h2 className="text-3xl font-serif font-bold text-stone-900">
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
               Appointment Scheduled
             </h2>
             <p className="text-xs sm:text-sm text-stone-500">
-              Your appointment is recorded in our system. A confirmation SMS & WhatsApp message has been generated.
+              Your appointment is recorded in our system. A confirmation SMS & WhatsApp voucher has been generated.
             </p>
           </div>
 
           {/* Booking Summary Box */}
-          <div className="p-6 bg-stone-50 rounded-xl border border-stone-200 text-left text-xs space-y-3">
+          <div className="p-5 sm:p-6 bg-stone-50 rounded-xl border border-stone-200 text-left text-xs space-y-3">
             <div className="flex justify-between border-b border-stone-200 pb-2.5 items-center">
               <span className="text-stone-500">Booking Reference:</span>
               <span className="font-bold text-stone-900 font-mono text-sm bg-stone-200/60 px-2 py-0.5 rounded">
@@ -1454,8 +1728,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             )}
           </div>
 
-
-          {/* ENHANCEMENT: 2-HOUR PUSH NOTIFICATION REMINDER */}
+          {/* 2-HOUR PUSH NOTIFICATION REMINDER */}
           <div className="p-4 rounded-xl border border-rose-200 bg-rose-50/60 text-left space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-rose-950">
@@ -1470,7 +1743,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             </div>
 
             <p className="text-[11px] text-rose-900 leading-snug">
-              Get an automated reminder alert on your phone/browser exactly 2 hours before your appointment at <strong className="font-semibold">{confirmedBooking.startTime}</strong>.
+              Get an automated reminder alert on your device 2 hours before your appointment at <strong className="font-semibold">{confirmedBooking.startTime}</strong>.
             </p>
 
             <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -1480,7 +1753,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   reminderActive
                     ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'bg-rose-700 hover:bg-rose-800 text-white'
+                    : 'bg-rose-700 hover:bg-rose-800 text-white shadow-xs'
                 }`}
               >
                 {reminderActive ? (
@@ -1513,7 +1786,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             </div>
           </div>
 
-          {/* ENHANCEMENT 2: ADD TO CALENDAR 1-TAP BUTTONS */}
+          {/* ADD TO CALENDAR 1-TAP BUTTONS */}
           <div className="p-4 rounded-xl border border-stone-200 bg-white text-left space-y-3">
             <div className="flex items-center space-x-2 text-stone-900">
               <Calendar className="w-4 h-4 text-stone-700" />
@@ -1546,7 +1819,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             </div>
           </div>
 
-          {/* ENHANCEMENT 3: AUTOMATED WHATSAPP BOOKING VOUCHER */}
+          {/* AUTOMATED WHATSAPP BOOKING VOUCHER */}
           <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 text-left space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-emerald-950">
@@ -1606,6 +1879,180 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             >
               Browse More Services
             </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* PERSISTENT FLOATING STICKY BOTTOM ACTION BAR (STEPS 1-4)  */}
+      {/* Guarantees the user NEVER has to hunt or scroll for NEXT  */}
+      {/* ======================================================== */}
+      {currentStep < 5 && (
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl px-4 py-3 sm:py-3.5 pb-safe">
+          <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
+            
+            {/* Left Selection Preview */}
+            <div className="min-w-0 flex-1">
+              {currentStep === 1 && (
+                selectedService ? (
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center">
+                      <Check className="w-3 h-3 mr-1" />
+                      Treatment Selected
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-stone-900 truncate">
+                      {selectedService.name}
+                    </span>
+                    <span className="text-[11px] font-semibold text-stone-600">
+                      ₹{selectedService.discountPrice || selectedService.price} • {selectedService.duration} mins
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                      Step 1 of 4
+                    </span>
+                    <span className="text-xs font-semibold text-stone-600">
+                      Tap any treatment above to select
+                    </span>
+                  </div>
+                )
+              )}
+
+              {currentStep === 2 && (
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center">
+                    <Check className="w-3 h-3 mr-1" />
+                    Stylist Preference
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-stone-900 truncate">
+                    {selectedStaff === 'any' ? 'Any Available Stylist' : selectedStaff?.name}
+                  </span>
+                  <span className="text-[11px] text-stone-500 truncate">
+                    For {selectedService?.name}
+                  </span>
+                </div>
+              )}
+
+              {currentStep === 3 && (
+                selectedSlot ? (
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center">
+                      <Check className="w-3 h-3 mr-1" />
+                      Time Slot Selected
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-stone-900 truncate">
+                      {selectedDate} at {selectedSlot}
+                    </span>
+                    <span className="text-[11px] text-stone-500">
+                      {selectedService?.duration} mins with {selectedStaff === 'any' ? 'First Available' : selectedStaff?.name}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                      Step 3 of 4
+                    </span>
+                    <span className="text-xs font-semibold text-stone-600">
+                      Please pick an available time slot above
+                    </span>
+                  </div>
+                )
+              )}
+
+              {currentStep === 4 && (
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                    Total Payable
+                  </span>
+                  <span className="text-sm sm:text-base font-bold text-stone-900">
+                    ₹{currentFinalPayable}
+                  </span>
+                  <span className="text-[10px] font-medium text-stone-500">
+                    {paymentMethod === 'online' ? 'Razorpay Online' : 'Pay at Reception'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Right Action Buttons */}
+            <div className="flex items-center space-x-2 shrink-0">
+              {currentStep > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep((prev) => prev - 1)}
+                  className="px-3 sm:px-4 py-2.5 rounded-xl border border-stone-300 hover:bg-stone-50 text-stone-700 font-semibold text-xs transition-colors cursor-pointer flex items-center"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-0.5 sm:mr-1" />
+                  <span className="hidden sm:inline">Back</span>
+                </button>
+              )}
+
+              {currentStep === 1 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(2)}
+                  disabled={!selectedService}
+                  className={`px-5 sm:px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center cursor-pointer shadow-sm ${
+                    selectedService
+                      ? 'bg-stone-900 hover:bg-stone-800 text-white ring-2 ring-stone-900 ring-offset-1'
+                      : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  }`}
+                >
+                  Continue to Stylist
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </button>
+              )}
+
+              {currentStep === 2 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(3)}
+                  className="px-5 sm:px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs transition-all flex items-center cursor-pointer shadow-sm ring-2 ring-stone-900 ring-offset-1"
+                >
+                  Continue to Date & Slot
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </button>
+              )}
+
+              {currentStep === 3 && (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(4)}
+                  disabled={!selectedSlot}
+                  className={`px-5 sm:px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center cursor-pointer shadow-sm ${
+                    selectedSlot
+                      ? 'bg-stone-900 hover:bg-stone-800 text-white ring-2 ring-stone-900 ring-offset-1'
+                      : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                  }`}
+                >
+                  Review Details
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </button>
+              )}
+
+              {currentStep === 4 && (
+                <button
+                  type="button"
+                  onClick={handleConfirmAppointment}
+                  disabled={isSubmitting || (!user?.isPhoneVerified && !isMobileVerified)}
+                  className="px-5 sm:px-7 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs transition-all flex items-center cursor-pointer shadow-sm disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                      Confirming...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4 mr-1.5" />
+                      Confirm Booking
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
           </div>
         </div>
       )}
