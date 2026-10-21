@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import Modal from '../common/Modal';
-import { CheckCircle2, AlertCircle, Sparkles, ShieldCheck } from 'lucide-react';
+import { X, ExternalLink, ShieldCheck, AlertCircle, Info, ArrowRight } from 'lucide-react';
 
 /**
- * Google Brand multi-color SVG icon
+ * Authentic multi-colored Google 'G' brand vector
  */
 export function GoogleGLogo({ className = 'w-5 h-5' }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
         fill="#4285F4"
@@ -31,62 +30,47 @@ export function GoogleGLogo({ className = 'w-5 h-5' }) {
 }
 
 /**
- * Pre-configured simulated Google test profiles for quick one-click preview
+ * GoogleAuthButton Component
+ * Supports genuine Google Identity Services (GIS) OAuth.
+ * If OAuth client ID is not configured, provides a transparent setup modal
+ * rather than accepting arbitrary emails or simulating fake logins.
  */
-const QUICK_GOOGLE_PROFILES = [
-  {
-    name: 'Ananya Sharma',
-    email: 'ananya.sharma.enrich@gmail.com',
-    picture: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80',
-    label: 'Client'
-  },
-  {
-    name: 'Pooja Verma',
-    email: 'pooja.verma.sikar@gmail.com',
-    picture: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&h=150&q=80',
-    label: 'Bridal Guest'
-  }
-];
-
 export default function GoogleAuthButton({
   mode = 'signin', // 'signin' or 'signup'
   onSuccess,
   onError,
   className = '',
-  redirectTo
+  redirectTo,
+  onSwitchToEmail
 }) {
   const { googleLogin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showDirectModal, setShowDirectModal] = useState(false);
-  const [customEmail, setCustomEmail] = useState('');
-  const [customName, setCustomName] = useState('');
-  const [modalError, setModalError] = useState('');
-  const [successInfo, setSuccessInfo] = useState(null);
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const buttonRef = useRef(null);
+  const modalCloseBtnRef = useRef(null);
 
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const isGoogleConfigured = Boolean(googleClientId && !googleClientId.includes('placeholder'));
+  const isGoogleConfigured = Boolean(
+    googleClientId &&
+    googleClientId.trim().length > 0 &&
+    !googleClientId.includes('placeholder') &&
+    !googleClientId.includes('your-google-client-id')
+  );
 
   const from = redirectTo || location.state?.from?.pathname || '/profile';
+  const actionLabel = mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google';
 
-  // Load Google Identity Services SDK if Client ID is configured
+  // Load Google Identity Services SDK when Client ID is configured
   useEffect(() => {
     if (!isGoogleConfigured) return;
 
-    if (!window.google?.accounts?.id) {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = () => initGIS();
-      document.body.appendChild(script);
-    } else {
-      initGIS();
-    }
+    const scriptId = 'google-gsi-client';
+    let script = document.getElementById(scriptId);
 
-    function initGIS() {
+    const initializeGIS = () => {
       if (window.google?.accounts?.id) {
         try {
           window.google.accounts.id.initialize({
@@ -96,15 +80,28 @@ export default function GoogleAuthButton({
             cancel_on_tap_outside: true
           });
         } catch (err) {
-          console.warn('Google Identity Services initialization warning:', err);
+          console.warn('Google Identity Services initialization warning:', err.message);
         }
       }
+    };
+
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGIS;
+      document.body.appendChild(script);
+    } else if (window.google?.accounts?.id) {
+      initializeGIS();
     }
   }, [googleClientId, isGoogleConfigured]);
 
+  // Handle authentic credential response from Google
   const handleGoogleCredentialResponse = async (response) => {
-    if (!response.credential) {
-      onError?.('No credential returned from Google');
+    if (!response?.credential) {
+      onError?.('Google authentication was cancelled or returned no credential.');
       return;
     }
 
@@ -116,214 +113,167 @@ export default function GoogleAuthButton({
       if (onSuccess) onSuccess(result.user);
       navigate(from, { replace: true });
     } else {
-      onError?.(result.message);
+      onError?.(result.message || 'Google authentication failed. Please try again.');
     }
   };
 
-  const handleButtonClick = () => {
-    // If official Google Client ID is configured and GIS is available, trigger GIS prompt
+  // Trigger Google Sign-In prompt or setup notice
+  const handleClick = () => {
     if (isGoogleConfigured && window.google?.accounts?.id) {
       try {
         window.google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // If one-tap popup is skipped or suppressed by browser, open direct modal
-            setShowDirectModal(true);
+            console.info('Google One Tap not displayed, initiating standard prompt:', notification.getNotDisplayedReason?.());
           }
         });
         return;
       } catch (err) {
-        console.warn('GIS prompt error, falling back to modal:', err);
+        console.warn('GIS prompt error:', err);
       }
     }
 
-    // Default & instant flow: open Google Account selector modal
-    setModalError('');
-    setShowDirectModal(true);
+    // If client ID is not configured, open the configuration guidance modal
+    setShowConfigModal(true);
   };
 
-  const handleExecuteAuth = async ({ email, name, picture }) => {
-    if (!email || !email.includes('@')) {
-      setModalError('Please enter a valid Google email address');
-      return;
-    }
-
-    setIsLoading(true);
-    setModalError('');
-
-    const pseudoGoogleId = `google_${email.replace(/[^a-zA-Z0-9]/g, '_')}`;
-
-    const result = await googleLogin({
-      email: email.trim().toLowerCase(),
-      name: name?.trim() || email.split('@')[0],
-      picture: picture || '',
-      googleId: pseudoGoogleId
-    });
-
-    setIsLoading(false);
-
-    if (result.success) {
-      setSuccessInfo(result);
-      setTimeout(() => {
-        setShowDirectModal(false);
-        if (onSuccess) {
-          onSuccess(result.user);
+  // Keyboard and focus management for the configuration modal
+  useEffect(() => {
+    if (showConfigModal) {
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          setShowConfigModal(false);
+          buttonRef.current?.focus();
         }
-        navigate(from, { replace: true });
-      }, 700);
-    } else {
-      setModalError(result.message || 'Authentication with Google failed.');
-      onError?.(result.message);
-    }
-  };
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => modalCloseBtnRef.current?.focus(), 50);
 
-  const actionText = mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google';
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [showConfigModal]);
+
+  const closeModal = () => {
+    setShowConfigModal(false);
+    buttonRef.current?.focus();
+  };
 
   return (
     <>
       <button
+        ref={buttonRef}
         type="button"
         id="google-auth-button"
-        onClick={handleButtonClick}
+        onClick={handleClick}
         disabled={isLoading}
-        className={`w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 hover:border-stone-400 text-stone-800 font-semibold text-sm transition-all duration-150 shadow-xs active:scale-[0.99] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
+        aria-label={actionLabel}
+        className={`w-full h-11 flex items-center justify-center gap-3 px-4 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 hover:border-stone-400 text-stone-700 font-semibold text-sm transition-all duration-150 shadow-xs active:scale-[0.99] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-800/20 focus-visible:border-stone-400 disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
       >
         <GoogleGLogo className="w-5 h-5 shrink-0" />
-        <span>{isLoading ? 'Connecting to Google...' : actionText}</span>
+        <span>{isLoading ? 'Connecting to Google...' : actionLabel}</span>
       </button>
 
-      {/* Google Sign-In Selection Modal */}
-      <Modal
-        isOpen={showDirectModal}
-        onClose={() => !isLoading && setShowDirectModal(false)}
-        maxWidth="max-w-md"
-        showClose={!isLoading}
-      >
-        <div className="space-y-5">
-          {/* Header */}
-          <div className="text-center space-y-1.5 pb-1">
-            <div className="w-12 h-12 rounded-full bg-white border border-stone-200 shadow-xs flex items-center justify-center mx-auto mb-2">
-              <GoogleGLogo className="w-6 h-6" />
-            </div>
-            <h3 className="font-serif font-bold text-xl text-stone-900">
-              {mode === 'signup' ? 'Sign Up with Google' : 'Sign In with Google'}
-            </h3>
-            <p className="text-xs text-stone-500">
-              Choose an account to continue to <span className="font-semibold text-stone-700">Enrich Beauty Parlor</span>
-            </p>
-          </div>
+      {/* Accessible Google Configuration Notice Modal */}
+      {showConfigModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="google-config-title"
+          className="fixed inset-0 z-50 overflow-y-auto"
+        >
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150"
+            onClick={closeModal}
+          />
 
-          {modalError && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-              <span>{modalError}</span>
-            </div>
-          )}
-
-          {successInfo && (
-            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 animate-in fade-in">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-              <span>{successInfo.message || 'Authenticated successfully! Redirecting...'}</span>
-            </div>
-          )}
-
-          {/* Quick Select 1-Tap Google Profiles */}
-          <div className="space-y-2">
-            <div className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider px-1">
-              Quick 1-Tap Profiles
-            </div>
-
-            <div className="divide-y divide-stone-100 border border-stone-200 rounded-xl overflow-hidden bg-stone-50/50">
-              {QUICK_GOOGLE_PROFILES.map((profile, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  disabled={isLoading}
-                  onClick={() => handleExecuteAuth(profile)}
-                  className="w-full flex items-center gap-3 p-3 text-left hover:bg-stone-100/80 transition-colors cursor-pointer group"
-                >
-                  <img
-                    src={profile.picture}
-                    alt={profile.name}
-                    className="w-9 h-9 rounded-full object-cover border border-stone-200 group-hover:scale-105 transition-transform shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-stone-900 truncate">
-                        {profile.name}
-                      </span>
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-stone-200 text-stone-700">
-                        {profile.label}
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-stone-500 truncate">
-                      {profile.email}
-                    </div>
-                  </div>
-                  <Sparkles className="w-4 h-4 text-stone-400 group-hover:text-stone-700 transition-colors shrink-0" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center my-3">
-            <div className="border-t border-stone-200 w-full" />
-            <span className="bg-white px-2.5 text-[11px] text-stone-400 uppercase tracking-wider shrink-0 font-medium">
-              or enter your Google email
-            </span>
-            <div className="border-t border-stone-200 w-full" />
-          </div>
-
-          {/* Custom Google Email Form */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleExecuteAuth({ email: customEmail, name: customName });
-            }}
-            className="space-y-3"
-          >
-            <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
-                Google Account Email
-              </label>
-              <input
-                type="email"
-                required
-                value={customEmail}
-                onChange={(e) => setCustomEmail(e.target.value)}
-                placeholder="your.email@gmail.com"
-                className="w-full px-3.5 py-2 text-xs rounded-lg border border-stone-300 focus:outline-stone-500 bg-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
-                Your Name <span className="text-stone-400 font-normal">(Optional)</span>
-              </label>
-              <input
-                type="text"
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                placeholder="e.g. Priyanshi Sharma"
-                className="w-full px-3.5 py-2 text-xs rounded-lg border border-stone-300 focus:outline-stone-500 bg-white"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading || !customEmail}
-              className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
+          {/* Centered Modal Container */}
+          <div className="min-h-full flex items-center justify-center p-4 text-center">
+            <div
+              className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl border border-stone-200 transition-all animate-in zoom-in-95 duration-150 relative my-8 p-6 sm:p-7 space-y-5"
+              onClick={(e) => e.stopPropagation()}
             >
-              <ShieldCheck className="w-4 h-4" />
-              <span>{isLoading ? 'Authorizing with Google...' : `Continue to Enrich Salon`}</span>
-            </button>
-          </form>
+              {/* Header */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-11 h-11 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center shrink-0">
+                    <GoogleGLogo className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 id="google-config-title" className="font-serif font-bold text-lg text-stone-900 leading-snug">
+                      Google OAuth Setup Required
+                    </h3>
+                    <p className="text-xs text-stone-500">
+                      Enrich Beauty Parlour & Cosmetic Clinic
+                    </p>
+                  </div>
+                </div>
 
-          <p className="text-[11px] text-stone-400 text-center pt-2">
-            By continuing, Google shares your name, email address, and profile picture with Enrich Salon in accordance with our Privacy Policy.
-          </p>
+                <button
+                  ref={modalCloseBtnRef}
+                  type="button"
+                  onClick={closeModal}
+                  aria-label="Close dialog"
+                  className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-800/20"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Informative Explanation */}
+              <div className="space-y-3 text-xs text-stone-600 leading-relaxed">
+                <div className="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200/80 text-amber-900 space-y-1.5">
+                  <div className="flex items-center space-x-2 font-semibold">
+                    <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+                    <span>Provider Configuration Notice</span>
+                  </div>
+                  <p className="text-[11px] text-amber-800 leading-normal">
+                    To maintain strict security and protect account integrity, Google authentication requires verified credentials from Google Cloud Console. Simulated or arbitrary logins are disabled.
+                  </p>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <span className="font-semibold text-stone-800 uppercase tracking-wider text-[11px] block">
+                    Configuration Steps for Administrators:
+                  </span>
+                  <ol className="list-decimal list-inside space-y-1 text-[11px] text-stone-600 pl-1">
+                    <li>Create an OAuth 2.0 Web Client ID in the <strong className="text-stone-800">Google Cloud Console</strong>.</li>
+                    <li>Add <code className="bg-stone-100 px-1 py-0.5 rounded font-mono text-stone-800">http://localhost:5173</code> to <strong className="text-stone-800">Authorized JavaScript Origins</strong>.</li>
+                    <li>Add <code className="bg-stone-100 px-1 py-0.5 rounded font-mono text-stone-800">VITE_GOOGLE_CLIENT_ID</code> into <code className="bg-stone-100 px-1 py-0.5 rounded font-mono text-stone-800">frontend/.env</code>.</li>
+                  </ol>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 space-y-2 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeModal();
+                    if (onSwitchToEmail) onSwitchToEmail();
+                  }}
+                  className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-800/20"
+                >
+                  <span>{mode === 'signup' ? 'Continue with Email Registration' : 'Continue with Email / Phone Sign In'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="w-full py-2 text-center text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+                >
+                  Dismiss
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
-      </Modal>
+      )}
     </>
   );
 }

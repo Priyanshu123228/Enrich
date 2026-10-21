@@ -42,7 +42,7 @@ export default function ForgotPassword() {
         
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-2xl bg-stone-100 text-stone-800 flex items-center justify-center mx-auto mb-2">
+          <div className="w-13 h-13 rounded-2xl bg-stone-100 text-stone-800 flex items-center justify-center mx-auto mb-2 border border-stone-200/60 shadow-2xs">
             <KeyRound className="w-7 h-7 text-stone-800" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
@@ -72,7 +72,7 @@ export default function ForgotPassword() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-stone-300 focus:outline-stone-500 text-sm"
+                className="w-full h-11 pl-10 pr-4 rounded-xl border border-stone-300 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800/15 focus:border-rose-800 transition-colors disabled:bg-stone-50"
               />
             </div>
           </div>
@@ -81,6 +81,7 @@ export default function ForgotPassword() {
             type="submit"
             loading={isSubmitting}
             loadingText="Sending Reset Code..."
+            className="h-11 bg-stone-900 hover:bg-stone-800 text-white rounded-xl shadow-xs"
           >
             Send Reset Code <ArrowRight className="w-4 h-4 ml-1.5" />
           </LoadingButton>

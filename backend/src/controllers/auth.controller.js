@@ -768,49 +768,60 @@ export const verifyGuestPhoneOTP = asyncHandler(async (req, res) => {
  * @route   POST /api/v1/auth/google
  * @access  Public
  */
+/**
+ * @desc    Authenticate or Sign Up via Google OAuth
+ * @route   POST /api/v1/auth/google
+ * @access  Public
+ */
 export const googleAuth = asyncHandler(async (req, res) => {
-  const { credential, email: directEmail, name: directName, picture: directPicture, googleId: directGoogleId } = req.body;
+  const { credential } = req.body;
 
-  let googleId = directGoogleId;
-  let email = directEmail;
-  let name = directName;
-  let picture = directPicture;
+  // Strict Security: A genuine, cryptographically signed Google ID Token is mandatory
+  if (!credential || typeof credential !== 'string' || credential.trim().length === 0) {
+    throw new ApiError(400, 'Google OAuth credential ID token is required');
+  }
 
-  // 1. Verify Google token with Google Tokeninfo endpoint if provided
-  if (credential) {
-    try {
-      const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
-      const payload = await response.json();
+  let googleId;
+  let email;
+  let name;
+  let picture;
 
-      if (response.ok && payload.email) {
-        googleId = payload.sub;
-        email = payload.email;
-        name = payload.name;
-        picture = payload.picture;
-      } else {
-        console.warn('Google tokeninfo verification failed:', payload.error_description || response.statusText);
-        if (process.env.NODE_ENV === 'production' && !directEmail) {
-          throw new ApiError(400, 'Invalid or expired Google credential');
-        }
-      }
-    } catch (tokenErr) {
-      if (!directEmail) {
-        throw new ApiError(400, `Google authentication failed: ${tokenErr.message}`);
-      }
+  // 1. Verify Google token directly with Google's official Tokeninfo service
+  try {
+    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential.trim())}`);
+    const payload = await response.json();
+
+    if (!response.ok || !payload.email) {
+      const reason = payload.error_description || payload.error || response.statusText;
+      console.warn('Google token verification rejected by provider:', reason);
+      throw new ApiError(401, 'Invalid or expired Google authentication credential');
     }
-  }
 
-  if (!email) {
-    throw new ApiError(400, 'Google email address is required');
-  }
+    // Ensure email is verified by Google
+    if (payload.email_verified !== 'true' && payload.email_verified !== true) {
+      throw new ApiError(403, 'Your Google email address has not been verified by Google');
+    }
 
-  const normalizedEmail = email.toLowerCase().trim();
+    // Verify audience if GOOGLE_CLIENT_ID is configured on the backend
+    if (process.env.GOOGLE_CLIENT_ID && payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+      console.warn('Google token audience mismatch:', payload.aud);
+      throw new ApiError(401, 'Google credential was issued for a different client ID');
+    }
+
+    googleId = payload.sub;
+    email = payload.email.toLowerCase().trim();
+    name = payload.name?.trim() || 'Google Client';
+    picture = payload.picture || '';
+  } catch (tokenErr) {
+    if (tokenErr instanceof ApiError) throw tokenErr;
+    throw new ApiError(401, `Google token verification failed: ${tokenErr.message}`);
+  }
 
   // 2. Look up existing user by googleId or email
   let user = await User.findOne({
     $or: [
-      ...(googleId ? [{ googleId }] : []),
-      { email: normalizedEmail }
+      { googleId },
+      { email }
     ]
   });
 
@@ -818,7 +829,7 @@ export const googleAuth = asyncHandler(async (req, res) => {
 
   if (user) {
     // Existing user: Link googleId and mark email verified
-    if (googleId && !user.googleId) {
+    if (!user.googleId) {
       user.googleId = googleId;
     }
     if (picture && (!user.avatar?.url || user.avatar.url.includes('placeholder'))) {
@@ -832,16 +843,15 @@ export const googleAuth = asyncHandler(async (req, res) => {
     }
     await user.save();
   } else {
-    // New user signup with Google
+    // New user registration with verified Google account
     isNewUser = true;
-    const finalGoogleId = googleId || `google_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     user = await User.create({
-      name: name?.trim() || 'Google Client',
-      email: normalizedEmail,
-      googleId: finalGoogleId,
+      name,
+      email,
+      googleId,
       authProvider: 'google',
-      avatar: { url: picture || '', public_id: '' },
-      role: 'customer',
+      avatar: { url: picture, public_id: '' },
+      role: 'customer', // Public registration is strictly role: customer
       status: 'active',
       isEmailVerified: true,
       isPhoneVerified: false,
@@ -849,16 +859,8 @@ export const googleAuth = asyncHandler(async (req, res) => {
     });
   }
 
-  // 3. Generate JWT access token
+  // 3. Issue genuine JWT access token
   const token = user.generateAccessToken();
-
-  console.log(
-    `\n======================================================\n` +
-    `🔑 [GOOGLE OAUTH SUCCESS]\n` +
-    `User: ${user.name} (${user.email})\n` +
-    `Status: ${isNewUser ? 'NEW ACCOUNT CREATED' : 'EXISTING ACCOUNT LOGGED IN'}\n` +
-    `======================================================\n`
-  );
 
   return res.status(200).json(
     new ApiResponse(
