@@ -755,7 +755,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
   const currentFinalPayable = Math.max(0, currentBasePrice - discountAmount);
 
   return (
-    <div ref={topRef} className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 pb-36">
+    <div ref={topRef} className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 pb-28 md:pb-12">
       
       {/* Top Header & Interactive Wizard Step Bar */}
       {currentStep < 5 && (
@@ -947,24 +947,16 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                       </div>
                     </div>
 
-                    {/* Inline Instant CTA button when selected */}
+                    {/* Inline Selection Indicator */}
                     {isSelected && (
                       <div className="pt-2 border-t border-stone-200/70 flex items-center justify-between">
                         <span className="text-[11px] font-bold text-emerald-800 flex items-center">
                           <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
-                          Selected
+                          Selected Treatment
                         </span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentStep(2);
-                          }}
-                          className="px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center gap-1 cursor-pointer shadow-xs"
-                        >
-                          Continue to Stylist
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
+                        <span className="text-xs font-bold font-serif text-stone-900">
+                          ₹{service.discountPrice || service.price}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -987,8 +979,8 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             </div>
           )}
 
-          {/* Bottom static bar (backup for desktop) */}
-          <div className="pt-4 flex justify-between items-center border-t border-stone-100">
+          {/* Desktop Navigation Footer (Hidden on mobile where sticky bar is active) */}
+          <div className="pt-5 hidden md:flex justify-between items-center border-t border-stone-100">
             <span className="text-xs text-stone-500">
               {selectedService ? (
                 <span>Selected: <strong className="text-stone-900">{selectedService.name}</strong></span>
@@ -1122,7 +1114,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
           </div>
 
-          <div className="pt-4 flex justify-between items-center border-t border-stone-100">
+          <div className="pt-5 hidden md:flex justify-between items-center border-t border-stone-100">
             <button
               onClick={() => setCurrentStep(1)}
               className="inline-flex items-center px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
@@ -1257,7 +1249,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             )}
           </div>
 
-          <div className="pt-4 flex justify-between items-center border-t border-stone-100">
+          <div className="pt-5 hidden md:flex justify-between items-center border-t border-stone-100">
             <button
               onClick={() => setCurrentStep(2)}
               className="inline-flex items-center px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
@@ -1941,7 +1933,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
       {/* Guarantees the user NEVER has to hunt or scroll for NEXT  */}
       {/* ======================================================== */}
       {currentStep < 5 && (
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl">
+        <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl">
           {/* Real-time Inline Error Alert attached directly above the Bottom Bar */}
           {errorMsg && (
             <div className="bg-rose-600 text-white text-xs px-4 py-2.5 flex items-center justify-between shadow-lg animate-in slide-in-from-bottom duration-150">
