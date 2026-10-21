@@ -36,11 +36,6 @@ import {
   Tag,
   Check,
   Smartphone,
-  MessageSquare,
-  Share2,
-  Download,
-  Copy,
-  ExternalLink,
   MapPin,
   PhoneCall,
   Bell,
@@ -146,7 +141,6 @@ export default function BookingWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmedBooking, setConfirmedBooking] = useState(null);
-  const [copiedVoucher, setCopiedVoucher] = useState(false);
 
   // Clear selected slot if it has passed
   useEffect(() => {
@@ -633,106 +627,6 @@ export default function BookingWizard() {
       }
       setIsSubmitting(false);
     }
-  };
-
-  // Helper 1: Google Calendar Link Generator
-  const getGoogleCalendarUrl = (booking) => {
-    if (!booking) return '#';
-    const cleanDate = booking.date.replace(/-/g, '');
-    const cleanStart = booking.startTime.replace(':', '') + '00';
-    const cleanEnd = (booking.endTime || booking.startTime).replace(':', '') + '00';
-    const dates = `${cleanDate}T${cleanStart}/${cleanDate}T${cleanEnd}`;
-
-    const title = encodeURIComponent(`${booking.service?.name || 'Treatment'} - Enrich Beauty Parlour`);
-    const details = encodeURIComponent(
-      `Booking ID: ${booking.bookingId}\n` +
-      `Service: ${booking.service?.name}\n` +
-      `Stylist: ${booking.staff?.name}\n` +
-      `Time: ${booking.startTime} - ${booking.endTime}\n` +
-      `Enrich Ladies Beauty Parlor & Cosmetic Clinic\n` +
-      `Phone: +91 96679 00313\n` +
-      `Address: Station Road, Opposite City Center Mall, Sikar, Rajasthan 332001`
-    );
-    const location = encodeURIComponent('Enrich Ladies Beauty Parlor & Cosmetic Clinic, Station Road, Sikar, Rajasthan 332001');
-
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
-  };
-
-  // Helper 2: Apple Calendar / Outlook .ics File Generator
-  const handleDownloadIcs = (booking) => {
-    if (!booking) return;
-    const cleanDate = booking.date.replace(/-/g, '');
-    const cleanStart = booking.startTime.replace(':', '') + '00';
-    const cleanEnd = (booking.endTime || booking.startTime).replace(':', '') + '00';
-
-    const icsContent = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//Enrich Beauty Parlour//Booking System//EN',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-      'BEGIN:VEVENT',
-      `UID:${booking.bookingId || Date.now()}@enrichsalon.com`,
-      `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-      `DTSTART:${cleanDate}T${cleanStart}`,
-      `DTEND:${cleanDate}T${cleanEnd}`,
-      `SUMMARY:${booking.service?.name || 'Treatment'} - Enrich Salon Sikar`,
-      `DESCRIPTION:Booking ID: ${booking.bookingId}\\nService: ${booking.service?.name}\\nStylist: ${booking.staff?.name}\\nHelpline: +91 96679 00313`,
-      'LOCATION:Enrich Ladies Beauty Parlor & Cosmetic Clinic\\, Opposite City Center Mall\\, Station Road\\, Sikar\\, Rajasthan 332001',
-      'STATUS:CONFIRMED',
-      'END:VEVENT',
-      'END:VCALENDAR'
-    ].join('\r\n');
-
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `Enrich-Appointment-${booking.bookingId}.ics`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  };
-
-  // Helper 3: WhatsApp Booking Voucher Text
-  const getWhatsAppVoucherText = (booking) => {
-    if (!booking) return '';
-    const mapUrl = 'https://maps.google.com/?q=Enrich+Ladies+Beauty+Parlor+Sikar';
-    const paymentLabel = booking.paymentStatus === 'paid' ? 'Paid Online via Razorpay ✅' : 'Pay at Reception Counter 🏢';
-
-    return (
-`✨ *ENRICH BEAUTY PARLOUR & CLINIC* ✨
-━━━━━━━━━━━━━━━━━━━━━━
-🎉 *APPOINTMENT CONFIRMATION VOUCHER*
-
-📋 *Booking ID:* ${booking.bookingId}
-💆‍♀️ *Service:* ${booking.service?.name || 'Salon Treatment'}
-👤 *Stylist:* ${booking.staff?.name || 'Salon Specialist'}
-📅 *Date:* ${booking.date}
-⏰ *Time:* ${booking.startTime} - ${booking.endTime}
-💰 *Total Amount:* ₹${booking.finalAmount || booking.price || 0}
-💳 *Payment:* ${paymentLabel}
-
-📍 *Salon Address:*
-Enrich Ladies Beauty Parlor & Cosmetic Clinic,
-Opposite City Center Mall, Station Road,
-Sikar, Rajasthan 332001
-
-🗺️ *Google Maps Location:*
-${mapUrl}
-
-📞 *Direct Helpline:* +91 96679 00313
-━━━━━━━━━━━━━━━━━━━━━━
-_Please arrive 5-10 minutes prior to your scheduled time. We look forward to pampering you!_`
-    );
-  };
-
-  const handleCopyVoucher = () => {
-    if (!confirmedBooking) return;
-    navigator.clipboard.writeText(getWhatsAppVoucherText(confirmedBooking));
-    setCopiedVoucher(true);
-    setTimeout(() => setCopiedVoucher(false), 2500);
   };
 
   const steps = [
@@ -1866,86 +1760,6 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                   {reminderFeedback}
                 </span>
               )}
-            </div>
-          </div>
-
-          {/* ADD TO CALENDAR 1-TAP BUTTONS */}
-          <div className="p-4 rounded-xl border border-stone-200 bg-white text-left space-y-3">
-            <div className="flex items-center space-x-2 text-stone-900">
-              <Calendar className="w-4 h-4 text-stone-700" />
-              <h4 className="text-xs font-bold uppercase tracking-wider">
-                Add to Your Calendar
-              </h4>
-            </div>
-            <p className="text-[11px] text-stone-500 leading-snug">
-              Sync this appointment with your device calendar so you never miss your scheduled pampering session.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              <a
-                href={getGoogleCalendarUrl(confirmedBooking)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-stone-300 hover:bg-stone-50 text-stone-800 font-semibold text-xs transition-colors cursor-pointer group"
-              >
-                <Calendar className="w-3.5 h-3.5 mr-2 text-blue-600 group-hover:scale-110 transition-transform" />
-                Add to Google Calendar
-                <ExternalLink className="w-3 h-3 ml-1.5 text-stone-400" />
-              </a>
-              <button
-                type="button"
-                onClick={() => handleDownloadIcs(confirmedBooking)}
-                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-stone-300 hover:bg-stone-50 text-stone-800 font-semibold text-xs transition-colors cursor-pointer group"
-              >
-                <Download className="w-3.5 h-3.5 mr-2 text-stone-700 group-hover:scale-110 transition-transform" />
-                Apple / Outlook (.ics)
-              </button>
-            </div>
-          </div>
-
-          {/* AUTOMATED WHATSAPP BOOKING VOUCHER */}
-          <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 text-left space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-emerald-950">
-                <MessageSquare className="w-4 h-4 text-emerald-700" />
-                <h4 className="text-xs font-bold uppercase tracking-wider">
-                  Automated WhatsApp Booking Voucher
-                </h4>
-              </div>
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                Instant Delivery
-              </span>
-            </div>
-            <p className="text-[11px] text-emerald-800 leading-snug">
-              Access your digital appointment voucher with salon address link, stylist details, and booking reference.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-2 pt-1">
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent(getWhatsAppVoucherText(confirmedBooking))}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs transition-colors cursor-pointer shadow-xs"
-              >
-                <Share2 className="w-3.5 h-3.5 mr-2" />
-                Save / Send WhatsApp Voucher
-              </a>
-              <button
-                type="button"
-                onClick={handleCopyVoucher}
-                className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-900 font-semibold text-xs transition-colors cursor-pointer"
-              >
-                {copiedVoucher ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 mr-1.5 text-emerald-700" />
-                    Copy Voucher Text
-                  </>
-                )}
-              </button>
             </div>
           </div>
 
