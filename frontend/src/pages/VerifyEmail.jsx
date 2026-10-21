@@ -46,9 +46,9 @@ export default function VerifyEmail() {
 
     if (result.success) {
       setIsVerified(true);
-      setSuccessMsg('Email Verified Successfully! Redirecting...');
+      setSuccessMsg('Email Verified Successfully! Welcome to Enrich Salon...');
       setTimeout(() => {
-        navigate('/profile', { replace: true });
+        navigate('/', { replace: true });
       }, 1500);
     } else {
       setErrorMsg(result.message);

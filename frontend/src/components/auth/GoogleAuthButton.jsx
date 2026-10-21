@@ -62,7 +62,7 @@ export default function GoogleAuthButton({
     !googleClientId.includes('your-google-client-id')
   );
 
-  const from = redirectTo || location.state?.from?.pathname || '/profile';
+  const from = redirectTo || location.state?.from?.pathname || '/';
   const actionText = mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google';
 
   // 1. Handle authentic Google credential returned from the popup
