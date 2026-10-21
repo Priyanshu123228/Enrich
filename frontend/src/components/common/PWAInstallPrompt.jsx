@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Download, X, Smartphone, Sparkles, Share } from 'lucide-react';
 
 /**
@@ -9,6 +10,7 @@ import { Download, X, Smartphone, Sparkles, Share } from 'lucide-react';
  * Supports native Android/Chrome prompt + iOS Safari "Add to Home Screen" guidance.
  */
 export default function PWAInstallPrompt() {
+  const location = useLocation();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
@@ -91,7 +93,7 @@ export default function PWAInstallPrompt() {
     localStorage.setItem('enrich_pwa_dismissed', Date.now().toString());
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || location.pathname.startsWith('/book')) return null;
 
   return (
     <aside

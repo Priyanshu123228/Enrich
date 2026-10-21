@@ -220,7 +220,20 @@ export default function BookingWizard() {
         });
 
         if (res?.data?.availableSlots) {
-          setAvailableSlots(res.data.availableSlots);
+          const slots = res.data.availableSlots;
+          setAvailableSlots(slots);
+
+          // If today has 0 open (unpassed) slots because salon has closed for today, auto-switch to tomorrow
+          const todayIso = getTodayDateString();
+          if (selectedDate === todayIso) {
+            const openToday = slots.filter((s) => !isSlotPassed(todayIso, s.time) && !s.isPassed);
+            if (openToday.length === 0) {
+              const tmrw = new Date();
+              tmrw.setDate(tmrw.getDate() + 1);
+              const tmrwIso = tmrw.toISOString().split('T')[0];
+              setSelectedDate(tmrwIso);
+            }
+          }
         } else {
           setAvailableSlots([]);
         }
@@ -270,16 +283,19 @@ export default function BookingWizard() {
   const datePresets = useMemo(() => {
     const today = new Date();
     const presets = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 7; i++) {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
       const iso = d.toISOString().split('T')[0];
+      const weekdayShort = d.toLocaleDateString('en-US', { weekday: 'short' });
+      const dayNum = d.getDate();
+      const monthShort = d.toLocaleDateString('en-US', { month: 'short' });
       const label =
         i === 0
           ? 'Today'
           : i === 1
           ? 'Tomorrow'
-          : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+          : `${weekdayShort}, ${monthShort} ${dayNum}`;
       presets.push({ iso, label });
     }
     return presets;
@@ -949,14 +965,21 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
                     {/* Inline Selection Indicator */}
                     {isSelected && (
-                      <div className="pt-2 border-t border-stone-200/70 flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-emerald-800 flex items-center">
-                          <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
-                          Selected Treatment
+                      <div className="pt-2.5 border-t border-stone-200/90 flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-emerald-800 flex items-center">
+                          <Check className="w-4 h-4 mr-1 text-emerald-600" />
+                          Selected
                         </span>
-                        <span className="text-xs font-bold font-serif text-stone-900">
-                          ₹{service.discountPrice || service.price}
-                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentStep(2);
+                          }}
+                          className="px-3.5 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                        >
+                          Continue to Stylist <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -1049,10 +1072,22 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                   Maximum Flexibility
                 </span>
                 {selectedStaff === 'any' && (
-                  <span className="text-xs font-bold text-emerald-800 flex items-center">
-                    <Check className="w-3.5 h-3.5 mr-0.5 text-emerald-600" />
-                    Selected
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-emerald-800 flex items-center">
+                      <Check className="w-3.5 h-3.5 mr-0.5 text-emerald-600" />
+                      Selected
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentStep(3);
+                      }}
+                      className="px-3 py-1 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs flex items-center gap-1 shadow-xs cursor-pointer"
+                    >
+                      Pick Slot <ArrowRight className="w-3 h-3 ml-0.5" />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -1388,9 +1423,12 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
                 <div className="pt-2 border-t border-stone-200/60 flex justify-between items-baseline">
                   <span className="text-sm font-bold text-stone-900">Total Payable:</span>
-                  <span className="text-2xl font-bold font-serif text-stone-900">
-                    ₹{currentFinalPayable}
-                  </span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-base font-semibold text-stone-500">₹</span>
+                    <span className="text-2xl font-bold font-serif text-stone-900">
+                      {currentFinalPayable}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
