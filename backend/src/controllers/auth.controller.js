@@ -231,10 +231,16 @@ export const resendEmailOTP = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const identifier = email.toLowerCase().trim();
+  const digitsOnly = identifier.replace(/\D/g, '');
+  const tenDigitPhone = digitsOnly.length >= 10 ? digitsOnly.slice(-10) : null;
 
-  // 1. Find user by email or phone
+  // 1. Find user by email or phone (tolerant of formatting/spaces/country codes)
   const user = await User.findOne({
-    $or: [{ email: identifier }, { phone: identifier }]
+    $or: [
+      { email: identifier },
+      { phone: identifier },
+      ...(tenDigitPhone ? [{ phone: tenDigitPhone }, { phone: `+91${tenDigitPhone}` }] : [])
+    ]
   }).select('+password');
 
   if (!user) {

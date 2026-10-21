@@ -20,6 +20,7 @@ export default function VerifyEmail() {
   const [successMsg, setSuccessMsg] = useState(location.state?.message || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(!location.state?.email);
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -97,7 +98,18 @@ export default function VerifyEmail() {
             {isVerified
               ? 'Your account is now activated and ready.'
               : email
-              ? `We sent a 6-digit verification code to ${email}`
+              ? (
+                <span>
+                  We sent a 6-digit verification code to <span className="font-semibold text-stone-800">{email}</span>{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingEmail((prev) => !prev)}
+                    className="text-rose-800 hover:underline text-xs font-semibold ml-1 cursor-pointer"
+                  >
+                    {isEditingEmail ? '(Hide)' : '(Change)'}
+                  </button>
+                </span>
+              )
               : 'Enter the 6-digit verification code sent to your email.'}
           </p>
         </div>
@@ -108,7 +120,7 @@ export default function VerifyEmail() {
 
         {!isVerified ? (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {!location.state?.email && (
+            {(isEditingEmail || !email) && (
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1 uppercase tracking-wide">
                   Registered Email Address
@@ -153,15 +165,18 @@ export default function VerifyEmail() {
                 cooldownSeconds={45}
                 disabled={isSubmitting}
               />
+              <p className="text-[11px] text-stone-400 text-center mt-2.5">
+                Can't find the email? Please check your Spam or Promotions folder.
+              </p>
             </div>
           </form>
         ) : (
           <div className="text-center pt-4">
             <Link
-              to="/profile"
-              className="inline-flex items-center text-sm font-semibold text-stone-900 hover:underline"
+              to="/"
+              className="inline-flex items-center text-sm font-semibold text-stone-900 hover:text-rose-900 hover:underline transition-colors"
             >
-              Continue to Dashboard <ArrowRight className="w-4 h-4 ml-1.5" />
+              Continue to Home <ArrowRight className="w-4 h-4 ml-1.5" />
             </Link>
           </div>
         )}

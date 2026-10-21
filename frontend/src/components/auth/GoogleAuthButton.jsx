@@ -128,7 +128,10 @@ export default function GoogleAuthButton({
             text: mode === 'signup' ? 'signup_with' : 'signin_with',
             shape: 'rectangular',
             logo_alignment: 'left',
-            width: 380
+            width: (() => {
+            const containerW = googleBtnContainerRef.current?.offsetWidth || (window.innerWidth - 64);
+            return Math.min(380, Math.max(240, containerW));
+          })()
           });
 
           setIsGisReady(true);
