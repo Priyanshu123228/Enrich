@@ -6,8 +6,6 @@ import {
   Mail,
   MapPin,
   Clock,
-  Sparkles,
-  ShieldCheck,
   Star,
   ArrowRight,
   ExternalLink,
@@ -76,43 +74,6 @@ export default function Footer() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
-        {/* =========================================================================
-            TOP TRUST & PRESTIGE BAR
-            ========================================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-10 border-b border-stone-200/90">
-          
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/70 border border-stone-200/80 shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200/60">
-              <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-stone-900">4.9★ Rated on Google</p>
-              <p className="text-[11px] text-stone-500">Over 510+ verified client reviews in Sikar</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/70 border border-stone-200/80 shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-200/60">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-stone-900">Certified Aesthetic Clinic</p>
-              <p className="text-[11px] text-stone-500">Clinical-grade skincare & sanitized tools</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/70 border border-stone-200/80 shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-stone-100 text-rose-800 flex items-center justify-center shrink-0 border border-stone-200">
-              <Sparkles className="w-5 h-5 text-rose-700" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-stone-900">Royal Bridal & Hair Atelier</p>
-              <p className="text-[11px] text-stone-500">Personalized artistry crafting memories since 2018</p>
-            </div>
-          </div>
-
-        </div>
-
         {/* =========================================================================
             MAIN 4-COLUMN FOOTER GRID
             ========================================================================= */}
