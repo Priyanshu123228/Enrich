@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MessageCircle, X, Send, Sparkles, Calendar, HeartHandshake, PhoneCall } from 'lucide-react';
 import { SALON_CONFIG } from '../../config/salonConfig';
 import { trackContactAction } from '../../utils/analytics';
@@ -13,6 +14,8 @@ function WhatsAppIcon({ className = "w-6 h-6" }) {
 
 export default function WhatsAppWidget() {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const isBookingPage = location.pathname.startsWith('/book');
   const phoneNumber = '919667900313'; // Enrich official WhatsApp number
 
   const quickMessages = [
@@ -45,7 +48,7 @@ export default function WhatsAppWidget() {
   };
 
   return (
-    <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end">
+    <div className={`fixed ${isBookingPage ? 'bottom-24 sm:bottom-6' : 'bottom-20 sm:bottom-6'} right-4 sm:right-6 z-40 flex flex-col items-end`}>
       
       {/* Interactive Popover Window */}
       {isOpen && (

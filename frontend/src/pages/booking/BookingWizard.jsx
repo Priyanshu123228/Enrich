@@ -48,7 +48,8 @@ import {
   Wifi,
   Search,
   Filter,
-  ArrowRight
+  ArrowRight,
+  X
 } from 'lucide-react';
 
 export default function BookingWizard() {
@@ -56,6 +57,11 @@ export default function BookingWizard() {
   const location = useLocation();
   const navigate = useNavigate();
   const topRef = useRef(null);
+  const topErrorRef = useRef(null);
+  const phoneVerificationRef = useRef(null);
+  const phoneInputRef = useRef(null);
+  const otpInputRef = useRef(null);
+  const [highlightPhoneCard, setHighlightPhoneCard] = useState(false);
 
   // Step 1 to 5
   const [currentStep, setCurrentStep] = useState(1);
@@ -455,6 +461,21 @@ export default function BookingWizard() {
     // Frictionless Check: Verify mobile number before booking
     if (!user?.isPhoneVerified && !isMobileVerified) {
       setErrorMsg('Please complete quick mobile verification above before confirming your reservation.');
+      setHighlightPhoneCard(true);
+      setTimeout(() => setHighlightPhoneCard(false), 3500);
+
+      // Smooth scroll directly to the verification section so the user instantly sees what is required
+      if (phoneVerificationRef.current) {
+        phoneVerificationRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      setTimeout(() => {
+        if (!guestPhone || guestPhone.length < 10) {
+          phoneInputRef.current?.focus();
+        } else if (otpSent && (!otpInput || otpInput.length < 4)) {
+          otpInputRef.current?.focus();
+        }
+      }, 350);
       return;
     }
 
@@ -580,10 +601,19 @@ export default function BookingWizard() {
 
       rzp.open();
     } catch (err) {
-      if (err.status === 401 || err.message?.toLowerCase().includes('token') || err.message?.toLowerCase().includes('unauthorized')) {
-        setErrorMsg('Please complete quick mobile verification above before confirming your reservation.');
+      const isAuthErr = err.status === 401 || err.message?.toLowerCase().includes('token') || err.message?.toLowerCase().includes('unauthorized');
+      const errorText = isAuthErr
+        ? 'Please complete quick mobile verification above before confirming your reservation.'
+        : (err.message || 'Failed to complete reservation. Please try again.');
+
+      setErrorMsg(errorText);
+
+      if (isAuthErr) {
+        setHighlightPhoneCard(true);
+        setTimeout(() => setHighlightPhoneCard(false), 3500);
+        phoneVerificationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
-        setErrorMsg(err.message || 'Failed to complete reservation. Please try again.');
+        topErrorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       setIsSubmitting(false);
     }
@@ -693,7 +723,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
     { num: 1, title: 'Service', icon: Scissors },
     { num: 2, title: 'Stylist', icon: User },
     { num: 3, title: 'Date & Slot', icon: Calendar },
-    { num: 4, title: 'Review & Confirm', icon: CheckCircle2 }
+    { num: 4, title: 'Review', fullTitle: 'Review & Confirm', icon: CheckCircle2 }
   ];
 
   // Helper: check if a step is accessible by the user
@@ -771,7 +801,10 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                     )}
                     <span>Step {s.num}</span>
                   </div>
-                  <div className="text-xs font-semibold truncate mt-0.5">{s.title}</div>
+                  <div className="text-xs font-semibold truncate mt-0.5">
+                    <span className="sm:hidden">{s.title}</span>
+                    <span className="hidden sm:inline">{s.fullTitle || s.title}</span>
+                  </div>
                 </button>
               );
             })}
@@ -781,9 +814,19 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center space-x-3 shadow-xs">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
-          <span>{errorMsg}</span>
+        <div ref={topErrorRef} className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center justify-between shadow-xs animate-in fade-in duration-150">
+          <div className="flex items-center space-x-3">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+            <span className="font-medium">{errorMsg}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMsg('')}
+            className="p-1 hover:bg-red-100 rounded text-red-700 transition-colors cursor-pointer"
+            title="Dismiss"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
@@ -1364,7 +1407,15 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
             <div className="space-y-5">
               
               {/* ENHANCEMENT 1: FRICTIONLESS GUEST / PHONE OTP VERIFICATION */}
-              <div className="p-4 rounded-xl border border-stone-200 bg-stone-50/70 space-y-3">
+              <div
+                ref={phoneVerificationRef}
+                id="phone-verification-section"
+                className={`p-4 rounded-xl border transition-all duration-300 space-y-3 ${
+                  highlightPhoneCard
+                    ? 'border-amber-500 bg-amber-50/80 ring-4 ring-amber-400/50 shadow-lg scale-[1.01]'
+                    : 'border-stone-200 bg-stone-50/70'
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Smartphone className="w-4 h-4 text-stone-800" />
@@ -1426,6 +1477,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                             +91
                           </span>
                           <input
+                            ref={phoneInputRef}
                             type="tel"
                             maxLength={10}
                             value={guestPhone}
@@ -1505,6 +1557,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
                         <div className="flex items-center gap-2">
                           <input
+                            ref={otpInputRef}
                             type="text"
                             maxLength={4}
                             value={otpInput}
@@ -1633,7 +1686,7 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
 
           </div>
 
-          <div className="pt-4 flex justify-between items-center border-t border-stone-100">
+          <div className="pt-4 hidden md:flex justify-between items-center border-t border-stone-100">
             <button
               onClick={() => setCurrentStep(3)}
               className="inline-flex items-center px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-xs transition-colors cursor-pointer"
@@ -1888,8 +1941,44 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
       {/* Guarantees the user NEVER has to hunt or scroll for NEXT  */}
       {/* ======================================================== */}
       {currentStep < 5 && (
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl px-4 py-3 sm:py-3.5 pb-safe">
-          <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-2xl">
+          {/* Real-time Inline Error Alert attached directly above the Bottom Bar */}
+          {errorMsg && (
+            <div className="bg-rose-600 text-white text-xs px-4 py-2.5 flex items-center justify-between shadow-lg animate-in slide-in-from-bottom duration-150">
+              <div className="flex items-center gap-2 min-w-0">
+                <AlertCircle className="w-4 h-4 shrink-0 text-white" />
+                <span className="font-semibold truncate">{errorMsg}</span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                {!isMobileVerified && !user?.isPhoneVerified && currentStep === 4 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      phoneVerificationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      if (!guestPhone || guestPhone.length < 10) {
+                        phoneInputRef.current?.focus();
+                      } else {
+                        otpInputRef.current?.focus();
+                      }
+                    }}
+                    className="px-2 py-0.5 rounded bg-white text-rose-700 text-[11px] font-bold hover:bg-rose-50 cursor-pointer shadow-xs"
+                  >
+                    Verify Phone ↑
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setErrorMsg('')}
+                  className="p-1 hover:bg-rose-700 rounded text-rose-100 cursor-pointer"
+                  title="Dismiss"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="px-4 py-3 sm:py-3.5 max-w-5xl mx-auto flex items-center justify-between gap-3 pb-safe">
             
             {/* Left Selection Preview */}
             <div className="min-w-0 flex-1">
@@ -2035,18 +2124,27 @@ _Please arrive 5-10 minutes prior to your scheduled time. We look forward to pam
                 <button
                   type="button"
                   onClick={handleConfirmAppointment}
-                  disabled={isSubmitting || (!user?.isPhoneVerified && !isMobileVerified)}
-                  className="px-5 sm:px-7 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs transition-all flex items-center cursor-pointer shadow-sm disabled:opacity-50"
+                  disabled={isSubmitting}
+                  className={`px-5 sm:px-7 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center cursor-pointer shadow-sm ${
+                    !isMobileVerified && !user?.isPhoneVerified
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white ring-2 ring-amber-500 ring-offset-1'
+                      : 'bg-stone-900 hover:bg-stone-800 text-white ring-2 ring-stone-900 ring-offset-1'
+                  }`}
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
                       Confirming...
                     </>
+                  ) : !isMobileVerified && !user?.isPhoneVerified ? (
+                    <>
+                      <Smartphone className="w-4 h-4 mr-1.5 animate-pulse" />
+                      <span>Verify Phone to Book</span>
+                    </>
                   ) : (
                     <>
-                      <Check className="w-4 h-4 mr-1.5" />
-                      Confirm Booking
+                      <Check className="w-4 h-4 mr-1.5 text-emerald-400" />
+                      <span>Confirm Booking</span>
                     </>
                   )}
                 </button>
