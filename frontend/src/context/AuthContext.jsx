@@ -39,6 +39,31 @@ export const AuthProvider = ({ children }) => {
   /**
    * Log in user and persist token
    */
+  /**
+   * Authenticate or register via Google OAuth
+   */
+  const googleLogin = async (googlePayload) => {
+    setIsLoading(true);
+    try {
+      const res = await authService.googleAuth(googlePayload);
+      const { user: userData, token: jwtToken, isNewUser } = res.data;
+
+      localStorage.setItem('token', jwtToken);
+      setToken(jwtToken);
+      setUser(userData);
+      return { success: true, user: userData, token: jwtToken, isNewUser, message: res.message };
+    } catch (error) {
+      return {
+        success: false,
+        statusCode: error.statusCode || error.response?.status,
+        message: error.message || 'Google sign-in failed. Please try again.',
+        errors: error.errors || []
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const login = async (credentials) => {
     setIsLoading(true);
     try {
@@ -245,6 +270,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user && !!token,
     isLoading,
     login,
+    googleLogin,
     signup,
     verifyEmail,
     resendEmailOTP,

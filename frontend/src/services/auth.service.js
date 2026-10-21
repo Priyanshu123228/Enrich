@@ -29,6 +29,14 @@ export const authService = {
    * Login user with credentials
    * @param {Object} credentials - { email, password }
    */
+  /**
+   * Authenticate or register using Google OAuth
+   * @param {Object} data - { credential, email, name, picture, googleId }
+   */
+  googleAuth: async (data) => {
+    return await api.post('/auth/google', data);
+  },
+
   login: async (credentials) => {
     return await api.post('/auth/login', credentials);
   },

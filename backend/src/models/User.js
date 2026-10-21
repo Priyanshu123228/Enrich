@@ -22,16 +22,36 @@ const userSchema = new mongoose.Schema(
       ],
       index: true
     },
+    googleId: {
+      type: String,
+      sparse: true,
+      index: true
+    },
+    authProvider: {
+      type: String,
+      enum: ['local', 'google', 'phone_guest'],
+      default: 'local'
+    },
     phone: {
       type: String,
-      required: [true, 'Phone number is required'],
-      unique: true,
+      sparse: true,
       trim: true,
-      index: true
+      index: true,
+      required: [
+        function () {
+          return !this.googleId;
+        },
+        'Phone number is required'
+      ]
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      required: [
+        function () {
+          return !this.googleId;
+        },
+        'Password is required'
+      ],
       minlength: [6, 'Password must be at least 6 characters long'],
       select: false
     },
@@ -95,13 +115,14 @@ const userSchema = new mongoose.Schema(
 
 // Pre-save hook: Hash password
 userSchema.pre('save', async function () {
-  if (!this.isModified('password')) return;
+  if (!this.password || !this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Compare password
 userSchema.methods.isPasswordCorrect = async function (enteredPassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

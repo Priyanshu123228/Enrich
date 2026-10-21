@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Lock, Mail, ArrowRight, ShieldAlert } from 'lucide-react';
 import LoadingButton from '../components/auth/LoadingButton';
+import GoogleAuthButton from '../components/auth/GoogleAuthButton';
 import AlertMessage from '../components/auth/AlertMessage';
 
 export default function Login() {
@@ -85,6 +86,22 @@ export default function Login() {
             </button>
           </div>
         )}
+
+        {/* Google Authentication Option */}
+        <div className="space-y-4">
+          <GoogleAuthButton
+            mode="signin"
+            onError={(msg) => setErrorMsg(msg)}
+          />
+
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-stone-200 w-full" />
+            <span className="bg-white px-3 text-xs text-stone-400 uppercase tracking-wider shrink-0 font-medium">
+              or continue with email
+            </span>
+            <div className="border-t border-stone-200 w-full" />
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>

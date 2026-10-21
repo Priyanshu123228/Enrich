@@ -6,6 +6,7 @@ import {
   sendGuestPhoneOTP,
   verifyGuestPhoneOTP,
   login,
+  googleAuth,
   logout,
   forgotPassword,
   verifyResetOTP,
@@ -57,6 +58,7 @@ router.post('/guest-verify-otp', otpLimiter, verifyGuestPhoneOTP);
 // 2. AUTHENTICATION & SESSION
 // ==========================================
 router.post('/login', authLimiter, validateLogin, login);
+router.post('/google', authLimiter, googleAuth);
 router.post('/logout', logout);
 
 // ==========================================

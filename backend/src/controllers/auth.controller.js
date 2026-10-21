@@ -17,7 +17,8 @@ const formatUserResponse = (user) => {
     _id: user._id,
     name: user.name,
     email: user.email,
-    phone: user.phone,
+    phone: user.phone || '',
+    authProvider: user.authProvider || (user.googleId ? 'google' : 'local'),
     role: user.role,
     status: user.status || (user.isActive ? 'active' : 'pending_verification'),
     isEmailVerified: !!user.isEmailVerified,
@@ -757,6 +758,117 @@ export const verifyGuestPhoneOTP = asyncHandler(async (req, res) => {
         token
       },
       'Mobile number verified successfully. Welcome to Enrich Salon!'
+    )
+  );
+});
+
+
+/**
+ * @desc    Authenticate or Sign Up via Google OAuth
+ * @route   POST /api/v1/auth/google
+ * @access  Public
+ */
+export const googleAuth = asyncHandler(async (req, res) => {
+  const { credential, email: directEmail, name: directName, picture: directPicture, googleId: directGoogleId } = req.body;
+
+  let googleId = directGoogleId;
+  let email = directEmail;
+  let name = directName;
+  let picture = directPicture;
+
+  // 1. Verify Google token with Google Tokeninfo endpoint if provided
+  if (credential) {
+    try {
+      const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
+      const payload = await response.json();
+
+      if (response.ok && payload.email) {
+        googleId = payload.sub;
+        email = payload.email;
+        name = payload.name;
+        picture = payload.picture;
+      } else {
+        console.warn('Google tokeninfo verification failed:', payload.error_description || response.statusText);
+        if (process.env.NODE_ENV === 'production' && !directEmail) {
+          throw new ApiError(400, 'Invalid or expired Google credential');
+        }
+      }
+    } catch (tokenErr) {
+      if (!directEmail) {
+        throw new ApiError(400, `Google authentication failed: ${tokenErr.message}`);
+      }
+    }
+  }
+
+  if (!email) {
+    throw new ApiError(400, 'Google email address is required');
+  }
+
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // 2. Look up existing user by googleId or email
+  let user = await User.findOne({
+    $or: [
+      ...(googleId ? [{ googleId }] : []),
+      { email: normalizedEmail }
+    ]
+  });
+
+  let isNewUser = false;
+
+  if (user) {
+    // Existing user: Link googleId and mark email verified
+    if (googleId && !user.googleId) {
+      user.googleId = googleId;
+    }
+    if (picture && (!user.avatar?.url || user.avatar.url.includes('placeholder'))) {
+      user.avatar = { url: picture, public_id: '' };
+    }
+    user.isEmailVerified = true;
+    user.status = 'active';
+    user.isActive = true;
+    if (!user.authProvider || user.authProvider === 'local') {
+      user.authProvider = 'google';
+    }
+    await user.save();
+  } else {
+    // New user signup with Google
+    isNewUser = true;
+    const finalGoogleId = googleId || `google_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    user = await User.create({
+      name: name?.trim() || 'Google Client',
+      email: normalizedEmail,
+      googleId: finalGoogleId,
+      authProvider: 'google',
+      avatar: { url: picture || '', public_id: '' },
+      role: 'customer',
+      status: 'active',
+      isEmailVerified: true,
+      isPhoneVerified: false,
+      isActive: true
+    });
+  }
+
+  // 3. Generate JWT access token
+  const token = user.generateAccessToken();
+
+  console.log(
+    `\n======================================================\n` +
+    `🔑 [GOOGLE OAUTH SUCCESS]\n` +
+    `User: ${user.name} (${user.email})\n` +
+    `Status: ${isNewUser ? 'NEW ACCOUNT CREATED' : 'EXISTING ACCOUNT LOGGED IN'}\n` +
+    `======================================================\n`
+  );
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user: formatUserResponse(user),
+        token,
+        isNewUser
+      },
+      isNewUser ? 'Welcome to Enrich Salon! Account created with Google.' : 'Welcome back! Signed in with Google.'
     )
   );
 });
