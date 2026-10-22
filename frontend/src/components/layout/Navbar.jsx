@@ -79,8 +79,6 @@ export default function Navbar() {
     { name: 'Home', path: '/' },
     { name: 'Services', path: '/services' },
     { name: 'Cosmetics', path: '/cosmetics' },
-    { name: 'Offers', path: '/offers' },
-    { name: 'Stylists', path: '/staff' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' }
