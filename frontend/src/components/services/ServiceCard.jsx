@@ -124,21 +124,15 @@ export default function ServiceCard({
 
       {/* Card Footer Actions */}
       <div className="p-4 sm:p-5 pt-3 border-t border-stone-100 mt-2 space-y-3">
-        {/* Price & Combo Selection Row */}
+        {/* Service Details & Combo Selection Row */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-baseline space-x-1.5">
-              <span className="text-lg sm:text-xl font-bold font-serif text-stone-900">
-                {effectivePrice !== null ? `₹${effectivePrice}` : 'Custom'}
-              </span>
-              {service.discountPrice > 0 && service.price > 0 && (
-                <span className="text-xs text-stone-400 line-through">
-                  ₹{service.price}
-                </span>
-              )}
-            </div>
+            <span className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+              Salon Treatment
+            </span>
             <span className="text-[10px] text-stone-500 uppercase tracking-wider block">
-              Transparent Pricing
+              Consultation Available
             </span>
           </div>
 
@@ -180,7 +174,7 @@ export default function ServiceCard({
 
           <a
             href={`https://wa.me/919667900313?text=${encodeURIComponent(
-              `Hi Enrich Salon, I would like to book an appointment for "${service.name}" (${effectivePrice !== null ? `₹${effectivePrice}` : 'Custom'}). Please share available time slots.`
+              `Hi Enrich Salon, I would like to book an appointment for "${service.name}". Please share available time slots.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

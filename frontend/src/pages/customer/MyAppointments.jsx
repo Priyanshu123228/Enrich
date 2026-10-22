@@ -260,10 +260,10 @@ export default function MyAppointments() {
               <div className="flex flex-row md:flex-col items-end justify-between w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-stone-100 gap-3">
                 <div className="text-right">
                   <span className="text-[10px] text-stone-400 uppercase tracking-wider block">
-                    Amount
+                    Status
                   </span>
-                  <span className="text-2xl font-bold font-serif text-stone-900">
-                    ${app.finalAmount}
+                  <span className="text-sm font-bold text-stone-900 capitalize">
+                    {app.paymentStatus === 'paid' ? 'Paid' : 'Pay at Salon'}
                   </span>
                 </div>
 

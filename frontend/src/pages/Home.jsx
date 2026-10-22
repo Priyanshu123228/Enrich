@@ -743,22 +743,9 @@ export default function Home() {
                           <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
                           {service.duration || 45} mins
                         </span>
-                        <div className="flex items-baseline gap-1.5 font-mono">
-                          {service.discountPrice && service.discountPrice < service.price ? (
-                            <>
-                              <span className="text-sm font-bold text-stone-900">
-                                {SALON_CONFIG.currency.symbol}{service.discountPrice}
-                              </span>
-                              <span className="text-xs text-stone-400 line-through">
-                                {SALON_CONFIG.currency.symbol}{service.price}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-sm font-bold text-stone-900">
-                              {SALON_CONFIG.currency.symbol}{service.price || 'Custom'}
-                            </span>
-                          )}
-                        </div>
+                        <span className="text-[11px] font-medium text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
+                          Salon Service
+                        </span>
                       </div>
 
                       <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-1">
@@ -775,7 +762,7 @@ export default function Home() {
                   <div className="p-5 pt-0 border-t border-stone-100 mt-2 space-y-2">
                     <a
                       href={`https://wa.me/919667900313?text=${encodeURIComponent(
-                        `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
+                        `Hi Enrich Salon, I would like to book an appointment for "${service.name}". Please let me know available slots.`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1095,7 +1082,7 @@ export default function Home() {
                       <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-200">
                         {offer.discountType === 'percentage'
                           ? `${offer.discountValue || 15}% OFF`
-                          : `${SALON_CONFIG.currency.symbol}${offer.discountValue || 200} OFF`}
+                          : 'SPECIAL DISCOUNT'}
                       </span>
                       {offer.validUntil && (
                         <span className="text-xs text-stone-400 font-mono flex items-center">

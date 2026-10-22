@@ -121,7 +121,7 @@ export default function Offers() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {offers.map((offer) => {
             const isPercentage = offer.discountType === 'percentage';
-            const discountLabel = isPercentage ? `${offer.discountValue}% OFF` : `$${offer.discountValue} OFF`;
+            const discountLabel = isPercentage ? `${offer.discountValue}% OFF` : 'SPECIAL DISCOUNT';
             const validDateStr = new Date(offer.endDate || offer.validTill).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -178,10 +178,10 @@ export default function Offers() {
                     <div className="flex justify-between items-center">
                       <span className="text-stone-500 flex items-center">
                         <Tag className="w-3 h-3 mr-1 text-stone-400" />
-                        Min. Booking:
+                        Offer Privilege:
                       </span>
-                      <span className="font-semibold text-stone-900">
-                        {offer.minBookingAmount > 0 ? `₹${offer.minBookingAmount}` : 'None'}
+                      <span className="font-semibold text-stone-900 capitalize">
+                        {offer.offerType || 'Exclusive Voucher'}
                       </span>
                     </div>
 

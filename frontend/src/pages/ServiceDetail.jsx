@@ -273,20 +273,13 @@ export default function ServiceDetail() {
               </h1>
             </div>
 
-            {/* Pricing Section */}
-            <div className="flex items-baseline justify-between">
+            {/* Duration & Service Appointment Details */}
+            <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl border border-stone-200/80">
               <div>
-                <p className="text-[11px] text-stone-500 uppercase tracking-wider">Service Fee</p>
-                <div className="flex items-baseline space-x-2 mt-0.5">
-                  <span className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-                    ₹{service.discountPrice > 0 ? service.discountPrice : (service.price > 0 ? service.price : 'Custom')}
-                  </span>
-                  {service.discountPrice > 0 && service.price > 0 && (
-                    <span className="text-xs text-stone-400 line-through">
-                      ₹{service.price}
-                    </span>
-                  )}
-                </div>
+                <p className="text-[11px] text-stone-500 uppercase tracking-wider">Appointment Type</p>
+                <p className="text-sm font-semibold text-stone-900 mt-0.5">
+                  Direct In-Salon Booking
+                </p>
               </div>
 
               <div className="text-right">
@@ -314,7 +307,7 @@ export default function ServiceDetail() {
             <div className="space-y-2.5 pt-2">
               <a
                 href={`https://wa.me/919667900313?text=${encodeURIComponent(
-                  `Hi Enrich Salon, I would like to book an appointment for "${service.name}"${service.discountPrice > 0 ? ` (₹${service.discountPrice})` : (service.price > 0 ? ` (₹${service.price})` : '')}. Please let me know available slots.`
+                  `Hi Enrich Salon, I would like to book an appointment for "${service.name}". Please let me know available slots.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

@@ -178,7 +178,7 @@ export default function CustomerDashboard() {
 
             setFeedback({
               type: 'success',
-              message: `Payment of $${app.finalAmount} verified successfully. Razorpay Txn: ${response.razorpay_payment_id}`
+              message: `Payment verified successfully. Razorpay Txn: ${response.razorpay_payment_id}`
             });
             await fetchDashboardData();
           } catch (verErr) {
@@ -560,9 +560,9 @@ export default function CustomerDashboard() {
                             </span>
                           </div>
                           <div className="flex justify-between border-t border-stone-200 pt-1.5">
-                            <span className="text-stone-500">Total Price:</span>
-                            <span className="font-bold text-stone-900 font-serif text-sm">
-                              ${app.finalAmount}
+                            <span className="text-stone-500">Billing:</span>
+                            <span className="font-semibold text-stone-900 text-xs">
+                              {app.paymentStatus === 'paid' ? 'Paid Online' : 'Payable at Salon'}
                             </span>
                           </div>
                         </div>
@@ -656,8 +656,8 @@ export default function CustomerDashboard() {
                       </div>
 
                       <div className="flex items-center flex-wrap space-x-3 w-full md:w-auto justify-end pt-3 md:pt-0 border-t md:border-t-0 border-stone-100 text-xs">
-                        <span className="font-bold text-base font-serif text-stone-900 mr-2">
-                          ${app.finalAmount}
+                        <span className="font-semibold text-xs text-stone-600 mr-2 capitalize">
+                          {app.paymentStatus === 'paid' ? 'Paid Online' : 'Pay at Salon'}
                         </span>
 
                         <button
@@ -730,8 +730,8 @@ export default function CustomerDashboard() {
                       </div>
 
                       <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs">
-                        <span className="text-xl font-bold font-serif text-stone-900">
-                          ${service.discountPrice > 0 ? service.discountPrice : service.price}
+                        <span className="text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-1 rounded-md border border-rose-100">
+                          Salon Treatment
                         </span>
                         <Link
                           to="/book"
@@ -1026,8 +1026,8 @@ export default function CustomerDashboard() {
               )}
 
               <div className="flex justify-between border-t border-stone-200 pt-3 text-sm">
-                <span className="font-bold text-stone-900">Total Amount:</span>
-                <span className="font-bold text-stone-900 font-serif">${detailModalApp.finalAmount}</span>
+                <span className="font-bold text-stone-900">Billing:</span>
+                <span className="font-bold text-stone-900 text-xs">{detailModalApp.paymentStatus === 'paid' ? 'Paid Online' : 'Payable at Salon'}</span>
               </div>
             </div>
 
@@ -1042,7 +1042,7 @@ export default function CustomerDashboard() {
                   className="w-full py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <CreditCard className="w-3.5 h-3.5" />
-                  Pay Now with Razorpay (${detailModalApp.finalAmount})
+                  Pay Now with Razorpay
                 </button>
               )}
               <button

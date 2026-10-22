@@ -349,7 +349,7 @@ export default function ProductDetail() {
 
   const getWhatsAppUrl = () => {
     if (!product) return '#';
-    const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to book / order "${product.name}" (Price: ₹${product.price}). Please share order instructions and salon delivery details.`;
+    const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to book / order "${product.name}". Please share order instructions and salon delivery details.`;
     return `https://wa.me/919667900313?text=${encodeURIComponent(text)}`;
   };
 
@@ -470,22 +470,15 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Price Box */}
-            <div className="p-5 bg-stone-50 rounded-xl border border-stone-200/80 flex items-baseline justify-between flex-wrap gap-2">
-              <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-serif font-bold text-stone-900">
-                  ₹{product.price.toLocaleString()}
+            {/* Product Status & Availability */}
+            <div className="p-4 bg-stone-50 rounded-xl border border-stone-200/80 flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-rose-800 bg-rose-50 px-2.5 py-1 rounded-md border border-rose-200/60">
+                  Clinic Verified Formulation
                 </span>
-                {product.originalPrice > product.price && (
-                  <span className="text-base text-stone-400 line-through">
-                    ₹{product.originalPrice.toLocaleString()}
-                  </span>
-                )}
-                {savings > 0 && (
-                  <span className="text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-md">
-                    {savings}% OFF
-                  </span>
-                )}
+                <span className="text-xs text-stone-500 font-medium">
+                  {product.brand || 'Dermatologist Tested'}
+                </span>
               </div>
               <div className="text-xs font-bold text-emerald-700">
                 ✓ In Stock ({product.stock} units available)
@@ -606,12 +599,9 @@ export default function ProductDetail() {
                   <h3 className="font-serif font-bold text-sm text-stone-900 line-clamp-1 group-hover:text-rose-700 mt-0.5">{rel.name}</h3>
                   
                   <div className="mt-2">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-serif font-bold text-sm text-stone-900">₹{rel.price.toLocaleString()}</span>
-                      {rel.originalPrice > rel.price && (
-                        <span className="text-xs text-stone-400 line-through">₹{rel.originalPrice.toLocaleString()}</span>
-                      )}
-                    </div>
+                    <span className="text-xs font-medium text-stone-500">
+                      View Details →
+                    </span>
                   </div>
                 </Link>
               ))}

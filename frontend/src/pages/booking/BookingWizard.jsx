@@ -758,7 +758,7 @@ export default function BookingWizard() {
               <div className="inline-flex items-center gap-2 bg-stone-900 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium self-start sm:self-auto">
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="truncate max-w-[200px]">{selectedService.name}</span>
-                <span className="text-stone-300 font-bold">₹{selectedService.discountPrice || selectedService.price}</span>
+                <span className="text-stone-300 font-medium">{selectedService.duration} mins</span>
               </div>
             )}
           </div>
@@ -833,14 +833,9 @@ export default function BookingWizard() {
                             {service.category?.name || 'Treatment'}
                           </span>
                           <div className="text-right shrink-0">
-                            {service.discountPrice > 0 ? (
-                              <div className="flex items-baseline space-x-1.5">
-                                <span className="text-xs text-stone-400 line-through">₹{service.price}</span>
-                                <span className="text-sm sm:text-base font-bold text-stone-900">₹{service.discountPrice}</span>
-                              </div>
-                            ) : (
-                              <span className="text-sm sm:text-base font-bold text-stone-900">₹{service.price}</span>
-                            )}
+                            <span className="text-xs font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
+                              Available
+                            </span>
                           </div>
                         </div>
 
@@ -1301,28 +1296,21 @@ export default function BookingWizard() {
                 )}
               </div>
 
-              {/* Price Calculation Breakdown */}
+              {/* Booking Summary Note */}
               <div className="pt-3 border-t border-stone-200 space-y-1.5">
-                <div className="flex justify-between text-stone-500">
-                  <span>Treatment Price:</span>
-                  <span className="font-semibold text-stone-800">₹{currentBasePrice}</span>
+                <div className="flex justify-between text-stone-500 text-xs">
+                  <span>Appointment Type:</span>
+                  <span className="font-semibold text-stone-800">Confirmed Salon Visit</span>
                 </div>
-
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-700 font-semibold">
-                    <span>Promo Discount ({appliedOffer?.code}):</span>
-                    <span>-₹{discountAmount}</span>
+                {appliedOffer && (
+                  <div className="flex justify-between text-emerald-700 font-semibold text-xs">
+                    <span>Promo Code Applied:</span>
+                    <span>{appliedOffer.code}</span>
                   </div>
                 )}
-
-                <div className="pt-2 border-t border-stone-200/60 flex justify-between items-baseline">
-                  <span className="text-sm font-bold text-stone-900">Total Payable:</span>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-base font-semibold text-stone-500">₹</span>
-                    <span className="text-2xl font-bold font-serif text-stone-900">
-                      {currentFinalPayable}
-                    </span>
-                  </div>
+                <div className="pt-2 border-t border-stone-200/60 flex justify-between items-center text-xs text-stone-600">
+                  <span>Billing & Consultation:</span>
+                  <span className="font-semibold text-stone-900">Payable at Salon Counter</span>
                 </div>
               </div>
             </div>
@@ -1837,7 +1825,7 @@ export default function BookingWizard() {
                       {selectedService.name}
                     </span>
                     <span className="text-[11px] font-semibold text-stone-600">
-                      ₹{selectedService.discountPrice || selectedService.price} • {selectedService.duration} mins
+                      {selectedService.duration} mins session
                     </span>
                   </div>
                 ) : (
@@ -1895,11 +1883,12 @@ export default function BookingWizard() {
 
               {currentStep === 4 && (
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
-                    Total Payable
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 flex items-center">
+                    <Check className="w-3 h-3 mr-1" />
+                    Ready to Confirm
                   </span>
-                  <span className="text-sm sm:text-base font-bold text-stone-900">
-                    ₹{currentFinalPayable}
+                  <span className="text-xs sm:text-sm font-bold text-stone-900 truncate">
+                    {selectedService?.name}
                   </span>
                   <span className="text-[10px] font-medium text-stone-500">
                     {paymentMethod === 'online' ? 'Razorpay Online' : 'Pay at Reception'}

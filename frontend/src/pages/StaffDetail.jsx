@@ -248,8 +248,8 @@ export default function StaffDetail() {
                       <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-stone-100 text-stone-700">
                         {service.category}
                       </span>
-                      <span className="text-base font-bold font-serif text-stone-900">
-                        ${service.discountPrice > 0 ? service.discountPrice : service.price}
+                      <span className="text-[11px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
+                        Specialist Treatment
                       </span>
                     </div>
 

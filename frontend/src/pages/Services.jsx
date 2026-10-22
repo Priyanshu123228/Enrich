@@ -158,8 +158,6 @@ export default function Services() {
               className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-xs font-medium text-stone-700 focus:outline-rose-600 cursor-pointer"
             >
               <option value="newest">Featured & Newest</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
               <option value="duration-asc">Duration: Shortest</option>
               <option value="duration-desc">Duration: Longest</option>
               <option value="rating">Highest Rated</option>
@@ -243,11 +241,11 @@ export default function Services() {
 
             <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 border-stone-800/80 pt-2.5 sm:pt-0">
               <div className="text-left sm:text-right">
-                <div className="text-base font-bold text-white font-serif">
-                  ₹{comboServices.reduce((sum, s) => sum + (s.discountPrice > 0 ? s.discountPrice : (s.price || 0)), 0)}
+                <div className="text-sm font-semibold text-rose-300">
+                  {comboServices.reduce((sum, s) => sum + (s.duration || 30), 0)} mins total
                 </div>
                 <div className="text-[10px] text-stone-400">
-                  {comboServices.reduce((sum, s) => sum + (s.duration || 30), 0)} mins total
+                  All services included
                 </div>
               </div>
 

@@ -67,7 +67,7 @@ export default function TermsAndConditions() {
               3. Pricing & Payments
             </h2>
             <p>
-              All service prices and cosmetics are listed in Indian Rupees (INR ₹). We accept UPI, Cash, Credit/Debit cards, and secure online payments via Razorpay. We reserve the right to revise service pricing with advance on-site notice.
+              All service pricing and cosmetic quotes are confirmed directly at our salon counter or during consultation. We accept UPI, Cash, Credit/Debit cards, and secure online payments via Razorpay.
             </p>
           </section>
 

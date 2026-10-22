@@ -406,7 +406,7 @@ export default function Cosmetics() {
   };
 
   const getWhatsAppUrl = (product) => {
-    const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to book / order "${product.name}" (₹${product.price}). Please share order details and availability.`;
+    const text = `Hello Enrich Beauty & Cosmetic Clinic! I would like to book / order "${product.name}". Please share order details and availability.`;
     return `https://wa.me/919667900313?text=${encodeURIComponent(text)}`;
   };
 
@@ -493,8 +493,6 @@ export default function Cosmetics() {
                 className="w-full py-2 px-3 bg-white rounded-lg border border-stone-300 text-stone-800 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-600 cursor-pointer"
               >
                 <option value="popular">Most Popular</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
                 <option value="rating">Top Rated</option>
                 <option value="newest">Newest Additions</option>
               </select>
@@ -637,23 +635,14 @@ export default function Cosmetics() {
                           <span className="text-xs text-stone-400">({product.numReviews || 18})</span>
                         </div>
 
-                        {/* Price Row */}
-                        <div className="mt-4 pt-3 border-t border-stone-100 flex items-baseline justify-between">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-xl font-bold font-serif text-stone-900">
-                              ₹{product.price.toLocaleString()}
-                            </span>
-                            {product.originalPrice > product.price && (
-                              <span className="text-xs text-stone-400 line-through">
-                                ₹{product.originalPrice.toLocaleString()}
-                              </span>
-                            )}
-                            {savings > 0 && (
-                              <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                                Save {savings}%
-                              </span>
-                            )}
-                          </div>
+                        {/* Product Clinic Verification */}
+                        <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
+                          <span className="text-xs font-semibold text-rose-800 bg-rose-50 px-2.5 py-1 rounded-md border border-rose-200/60">
+                            Clinic Verified
+                          </span>
+                          <span className="text-xs text-stone-500 font-medium">
+                            {product.brand || 'Dermatologist Tested'}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -755,17 +744,12 @@ export default function Cosmetics() {
                   </div>
                 </div>
 
-                {/* Price Display */}
-                <div className="flex items-baseline gap-3 p-3.5 bg-stone-50 rounded-xl border border-stone-200/80">
-                  <span className="text-2xl font-bold font-serif text-stone-900">
-                    ₹{quickViewProduct.price.toLocaleString()}
+                {/* Product Availability & Authenticity */}
+                <div className="flex items-center justify-between p-3.5 bg-stone-50 rounded-xl border border-stone-200/80">
+                  <span className="text-xs font-bold text-stone-800 uppercase tracking-wider">
+                    {quickViewProduct.brand || 'Clinic Grade Formula'}
                   </span>
-                  {quickViewProduct.originalPrice > quickViewProduct.price && (
-                    <span className="text-sm text-stone-400 line-through">
-                      ₹{quickViewProduct.originalPrice.toLocaleString()}
-                    </span>
-                  )}
-                  <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full ml-auto">
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
                     In Stock ({quickViewProduct.stock || 20} available)
                   </span>
                 </div>
