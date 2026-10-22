@@ -283,9 +283,6 @@ export default function HomeReelsSection({
               </span>
             </h2>
 
-            <p className="text-xs sm:text-sm text-stone-600 font-light max-w-2xl leading-relaxed">
-              Tap any reel to preview bridal masterclasses, hair transformations, and clinical skincare procedures filmed inside our Sikar salon.
-            </p>
           </div>
 
           

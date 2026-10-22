@@ -503,9 +503,6 @@ export default function Home() {
               <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
                 Salon Portfolio & Gallery
               </h2>
-              <p className="text-xs sm:text-sm text-stone-600 max-w-2xl leading-relaxed">
-                Browse our real salon transformations, high-definition photo gallery, video tutorials, and bridal looks.
-              </p>
             </div>
 
             <Link
@@ -667,9 +664,6 @@ export default function Home() {
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
               Popular Services & Treatments
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 max-w-xl">
-              Filter by category to explore precision haircuts, bridal makeovers, clinical skincare, and luxury nail styling.
-            </p>
           </div>
         </div>
 
@@ -964,9 +958,6 @@ export default function Home() {
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight">
               Meet Our Certified Team
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 max-w-xl">
-              Book your session directly with our master colorists, skincare clinicians, and makeup artists.
-            </p>
           </div>
 
           <Link
