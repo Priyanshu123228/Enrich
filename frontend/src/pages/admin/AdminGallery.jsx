@@ -693,7 +693,7 @@ export default function AdminGallery() {
               </span>
             </div>
             <h4 className="font-bold text-stone-900 text-sm break-words line-clamp-2">
-              {currentOwnerPhoto?.title || 'Pooja Sharma • Founder & Lead Cosmetologist'}
+              {currentOwnerPhoto?.title || 'Anu Saini • Founder & Lead Cosmetologist'}
             </h4>
             <p className="text-xs text-stone-600 font-light line-clamp-2 leading-relaxed">
               {currentOwnerPhoto?.description || 'Crafting Confidence, Redefining Elegance - Displayed in the About the Founder section.'}

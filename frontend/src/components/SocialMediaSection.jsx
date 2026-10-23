@@ -124,9 +124,6 @@ export default function SocialMediaSection() {
             Follow Our <span className="text-rose-700 italic font-serif">Journey</span>
           </h2>
 
-          <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-light">
-            Explore our daily bridal transformations, salon artistry, client reviews, and direct location directions.
-          </p>
         </div>
 
         {/* Social Platforms Grid */}

@@ -326,7 +326,6 @@ export default function Home() {
         url="/"
       />
 
-
       {/* =========================================================================
           SECTION 1: HERO SECTION (LUMINOUS LUXURY ATELIER)
           ========================================================================= */}
@@ -833,10 +832,7 @@ export default function Home() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-serif font-bold text-stone-900 truncate">
-                      Pooja Sharma
-                    </p>
-                    <p className="text-[11px] font-medium text-rose-700 truncate">
-                      Founder & Master Cosmetologist
+                      Anu Saini
                     </p>
                   </div>
                 </div>
@@ -909,13 +905,6 @@ export default function Home() {
 
               {/* Action Buttons */}
               <div className="pt-2 flex flex-wrap items-center gap-3">
-                <Link
-                  to="/appointments"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs sm:text-sm font-semibold shadow-md shadow-rose-900/15 transition-all group"
-                >
-                  <Calendar className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                  Book with Our Founder
-                </Link>
 
                 <a
                   href="https://wa.me/919667900313?text=Hi%20Anu%2C%20I%20would%20like%20to%20consult%20with%20you%20at%20Enrich%20Beauty%20Parlour."
