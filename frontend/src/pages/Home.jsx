@@ -128,15 +128,6 @@ export default function Home() {
           setServices(SALON_CONFIG.defaultServices);
         }
 
-        // 2. Process Staff / Stylists
-        if (staffRes.status === 'fulfilled' && staffRes.value?.data?.staff?.length > 0) {
-          setStaffList(staffRes.value.data.staff.filter(st => st.status !== 'inactive' && st.isActive !== false));
-        } else if (staffRes.status === 'fulfilled' && Array.isArray(staffRes.value?.data) && staffRes.value.data.length > 0) {
-          setStaffList(staffRes.value.data.filter(st => st.status !== 'inactive' && st.isActive !== false));
-        } else {
-          setStaffList(SALON_CONFIG.defaultStylists);
-        }
-
         // 3. Process Offers (filter active & unexpired)
         if (offersRes.status === 'fulfilled' && offersRes.value?.data?.offers?.length > 0) {
           const now = new Date();
@@ -214,9 +205,7 @@ export default function Home() {
         console.error('Error fetching homepage dynamic resources:', err);
         if (isMounted) {
           setServices(SALON_CONFIG.defaultServices);
-          setStaffList(SALON_CONFIG.defaultStylists);
           setOffers(SALON_CONFIG.defaultOffers);
-          setReviews(SALON_CONFIG.defaultReviews);
           const defCatch = SALON_CONFIG.defaultMedia || {};
           const defCatchAll = [...(defCatch.photos || []), ...(defCatch.videos || []), ...(defCatch.transformations || [])];
           setMediaItems({ ...defCatch, all: defCatchAll });
