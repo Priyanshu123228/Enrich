@@ -77,7 +77,6 @@ export default function BookingWizard() {
 
   // Selection states
   const [selectedService, setSelectedService] = useState(null);
-  const selectedStaff = 'any';
   const [selectedDate, setSelectedDate] = useState(() => getTodayDateString());
   const [selectedSlot, setSelectedSlot] = useState('');
   const [notes, setNotes] = useState('');
@@ -146,15 +145,12 @@ export default function BookingWizard() {
     }
   }, [selectedDate, selectedSlot]);
 
-  // Initial fetch of services & staff
+  // Initial fetch of services
   useEffect(() => {
     const fetchInitial = async () => {
       setIsLoadingData(true);
       try {
-        const [servicesRes, staffRes] = await Promise.all([
-          serviceService.getServices({ limit: 50 }),
-          staffService.getStaff()
-        ]);
+        const servicesRes = await serviceService.getServices({ limit: 50 });
 
         if (servicesRes?.data?.services) {
           setServices(servicesRes.data.services);
@@ -167,21 +163,7 @@ export default function BookingWizard() {
             );
             if (pre) {
               setSelectedService(pre);
-              setCurrentStep(2); // Jump directly to Stylist / Date selection
-            }
-          }
-        }
-
-        if (staffRes?.data) {
-          setStaffMembers(staffRes.data);
-          const searchParams = new URLSearchParams(location.search);
-          const targetStaffId = location.state?.preSelectedStaffId || searchParams.get('staffId') || searchParams.get('staff');
-          if (targetStaffId) {
-            const staffMatch = staffRes.data.find(
-              (st) => st._id === targetStaffId || st.name?.toLowerCase() === targetStaffId.toLowerCase()
-            );
-            if (staffMatch) {
-              setSelectedStaff(staffMatch);
+              setCurrentStep(2); // Jump directly to Date selection
             }
           }
         }
@@ -206,7 +188,7 @@ export default function BookingWizard() {
       try {
         const res = await slotService.getAvailableSlots({
           serviceId: selectedService._id,
-          staffId: selectedStaff === 'any' ? 'any' : selectedStaff._id,
+          staffId: 'any',
           date: selectedDate
         });
 
@@ -237,14 +219,8 @@ export default function BookingWizard() {
     };
 
     fetchSlots();
-  }, [selectedService, selectedStaff, selectedDate]);
+  }, [selectedService, selectedDate]);
 
-  // Filter staff offering the selected service
-  const qualifiedStaff = selectedService
-    ? staffMembers.filter((st) =>
-        st.services?.some((s) => (s._id ? s._id === selectedService._id : s === selectedService._id))
-      )
-    : staffMembers;
 
   // Extract unique categories from services
   const categories = useMemo(() => {
@@ -492,7 +468,7 @@ export default function BookingWizard() {
       // Create Appointment Reservation (Pay at Salon Desk)
       const appRes = await appointmentService.createAppointment({
         serviceId: selectedService._id,
-        staffId: selectedStaff === 'any' ? 'any' : selectedStaff._id,
+        staffId: 'any',
         date: selectedDate,
         startTime: selectedSlot,
         notes,
