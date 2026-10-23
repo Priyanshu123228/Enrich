@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Award, Users, MapPin, Phone, Clock, ShieldCheck, MessageCircle, Calendar } from 'lucide-react';
+import { Award, Users, MapPin, Phone, Clock, ShieldCheck, MessageCircle } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import { SALON_CONFIG } from '../config/salonConfig';
 
@@ -73,13 +73,15 @@ export default function About() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 pt-1">
-          <Link
-            to="/book"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-xs transition-colors"
+          <a
+            href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
           >
-            <Calendar className="w-4 h-4" />
-            <span>Book Appointment</span>
-          </Link>
+            <MessageCircle className="w-4 h-4 fill-current" />
+            <span>Book on WhatsApp</span>
+          </a>
 
           <a
             href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20have%20an%20inquiry%20regarding%20Enrich%20Salon."

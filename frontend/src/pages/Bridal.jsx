@@ -1,7 +1,7 @@
 import SEO from '../components/common/SEO';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Camera, Calendar, MessageCircle, ChevronDown, ChevronUp, Check, Sparkles } from 'lucide-react';
+import { Camera, MessageCircle, ChevronDown, ChevronUp, Check, Sparkles } from 'lucide-react';
 import BridalPortfolioModal from '../components/gallery/BridalPortfolioModal';
 
 export default function Bridal() {
@@ -75,13 +75,7 @@ export default function Bridal() {
           <span>View Bridal Portfolio</span>
         </button>
 
-        <Link
-          to="/book?service=Bridal"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200 transition-colors"
-        >
-          <Calendar className="w-4 h-4 text-stone-500" />
-          <span>Book Online</span>
-        </Link>
+
       </div>
 
       {/* 4. Collapsible Additional Details Section */}

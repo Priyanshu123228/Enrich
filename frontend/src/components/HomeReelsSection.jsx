@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, ChevronDown, ChevronUp, Volume2, VolumeX } from 'lucide-react';
+import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, ChevronDown, ChevronUp, Volume2, VolumeX, MessageCircle } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
 
 /**
@@ -338,13 +338,15 @@ export default function HomeReelsSection({
           </div>
 
           <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
-            <Link
-              to="/book"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-rose-700 via-rose-800 to-rose-900 hover:from-rose-600 hover:to-rose-800 text-white text-xs font-bold shadow-md shadow-rose-950/20 transition-all active:scale-98"
+            <a
+              href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20saw%20your%20styles%20and%20would%20like%20to%20book%20an%20appointment."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-950/20 transition-all active:scale-98"
             >
-              <span>Book Consultation</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+              <MessageCircle className="w-3.5 h-3.5 fill-current" />
+              <span>Book on WhatsApp</span>
+            </a>
 
             <Link
               to="/gallery"

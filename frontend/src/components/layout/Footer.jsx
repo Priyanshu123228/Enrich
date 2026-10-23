@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  MessageCircle,
   Scissors,
   Phone,
   Mail,
@@ -285,15 +286,18 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Quick Action Button - Solid Rose-700 Anchor */}
+            {/* Quick Action Button - WhatsApp */}
             <div className="pt-2">
-              <Link
-                to="/book"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-semibold text-xs tracking-wide shadow-sm shadow-rose-950/10 hover:shadow-md transition-all duration-200"
+              <a
+                href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs tracking-wide shadow-sm shadow-emerald-950/10 hover:shadow-md transition-all duration-200"
               >
-                <span>Book Appointment Online</span>
+                <MessageCircle className="w-4 h-4 fill-current mr-2" />
+                <span>Book on WhatsApp</span>
                 <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+              </a>
             </div>
           </div>
 

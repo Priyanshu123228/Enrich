@@ -1,22 +1,24 @@
-import { useLocation, Link } from 'react-router-dom';
-import { Phone, Calendar } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Phone, MessageCircle } from 'lucide-react';
 import { SALON_CONFIG } from '../../config/salonConfig';
 import { trackContactAction } from '../../utils/analytics';
 
 /**
  * MobileQuickActionBar
  * 
- * Compact, useful sticky bottom bar for mobile/phone screens.
- * Provides direct access to [Call Salon] and [Book Appointment]
- * with zero clutter and respects safe areas.
+ * Compact, useful sticky bottom bar for mobile screens.
+ * Provides direct access to:
+ * 1. [Call Salon]
+ * 2. [Book on WhatsApp]
+ * 
+ * No online calendar, no complicated date/slot selection.
  */
 export default function MobileQuickActionBar() {
   const location = useLocation();
 
-  // Hide on admin console, customer dashboard, booking wizard itself, and auth screens
-  const hiddenPrefixes = ['/admin', '/dashboard', '/my-appointments', '/profile'];
+  // Hide on admin console, customer dashboard, and auth screens
+  const hiddenPrefixes = ['/admin', '/dashboard', '/profile'];
   const hiddenExact = [
-    '/book',
     '/login',
     '/signup',
     '/register',
@@ -37,6 +39,7 @@ export default function MobileQuickActionBar() {
   };
 
   const phoneTel = SALON_CONFIG?.contact?.phoneTel || 'tel:+919667900313';
+  const whatsappUrl = 'https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment.';
 
   return (
     <aside
@@ -56,16 +59,18 @@ export default function MobileQuickActionBar() {
           <span>Call Salon</span>
         </a>
 
-        {/* 2. Book Now Action - Consistent Primary Brand Style */}
-        <Link
-          to="/book"
-          className="flex-[1.4] inline-flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-bold text-xs text-white bg-rose-700 hover:bg-rose-800 active:bg-rose-900 shadow-sm transition-all touch-manipulation select-none"
-          title="Book Salon Appointment Online"
-          aria-label="Book Salon Appointment"
+        {/* 2. ONLY ONE BOOKING OPTION: Book on WhatsApp */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-[1.5] inline-flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-bold text-xs text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 shadow-sm transition-all touch-manipulation select-none"
+          title="Book Salon Appointment on WhatsApp"
+          aria-label="Book on WhatsApp"
         >
-          <Calendar className="w-4 h-4 text-white shrink-0" />
-          <span>Book Appointment</span>
-        </Link>
+          <MessageCircle className="w-4 h-4 fill-current shrink-0" />
+          <span>Book on WhatsApp</span>
+        </a>
       </div>
     </aside>
   );

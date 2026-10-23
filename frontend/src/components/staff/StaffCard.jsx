@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { resolveImageUrl, handleImageError, DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageUrl';
-import { Star, Award, Scissors, ArrowRight, Calendar } from 'lucide-react';
+import { Star, Award, Scissors, ArrowRight, MessageCircle } from 'lucide-react';
 
 export default function StaffCard({ staff }) {
   const rawAvatar = staff.avatar?.url || (typeof staff.avatar === 'string' ? staff.avatar : '') || '';
@@ -103,13 +103,17 @@ export default function StaffCard({ staff }) {
           >
             <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link
-            to={`/staff/${staff._id}`}
-            className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold"
+          <a
+            href={`https://wa.me/919667900313?text=${encodeURIComponent(
+              `Hi Enrich Salon, I would like to book an appointment with ${staff.name || 'a specialist'}.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
           >
-            <Calendar className="w-3.5 h-3.5 mr-1.5 text-rose-300" />
-            Book
-          </Link>
+            <MessageCircle className="w-3.5 h-3.5 fill-current" />
+            Book on WhatsApp
+          </a>
         </div>
       </div>
 

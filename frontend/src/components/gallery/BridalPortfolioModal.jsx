@@ -6,7 +6,6 @@ import {
   Eye,
   ExternalLink,
   MessageCircle,
-  Calendar,
   ShieldCheck,
   ChevronRight,
   Heart
@@ -414,14 +413,16 @@ export default function BridalPortfolioModal({ isOpen, onClose }) {
                 <ChevronRight className="w-3.5 h-3.5" />
               </Link>
 
-              <Link
-                to="/book?service=Bridal"
+              <a
+                href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20want%20to%20book%20a%20bridal%20consultation."
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={onClose}
-                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold shadow-xs transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs transition-colors"
               >
-                <Calendar className="w-3.5 h-3.5" />
-                <span>Book Bridal Consultation</span>
-              </Link>
+                <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                <span>Book Bridal Consultation on WhatsApp</span>
+              </a>
             </div>
           </div>
 

@@ -247,26 +247,19 @@ export default function Offers() {
                   </div>
                 </div>
 
-                {/* Card Action Buttons: Book Online & WhatsApp Claim */}
-                <div className="p-4 sm:p-5 pt-0 flex items-center gap-2">
-                  <Link
-                    to={`/book?promo=${offer.code}`}
-                    className="flex-1 inline-flex items-center justify-center py-2.5 px-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs shadow-xs transition-colors"
-                  >
-                    <span>Book Offer</span>
-                  </Link>
-
+                {/* Card Action Button: Single Direct WhatsApp Booking */}
+                <div className="p-4 sm:p-5 pt-0">
                   <a
                     href={`https://wa.me/919667900313?text=${encodeURIComponent(
-                      `Hi Enrich Salon, I want to book an appointment with offer "${offer.title}" (Code: ${offer.code}).`
+                      `Hi Enrich Salon, I would like to book an appointment with offer "${offer.title}" (Promo Code: ${offer.code}).`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200 transition-colors"
-                    title="Claim offer on WhatsApp"
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
+                    title="Book this offer on WhatsApp"
                   >
-                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-current" />
-                    <span>WhatsApp</span>
+                    <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                    <span>Book Offer on WhatsApp</span>
                   </a>
                 </div>
 

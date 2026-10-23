@@ -18,7 +18,6 @@ import GoogleReviews from '../components/GoogleReviews';
 import HomeReelsSection from '../components/HomeReelsSection';
 import { CardSkeleton } from '../components/common/SkeletonLoader';
 import {
-  Calendar,
   Lock,
   ShieldCheck,
   CheckCircle,
@@ -365,9 +364,11 @@ export default function Home() {
                 </a>
 
                 {/* Emergency Slot / Today's Availability Urgency Ticker */}
-                <Link
-                  to="/book"
-                  title="Book one of today's remaining appointment slots"
+                <a
+                  href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20want%20to%20check%20today%27s%20available%20appointment%20slots."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Inquire about today's remaining slots on WhatsApp"
                   className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-200/90 text-rose-900 text-xs font-bold tracking-wide transition-all shadow-2xs group cursor-pointer"
                 >
                   <span className="relative flex h-2 w-2">
@@ -376,7 +377,7 @@ export default function Home() {
                   </span>
                   <span>Today's Availability: <span className="underline decoration-rose-300 underline-offset-2">Only 3 slots left</span></span>
                   <ArrowRight className="w-3 h-3 text-rose-600 group-hover:translate-x-0.5 transition-transform shrink-0" />
-                </Link>
+                </a>
               </div>
 
               {/* Main Heading */}
@@ -394,14 +395,16 @@ export default function Home() {
 
               {/* Clean Primary Actions */}
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
-                <Link
-                  to="/book"
+                <a
+                  href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+                  target="_blank"
+                  rel="noopener noreferrer"
                   id="hero-book-cta"
-                  className="btn-rose w-full sm:w-auto px-8 py-3.5 text-sm font-bold shadow-md shadow-rose-950/15"
+                  className="btn-rose w-full sm:w-auto px-8 py-3.5 text-sm font-bold shadow-md shadow-rose-950/15 inline-flex items-center justify-center gap-2"
                 >
-                  <Calendar className="w-4 h-4 mr-2 text-rose-200" />
-                  Book Appointment
-                </Link>
+                  <MessageCircle className="w-4 h-4 fill-current" />
+                  <span>Book on WhatsApp</span>
+                </a>
 
                 <a
                   href="#services"
@@ -457,26 +460,28 @@ export default function Home() {
                     <span className="text-stone-500 text-[11px]">510+ Verified Client Reviews</span>
                   </div>
 
-                  {/* 1-Tap Service Deep Link Category Chips */}
+                  {/* 1-Tap Direct WhatsApp Category Chips */}
                   <div className="flex flex-wrap items-center justify-center gap-2">
                     {[
-                      { label: 'Royal Bridal', cat: 'Bridal', link: '/services?category=Bridal', bookLink: '/book?service=Bridal', icon: Sparkles },
-                      { label: 'Hydrafacial & Skin', cat: 'Skin', link: '/services?category=Skin', bookLink: '/book?service=Skin', icon: Sparkle },
-                      { label: 'Balayage & Hair', cat: 'Hair', link: '/services?category=Hair', bookLink: '/book?service=Hair', icon: Scissors },
-                      { label: 'Nail Atelier', cat: 'Nails', link: '/services?category=Nails', bookLink: '/book?service=Nails', icon: Star }
+                      { label: 'Royal Bridal', text: 'Hi Enrich Salon, I would like to book a Royal Bridal appointment.', icon: Sparkles },
+                      { label: 'Hydrafacial & Skin', text: 'Hi Enrich Salon, I would like to book a Skin/Hydrafacial appointment.', icon: Sparkle },
+                      { label: 'Balayage & Hair', text: 'Hi Enrich Salon, I would like to book a Hair/Balayage appointment.', icon: Scissors },
+                      { label: 'Nail Atelier', text: 'Hi Enrich Salon, I would like to book a Nail appointment.', icon: Star }
                     ].map((item) => {
                       const Icon = item.icon;
                       return (
-                        <Link
+                        <a
                           key={item.label}
-                          to={item.bookLink}
-                          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-rose-50 text-stone-800 hover:text-rose-800 border border-stone-200/90 hover:border-rose-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
-                          title={`Book ${item.label} appointment`}
+                          href={`https://wa.me/919667900313?text=${encodeURIComponent(item.text)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-full bg-white/95 hover:bg-emerald-50 text-stone-800 hover:text-emerald-800 border border-stone-200/90 hover:border-emerald-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
+                          title={`Book ${item.label} on WhatsApp`}
                         >
-                          <Icon className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition-transform" />
+                          <Icon className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
                           <span>{item.label}</span>
-                          <span className="text-[10px] text-rose-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                        </Link>
+                          <span className="text-[10px] text-emerald-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                        </a>
                       );
                     })}
                   </div>
@@ -966,13 +971,7 @@ export default function Home() {
             <span>View Bridal Portfolio</span>
           </button>
 
-          <Link
-            to="/book?service=Bridal"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200 transition-colors"
-          >
-            <Calendar className="w-4 h-4 text-stone-500" />
-            <span>Book Online</span>
-          </Link>
+
         </div>
 
         {/* Collapsible Additional Details Section */}
@@ -1171,13 +1170,15 @@ export default function Home() {
           </div>
 
           <div className="pt-2 flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-            <Link
-              to="/book"
+            <a
+              href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-8 py-4 rounded-2xl text-xs sm:text-sm font-bold text-rose-950 bg-white hover:bg-rose-50 transition-all shadow-xl hover:shadow-2xl cursor-pointer active:scale-95"
             >
-              <Calendar className="w-4 h-4 mr-2 text-rose-700" />
-              Book Appointment Online
-            </Link>
+              <MessageCircle className="w-4 h-4 mr-2 text-emerald-600 fill-current" />
+              Book on WhatsApp
+            </a>
             <Link
               to="/contact"
               className="inline-flex items-center justify-center px-7 py-4 rounded-2xl text-xs sm:text-sm font-bold text-white bg-white/10 hover:bg-white/20 border border-white/25 backdrop-blur-xs transition-all cursor-pointer active:scale-95"

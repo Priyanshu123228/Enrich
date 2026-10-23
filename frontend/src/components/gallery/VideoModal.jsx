@@ -479,19 +479,22 @@ export default function VideoModal({
             </span>
           </div>
 
-          {/* BOOK THIS LOOK */}
+          {/* BOOK THIS LOOK ON WHATSAPP */}
           <div className="flex flex-col items-center">
-            <Link
-              to="/booking"
-              onClick={onClose}
-              aria-label="Book appointment for this look"
-              title="Book this style"
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-rose-700 hover:bg-rose-600 text-white border border-rose-500 shadow-xl flex items-center justify-center backdrop-blur-md transition-all active:scale-90 cursor-pointer"
+            <a
+              href={`https://wa.me/919667900313?text=${encodeURIComponent(
+                `Hi Enrich Salon, I saw this look/reel "${currentVideo.title || 'Studio Video'}" on your website and would like to book an appointment.`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Book appointment for this look on WhatsApp"
+              title="Book on WhatsApp"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 shadow-xl flex items-center justify-center backdrop-blur-md transition-all active:scale-90 cursor-pointer"
             >
-              <Calendar className="w-5 h-5" />
-            </Link>
-            <span className="text-[10px] font-bold text-rose-300 mt-1 drop-shadow-md">
-              Book
+              <MessageCircle className="w-5 h-5 fill-current" />
+            </a>
+            <span className="text-[10px] font-bold text-emerald-300 mt-1 drop-shadow-md">
+              WhatsApp
             </span>
           </div>
 
@@ -547,14 +550,17 @@ export default function VideoModal({
 
           {/* Action CTA Bar */}
           <div className="pt-1 flex items-center gap-2">
-            <Link
-              to="/booking"
-              onClick={onClose}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-rose-700 hover:bg-rose-600 text-white text-[11px] font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95"
+            <a
+              href={`https://wa.me/919667900313?text=${encodeURIComponent(
+                `Hi Enrich Salon, I saw this look/reel "${currentVideo.title || 'Studio Video'}" on your website and would like to book an appointment.`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold uppercase tracking-wider transition-all shadow-lg active:scale-95"
             >
-              <span>Book Appointment</span>
-              <ArrowRight className="w-3 h-3" />
-            </Link>
+              <MessageCircle className="w-3.5 h-3.5 fill-current" />
+              <span>Book on WhatsApp</span>
+            </a>
           </div>
         </div>
 

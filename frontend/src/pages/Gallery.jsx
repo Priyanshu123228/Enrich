@@ -20,7 +20,6 @@ import {
   Star,
   ArrowRight,
   MessageCircle,
-  Calendar,
   Image as ImageIcon,
   CheckCircle2,
   ExternalLink,
@@ -327,13 +326,15 @@ export default function Gallery() {
                     <MessageCircle className="w-4 h-4 fill-current" />
                     <span>Inquire Wedding Dates on WhatsApp</span>
                   </a>
-                  <Link
-                    to="/book?service=Bridal"
+                  <a
+                    href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20am%20viewing%20your%20Royal%20Bridal%20Portfolio%20and%20want%20to%20reserve%20wedding%20dates."
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer"
                   >
-                    <Calendar className="w-4 h-4 text-rose-300" />
-                    <span>Book Bridal Trial Consultation</span>
-                  </Link>
+                    <MessageCircle className="w-4 h-4 text-rose-300" />
+                    <span>Inquire Bridal Dates on WhatsApp</span>
+                  </a>
                 </div>
               </div>
             </section>
@@ -569,13 +570,15 @@ export default function Gallery() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
-              <Link
-                to={selectedType === 'bridal' ? '/book?service=Bridal' : '/book'}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold tracking-wider uppercase transition-colors shadow-xs"
+              <a
+                href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold tracking-wider uppercase transition-colors shadow-xs"
               >
-                <Calendar className="w-4 h-4 mr-2" />
-                <span>{selectedType === 'bridal' ? 'BOOK BRIDAL CONSULTATION' : 'BOOK AN APPOINTMENT'}</span>
-              </Link>
+                <MessageCircle className="w-4 h-4 mr-2 fill-current" />
+                <span>BOOK ON WHATSAPP</span>
+              </a>
 
               <button
                 onClick={handleWhatsAppChat}

@@ -317,14 +317,7 @@ export default function ServiceDetail() {
                 Book on WhatsApp
               </a>
 
-              <Link
-                to={`/book?serviceId=${service._id}`}
-                state={{ preSelectedServiceId: service._id }}
-                className="w-full flex items-center justify-center py-2.5 px-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs border border-stone-300 transition-colors cursor-pointer"
-              >
-                <Calendar className="w-3.5 h-3.5 mr-2 text-rose-700" />
-                Book Online Calendar
-              </Link>
+
 
               <div className="grid grid-cols-2 gap-3">
                 <button

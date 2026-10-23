@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   Scissors,
+  MessageCircle,
   Menu,
   X,
   Calendar,
@@ -308,13 +309,16 @@ export default function Navbar() {
               </Link>
             )}
 
-            <Link
-              to="/book"
-              className="btn-primary px-5 py-2.5 rounded-lg whitespace-nowrap shadow-sm"
+            <a
+              href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary px-5 py-2.5 rounded-lg whitespace-nowrap shadow-sm inline-flex items-center gap-2"
+              title="Book Appointment on WhatsApp"
             >
-              <Calendar className="w-4 h-4 mr-2 text-rose-200" />
-              Book Appointment
-            </Link>
+              <MessageCircle className="w-4 h-4 fill-current shrink-0" />
+              <span>Book on WhatsApp</span>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -445,13 +449,15 @@ export default function Navbar() {
               </Link>
             )}
 
-            <Link
-              to="/book"
+            <a
+              href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={handleNavClick}
-              className="w-full text-center py-3.5 px-6 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-rose-700 to-rose-600 shadow-md shadow-rose-900/20"
+              className="w-full text-center py-3.5 px-6 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-md shadow-emerald-900/20"
             >
-              Book Appointment
-            </Link>
+              Book on WhatsApp
+            </a>
           </div>
         </div>
       )}

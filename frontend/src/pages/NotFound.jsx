@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Home, Scissors, Sparkles, Phone, ArrowLeft, Search, Calendar } from 'lucide-react';
+import { Home, Scissors, Sparkles, Phone, ArrowLeft, Search, MessageCircle } from 'lucide-react';
 import { SALON_CONFIG } from '../config/salonConfig';
 import SEO from '../components/common/SEO';
 
@@ -54,20 +54,22 @@ export default function NotFound() {
             </p>
           </Link>
 
-          <Link
-            to="/book"
-            className="p-4 rounded-2xl bg-white border border-stone-200 hover:border-rose-300 hover:shadow-md transition-all group"
+          <a
+            href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-4 rounded-2xl bg-white border border-stone-200 hover:border-emerald-300 hover:shadow-md transition-all group"
           >
             <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-              <Calendar className="w-4 h-4" />
+              <MessageCircle className="w-4 h-4 fill-current" />
             </div>
             <h3 className="font-serif font-bold text-sm text-stone-900 group-hover:text-emerald-700 transition-colors">
-              Book Visit
+              Book on WhatsApp
             </h3>
             <p className="text-[11px] text-stone-500 font-light mt-0.5">
-              Reserve styling session online
+              Quick 1-tap WhatsApp booking
             </p>
-          </Link>
+          </a>
 
           <Link
             to="/contact"
