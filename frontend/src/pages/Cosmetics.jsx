@@ -550,7 +550,7 @@ export default function Cosmetics() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
               {products.map((product) => {
                 const savings = product.originalPrice > product.price ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
@@ -602,7 +602,7 @@ export default function Cosmetics() {
                       </div>
 
                       {/* Product Content Details - Issue #9: Compact, scannable presentation */}
-                      <div className="p-5">
+                      <div className="p-3 sm:p-5 space-y-2">
                         {/* Issue #4: Standardized to text-xs font-semibold text-rose-700 */}
                         <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
                           <span className="text-xs tracking-wide font-semibold text-rose-700">

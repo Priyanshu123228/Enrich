@@ -54,7 +54,7 @@ export default function WhatsAppWidget() {
   };
 
   return (
-    <div className={`fixed ${isBookingPage ? 'bottom-24 sm:bottom-6' : 'bottom-20 sm:bottom-6'} right-4 sm:right-6 z-40 flex flex-col items-end`}>
+    <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] md:bottom-6 right-3 sm:right-6 z-30 flex flex-col items-end">
       
       {/* Interactive Popover Window */}
       {isOpen && (
@@ -141,7 +141,7 @@ export default function WhatsAppWidget() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Open WhatsApp chat with Enrich Salon"
-        className="group relative flex items-center gap-2.5 px-4 py-3 sm:px-5 sm:py-3.5 rounded-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-xl shadow-emerald-900/25 transition-all duration-300 hover:scale-105 active:scale-95"
+        className="group relative flex items-center gap-2.5 px-4 py-3 sm:px-5 sm:py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl shadow-emerald-900/25 transition-all duration-300 hover:scale-105 active:scale-95"
       >
         <span className="relative flex h-3 w-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-200 opacity-75"></span>

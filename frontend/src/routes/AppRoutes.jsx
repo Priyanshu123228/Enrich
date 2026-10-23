@@ -15,6 +15,7 @@ const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 const Gallery = lazy(() => import('../pages/Gallery'));
 const Offers = lazy(() => import('../pages/Offers'));
 const About = lazy(() => import('../pages/About'));
+const Bridal = lazy(() => import('../pages/Bridal'));
 const Contact = lazy(() => import('../pages/Contact'));
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
@@ -70,6 +71,7 @@ export default function AppRoutes() {
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
           <Route path="services" element={<Services />} />
+          <Route path="bridal" element={<Bridal />} />
           <Route path="services/:id" element={<ServiceDetail />} />
           <Route path="cosmetics" element={<Cosmetics />} />
           <Route path="cosmetics/:id" element={<ProductDetail />} />

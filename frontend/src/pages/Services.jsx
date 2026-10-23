@@ -1,21 +1,8 @@
 import SEO from '../components/common/SEO';
-import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { serviceService } from '../services/service.service';
 import ServiceCard from '../components/services/ServiceCard';
-import {
-  Search,
-  SlidersHorizontal,
-  AlertCircle,
-  Database,
-  ArrowUpDown,
-  Calendar,
-  Sparkles,
-  Plus,
-  ArrowRight,
-  Check,
-  X
-} from 'lucide-react';
+import { Search, SlidersHorizontal, AlertCircle, Database } from 'lucide-react';
 
 export default function Services() {
   const [services, setServices] = useState([]);
@@ -25,27 +12,13 @@ export default function Services() {
     { name: 'Skin', count: 0 },
     { name: 'Makeup', count: 0 },
     { name: 'Nails', count: 0 },
-    { name: 'Spa', count: 0 },
     { name: 'Bridal', count: 0 }
   ]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
   const [isLoading, setIsLoading] = useState(true);
   const [isSeeding, setIsSeeding] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [comboServices, setComboServices] = useState([]);
-
-  const toggleComboService = (service) => {
-    setComboServices((prev) => {
-      const exists = prev.some((s) => s._id === service._id);
-      if (exists) {
-        return prev.filter((s) => s._id !== service._id);
-      } else {
-        return [...prev, service];
-      }
-    });
-  };
 
   // Fetch Categories
   const fetchCategories = async () => {
@@ -67,8 +40,7 @@ export default function Services() {
     try {
       const params = {
         category: selectedCategory === 'All' ? undefined : selectedCategory,
-        search: searchQuery.trim() || undefined,
-        sortBy
+        search: searchQuery.trim() || undefined
       };
 
       const res = await serviceService.getServices(params);
@@ -89,10 +61,10 @@ export default function Services() {
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       fetchServices();
-    }, 300);
+    }, 250);
 
     return () => clearTimeout(delayDebounce);
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [selectedCategory, searchQuery]);
 
   // One-click Seed Sample Data
   const handleSeedData = async () => {
@@ -109,32 +81,27 @@ export default function Services() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
       <SEO
-        title="Salon & Cosmetic Clinic Services Menu | Enrich Sikar"
-        description="Explore our complete treatment menu: HD Bridal Makeup, Keratin Hair Spa, Hydrafacial, Skin Peels, Bleach & Waxing in Sikar, Rajasthan."
+        title="Beauty & Salon Services Menu | Enrich Sikar"
+        description="Browse hair styling, HD bridal makeup, hydrafacials, skin therapy, and nail art at Enrich Beauty Parlour in Sikar. Direct WhatsApp booking."
         url="/services"
       />
 
-      
-      {/* Page Header */}
-      <div className="text-center max-w-2xl mx-auto space-y-3">
-        <span className="text-xs font-bold tracking-widest text-rose-700 uppercase">
-          Service Menu & Pricing
-        </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
-          Salon Services
+      {/* Simplified, Short Header */}
+      <div className="text-center max-w-xl mx-auto space-y-1.5 pt-2">
+        <h1 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
+          Beauty Services
         </h1>
-        <p className="text-stone-600 text-sm sm:text-base">
-          Browse our hair, skin, makeup, nail, and bridal services. Each service is performed by our licensed team in Sikar, Rajasthan.
+        <p className="text-xs sm:text-sm text-stone-600 font-light">
+          Tap <strong>Book Now</strong> on any service to reserve directly on WhatsApp.
         </p>
       </div>
 
-      {/* Search & Sort Controls Bar */}
-      <div className="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-center">
-        
+      {/* Compact Search & Category Filter */}
+      <div className="space-y-3">
         {/* Search Input */}
-        <div className="relative w-full md:w-96">
+        <div className="relative max-w-md mx-auto">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
             <Search className="w-4 h-4" />
           </div>
@@ -142,180 +109,86 @@ export default function Services() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by treatment or service name..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-stone-300 focus:outline-rose-600 focus:border-rose-600 text-sm"
+            placeholder="Search hair, facial, bridal, nails..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white focus:outline-none focus:border-rose-700 text-xs sm:text-sm shadow-2xs"
           />
         </div>
 
-        {/* Sort & Action Controls */}
-        <div className="w-full md:w-auto flex flex-wrap items-center gap-3 justify-end">
-          <div className="flex items-center space-x-2 w-full sm:w-auto">
-            <ArrowUpDown className="w-4 h-4 text-stone-500 shrink-0" />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              aria-label="Sort services"
-              className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-xs font-medium text-stone-700 focus:outline-rose-600 cursor-pointer"
-            >
-              <option value="newest">Featured & Newest</option>
-              <option value="duration-asc">Duration: Shortest</option>
-              <option value="duration-desc">Duration: Longest</option>
-              <option value="rating">Highest Rated</option>
-            </select>
-          </div>
-
-          {services.length === 0 && !isLoading && (
+        {/* Category Filter Pills (Horizontal Scroll on Mobile) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none justify-start sm:justify-center">
+          {categories.map((cat) => (
             <button
-              onClick={handleSeedData}
-              disabled={isSeeding}
-              className="inline-flex items-center px-4 py-2 rounded-lg text-xs font-semibold bg-stone-100 text-stone-800 hover:bg-stone-200 border border-stone-300 transition-colors cursor-pointer"
+              key={cat.name}
+              onClick={() => setSelectedCategory(cat.name)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
+                selectedCategory === cat.name
+                  ? 'bg-rose-700 text-white shadow-xs font-bold'
+                  : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-200'
+              }`}
             >
-              <Database className="w-3.5 h-3.5 mr-1.5" />
-              {isSeeding ? 'Populating...' : 'Seed Sample Catalog'}
+              <span>{cat.name}</span>
+              {cat.count > 0 && (
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                    selectedCategory === cat.name
+                      ? 'bg-rose-900 text-rose-100'
+                      : 'bg-stone-100 text-stone-600'
+                  }`}
+                >
+                  {cat.count}
+                </span>
+              )}
             </button>
-          )}
+          ))}
         </div>
-      </div>
-
-      {/* Category Tabs (Rectangular chips) */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none justify-start sm:justify-center">
-        {categories.map((cat) => (
-          <button
-            key={cat.name}
-            onClick={() => setSelectedCategory(cat.name)}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
-              selectedCategory === cat.name
-                ? 'bg-stone-900 text-white shadow-xs'
-                : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-200'
-            }`}
-          >
-            <span>{cat.name}</span>
-            {cat.count > 0 && (
-              <span
-                className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
-                  selectedCategory === cat.name
-                    ? 'bg-rose-700 text-white'
-                    : 'bg-stone-100 text-stone-600'
-                }`}
-              >
-                {cat.count}
-              </span>
-            )}
-          </button>
-        ))}
       </div>
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center space-x-2">
-          <AlertCircle className="w-5 h-5 text-rose-700 shrink-0" />
+        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 text-rose-700 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-{/* Sticky Multi-Service Combo Drawer (Mobile-Optimized Floating Tray) */}
-      {comboServices.length > 0 && (
-        <aside
-          aria-label="Multi-Service Combo Selection"
-          className="fixed bottom-16 md:bottom-6 left-0 right-0 z-40 px-3 sm:px-6 pointer-events-auto"
-        >
-          <div className="max-w-3xl mx-auto bg-stone-950 text-white rounded-2xl p-3.5 sm:p-4 shadow-2xl border border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="w-10 h-10 rounded-xl bg-rose-600/90 text-white flex items-center justify-center shrink-0 shadow-xs">
-                <Sparkles className="w-5 h-5 text-rose-100" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-white">
-                    {comboServices.length} {comboServices.length === 1 ? 'Treatment' : 'Treatments'} in Combo
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-900/90 text-rose-200 font-bold border border-rose-700/60">
-                    Combo Bundle
-                  </span>
-                </div>
-                <p className="text-xs text-stone-300 font-light truncate">
-                  {comboServices.map((s) => s.name).join(' • ')}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-t-0 border-stone-800/80 pt-2.5 sm:pt-0">
-              <div className="text-left sm:text-right">
-                <div className="text-sm font-semibold text-rose-300">
-                  {comboServices.reduce((sum, s) => sum + (s.duration || 30), 0)} mins total
-                </div>
-                <div className="text-[10px] text-stone-400">
-                  All services included
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setComboServices([])}
-                  className="text-xs text-stone-400 hover:text-white px-2.5 py-2 rounded-lg border border-stone-800 hover:border-stone-700 transition-colors cursor-pointer"
-                >
-                  Clear
-                </button>
-
-                <Link
-                  to={`/book?serviceId=${comboServices[0]._id}&combo=${encodeURIComponent(comboServices.map(s => s.name).join(' + '))}`}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md shadow-rose-950/30 transition-transform active:scale-95 whitespace-nowrap cursor-pointer"
-                >
-                  <Calendar className="w-3.5 h-3.5 text-rose-200" />
-                  <span>Book Combo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </aside>
-      )}
-
-      {/* Services Grid */}
+      {/* Services Grid: Compact 2-Column on Mobile, 3 on Tablet, 4 on Desktop */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-xl border border-stone-200 p-6 h-96 animate-pulse flex flex-col justify-between"
+              className="bg-white rounded-2xl border border-stone-200 p-3 h-56 animate-pulse flex flex-col justify-between"
             >
-              <div className="space-y-4">
-                <div className="h-44 bg-stone-200 rounded-lg w-full" />
-                <div className="h-5 bg-stone-200 rounded w-3/4" />
-                <div className="h-4 bg-stone-200 rounded w-full" />
+              <div className="h-32 bg-stone-200 rounded-xl w-full" />
+              <div className="space-y-1.5">
+                <div className="h-3.5 bg-stone-200 rounded w-3/4" />
+                <div className="h-7 bg-stone-200 rounded-lg w-full" />
               </div>
-              <div className="h-10 bg-stone-200 rounded-lg w-full" />
             </div>
           ))}
         </div>
       ) : services.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {services.map((service) => (
-            <ServiceCard
-              key={service._id}
-              service={service}
-              isComboSelected={comboServices.some((s) => s._id === service._id)}
-              onToggleCombo={toggleComboService}
-            />
+            <ServiceCard key={service._id} service={service} />
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-stone-200 p-12 text-center space-y-4 max-w-lg mx-auto">
-          <div className="w-12 h-12 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center mx-auto">
-            <SlidersHorizontal className="w-6 h-6" />
+        <div className="bg-white rounded-2xl border border-stone-200 p-8 sm:p-12 text-center space-y-3 max-w-md mx-auto">
+          <div className="w-10 h-10 rounded-xl bg-stone-100 text-stone-700 flex items-center justify-center mx-auto">
+            <SlidersHorizontal className="w-5 h-5" />
           </div>
-          <h3 className="text-xl font-serif font-bold text-stone-900">No Services Found</h3>
-          <p className="text-xs text-stone-600">
-            We could not find any services matching "{searchQuery || selectedCategory}". Try selecting another category or click below to seed starter services.
+          <h3 className="text-base font-bold text-stone-900">No Services Found</h3>
+          <p className="text-xs text-stone-500">
+            No treatments found for "{searchQuery || selectedCategory}".
           </p>
           <button
             onClick={handleSeedData}
             disabled={isSeeding}
-            className="inline-flex items-center px-6 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs shadow-sm transition-colors cursor-pointer"
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
           >
-            <Database className="w-4 h-4 mr-2 text-rose-300" />
-            {isSeeding ? 'Populating Sample Catalog...' : 'Seed Sample Catalog Now'}
+            <Database className="w-3.5 h-3.5 mr-1.5" />
+            <span>{isSeeding ? 'Loading...' : 'Populate Catalog'}</span>
           </button>
         </div>
       )}

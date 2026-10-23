@@ -8,6 +8,7 @@ import { offerService } from '../services/offer.service';
 import { reviewService } from '../services/review.service';
 import { mediaService } from '../services/media.service';
 import { SALON_CONFIG } from '../config/salonConfig';
+import ServiceCard from '../components/services/ServiceCard';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import BridalPortfolioModal from '../components/gallery/BridalPortfolioModal';
 import VideoModal from '../components/gallery/VideoModal';
@@ -63,6 +64,7 @@ function WhatsAppIcon({ className = "w-5 h-5" }) {
 
 export default function Home() {
   const [isBridalModalOpen, setIsBridalModalOpen] = useState(false);
+  const [isBridalDetailsOpen, setIsBridalDetailsOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   // ---------------------------------------------------------------------------
   // Data States
@@ -339,8 +341,7 @@ export default function Home() {
           ========================================================================= */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#FDFBF7] via-[#FAF5EE] to-[#F5EFEB] text-stone-900 py-10 sm:py-16 lg:py-18 border-b border-stone-200/90">
         {/* Soft Ambient Radial Lights */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-rose-200/35 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 -right-32 w-[30rem] h-[30rem] bg-amber-200/25 rounded-full blur-3xl pointer-events-none" />
+        
         <div className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#1c1917_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -704,91 +705,18 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Service Cards Grid */}
+        {/* Service Cards Grid: Compact 2-column on mobile, image-first */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {[1, 2, 3, 4].map((n) => (
               <CardSkeleton key={n} />
             ))}
           </div>
         ) : filteredServices.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredServices.map((service, idx) => {
-                            const imageUrl =
-                service.images?.[0]?.url ||
-                service.image ||
-                'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
-
-              return (
-                <div
-                  key={service._id || idx}
-                  className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
-                >
-                  <div>
-                    {/* Card Image */}
-                    <div className="relative h-48 w-full overflow-hidden bg-stone-100">
-                      <img
-                        src={imageUrl}
-                        alt={service.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80';
-                        }}
-                      />
-                      <div className="absolute top-3 left-3">
-                        <span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-white/95 text-stone-900 shadow-xs border border-stone-200/60 backdrop-blur-xs">
-                          {service.category || 'Specialty'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-5 space-y-2">
-                      <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
-                        <span className="flex items-center">
-                          <Clock className="w-3.5 h-3.5 mr-1 text-stone-400" />
-                          {service.duration || 45} mins
-                        </span>
-                        <span className="text-[11px] font-medium text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
-                          Salon Service
-                        </span>
-                      </div>
-
-                      <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-rose-700 transition-colors line-clamp-1">
-                        {service.name}
-                      </h3>
-
-                      <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed font-light">
-                        {service.description || 'High-standard aesthetic service performed by certified beauticians.'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card Footer CTA */}
-                  <div className="p-5 pt-0 border-t border-stone-100 mt-2 space-y-2">
-                    <a
-                      href={`https://wa.me/919667900313?text=${encodeURIComponent(
-                        `Hi Enrich Salon, I would like to book an appointment for "${service.name}". Please let me know available slots.`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-xs transition-all duration-200 mt-2.5"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      <span>Book on WhatsApp</span>
-                    </a>
-                    <Link
-                      to={`/book?service=${service._id || encodeURIComponent(service.name)}`}
-                      className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 text-[11px] font-medium rounded-lg text-stone-600 hover:text-stone-900 bg-stone-50 hover:bg-stone-100 border border-stone-200/80 transition-colors"
-                    >
-                      <Calendar className="w-3 h-3 text-rose-600" />
-                      <span>Or Book Online Calendar</span>
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+            {filteredServices.map((service) => (
+              <ServiceCard key={service._id} service={service} />
+            ))}
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-stone-200 p-8 text-center max-w-md mx-auto space-y-3 shadow-xs">
@@ -978,286 +906,117 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          SECTION 5: SIGNATURE BRIDAL ATELIER (COUTURE MAKEOVER SHOWCASE)
+          SECTION 5: SIMPLIFIED BRIDAL SECTION (IMAGE-FIRST, DIRECT BOOKING)
           ========================================================================= */}
-      <section id="bridal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-16">
-        <div className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5ECE1] rounded-3xl border border-rose-200/60 p-6 sm:p-10 lg:p-14 shadow-xl shadow-stone-900/5 relative overflow-hidden space-y-10">
-
-          {/* Decorative Warm Ambient Glows */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-rose-200/30 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-100/40 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
-
-          {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto space-y-4 relative z-10">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest text-rose-800 uppercase bg-rose-50 border border-rose-200/80 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-rose-600" />
-              The Royal Bridal Experience • Enrich Sikar
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
-              Timeless Elegance For Your Once-in-a-Lifetime Celebration
-            </h2>
-            <p className="text-stone-600 text-xs sm:text-sm md:text-base leading-relaxed font-light">
-              Crafted under the personal direction of Lead Cosmetologist <strong>Anu Saini</strong>, our bridal atelier unites high-definition waterproof cosmetics, heritage Rajasthani draping, and clinical skin-prep rituals to make you radiate pure royalty.
-            </p>
-          </div>
-
-          {/* 3 Bridal Pillars Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 relative z-10">
-
-            {/* Pillar 1: Signature HD Airbrush */}
-            <div className="group bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
-              <div>
-                <div className="relative aspect-[4/3] overflow-hidden bg-stone-900">
-                  <img
-                    src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792227018/enrich/direct_uploads/vyyui5c3eyspxjmmrncu.jpg"
-                    alt="Signature HD Airbrush Bridal Makeup"
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-rose-600 text-white shadow-md">
-                    Signature Makeover
-                  </span>
-                </div>
-
-                <div className="p-6 space-y-3">
-                  <h3 className="text-lg font-serif font-bold text-stone-900 leading-snug">
-                    HD Airbrush Bridal Glam
-                  </h3>
-                  <p className="text-xs text-stone-600 leading-relaxed font-light">
-                    Micro-fine airbrush application that creates a featherlight, poreless, 18-hour waterproof finish built for high-definition wedding photography and tear-resistant longevity.
-                  </p>
-
-                  <ul className="space-y-1.5 pt-2 text-xs text-stone-700">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>MAC, Huda Beauty &amp; Charlotte Tilbury</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>3D Silk Lash Extensions &amp; Brow Sculpting</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>18-Hour Transfer-Resistant Formulation</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <a
-                  href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20inquire%20about%20the%20Signature%20HD%20Airbrush%20Bridal%20Package."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-stone-100 group-hover:bg-rose-700 text-stone-800 group-hover:text-white text-xs font-semibold transition-colors duration-200"
-                >
-                  <WhatsAppIcon className="w-4 h-4 fill-current" />
-                  <span>Inquire for Wedding Dates</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Pillar 2: Royal Rajasthani & Shekhawati Artistry */}
-            <div className="group bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
-              <div>
-                <div className="relative aspect-[4/3] overflow-hidden bg-stone-900">
-                  <img
-                    src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792227121/enrich/direct_uploads/g85tb2zulgvdbzfubmec.jpg"
-                    alt="Royal Rajasthani Bridal Artistry"
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-600 text-white shadow-md">
-                    Heritage Royal
-                  </span>
-                </div>
-
-                <div className="p-6 space-y-3">
-                  <h3 className="text-lg font-serif font-bold text-stone-900 leading-snug">
-                    Royal Heritage &amp; Phera Artistry
-                  </h3>
-                  <p className="text-xs text-stone-600 leading-relaxed font-light">
-                    Specialized in regal Rajasthani bridal styling with authentic Borla, Mathapatti, and Nath setting, intricate crown hair braiding, and couture double-dupatta pleating.
-                  </p>
-
-                  <ul className="space-y-1.5 pt-2 text-xs text-stone-700">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>Authentic Borla, Kundan &amp; Nath Setting</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>Intricate Crown Braid with Fresh Florals</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>Double Dupatta &amp; Heavy Lehenga Draping</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <a
-                  href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20inquire%20about%20the%20Royal%20Rajasthani%20Bridal%20Package."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-stone-100 group-hover:bg-rose-700 text-stone-800 group-hover:text-white text-xs font-semibold transition-colors duration-200"
-                >
-                  <WhatsAppIcon className="w-4 h-4 fill-current" />
-                  <span>Inquire for Wedding Dates</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Pillar 3: Pre-Bridal Skin Transformation & Engagement Glam */}
-            <div className="group bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
-              <div>
-                <div className="relative aspect-[4/3] overflow-hidden bg-stone-900">
-                  <img
-                    src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792325848/enrich/direct_uploads/rwtxitnjispxjnyy2hqs.jpg"
-                    alt="Pre-Bridal Clinical Skincare & Engagement Makeover"
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-stone-900 text-white shadow-md">
-                    Complete Ritual
-                  </span>
-                </div>
-
-                <div className="p-6 space-y-3">
-                  <h3 className="text-lg font-serif font-bold text-stone-900 leading-snug">
-                    Pre-Bridal Clinical Skincare
-                  </h3>
-                  <p className="text-xs text-stone-600 leading-relaxed font-light">
-                    A customized 30-day pre-bridal transformation regimen combining clinical hydrafacials, body polishing, luxury manicure, and dewy engagement &amp; sangeet makeovers.
-                  </p>
-
-                  <ul className="space-y-1.5 pt-2 text-xs text-stone-700">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>Clinical Hydrafacial &amp; Glass Skin Infusion</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>Full Body Polishing &amp; Aromatherapy Care</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                      <span>Engagement, Sangeet &amp; Reception Looks</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0">
-                <a
-                  href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20inquire%20about%20the%20Pre-Bridal%20Skincare%20Package."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-stone-100 group-hover:bg-rose-700 text-stone-800 group-hover:text-white text-xs font-semibold transition-colors duration-200"
-                >
-                  <WhatsAppIcon className="w-4 h-4 fill-current" />
-                  <span>Inquire for Wedding Dates</span>
-                </a>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Bridal Standards & Reassurance Strip */}
-          <div className="bg-white/90 backdrop-blur-xs rounded-2xl border border-rose-200/80 p-6 sm:p-8 relative z-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
-                  <Award className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-serif font-bold text-stone-900">1-on-1 Bridal Trial</h4>
-                  <p className="text-xs text-stone-600 font-light mt-0.5">Pre-wedding consultation and veil placement trial.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-serif font-bold text-stone-900">Luxury Brands Only</h4>
-                  <p className="text-xs text-stone-600 font-light mt-0.5">100% authentic MAC, Kryolan, Huda Beauty &amp; NARS.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-serif font-bold text-stone-900">Hospital-Grade Hygiene</h4>
-                  <p className="text-xs text-stone-600 font-light mt-0.5">Sanitized brushes, disposable sponges, and sterile tools.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
-                  <HeartHandshake className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-serif font-bold text-stone-900">Private Bridal Suite</h4>
-                  <p className="text-xs text-stone-600 font-light mt-0.5">Tranquil, air-conditioned studio for peaceful preparation.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Callout Bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 relative z-10 border-t border-rose-200/60 pt-6">
-            <div className="space-y-1 text-center sm:text-left">
-              <p className="text-xs font-bold uppercase tracking-wider text-rose-800">
-                Planning Your Wedding Dates?
-              </p>
-              <p className="text-stone-600 text-xs sm:text-sm font-light">
-                Bridal dates fill fast during the wedding season in Sikar. Early booking recommended.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-center">
-              <a
-                href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20check%20availability%20for%20my%20wedding%20dates%20at%20Enrich%20Salon."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:-translate-y-0.5"
-              >
-                <WhatsAppIcon className="w-4 h-4 fill-current" />
-                <span>Chat with Anu Saini on WhatsApp</span>
-                <span className="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-              </a>
-
-              <button
-                type="button"
-                onClick={() => setIsBridalModalOpen(true)}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-rose-300 hover:border-rose-400 bg-rose-50 hover:bg-rose-100 text-rose-900 text-xs sm:text-sm font-bold transition-all shadow-sm hover:shadow-md cursor-pointer group"
-              >
-                <Camera className="w-4 h-4 text-rose-700 group-hover:scale-110 transition-transform" />
-                <span>View Bridal Portfolio</span>
-                <ArrowRight className="w-3.5 h-3.5 text-rose-700 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-
-              <Link
-                to="/gallery?category=Bridal"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-stone-300 hover:border-stone-400 bg-white hover:bg-stone-50 text-stone-700 text-xs sm:text-sm font-medium transition-all shadow-2xs group"
-                title="Open Dedicated Bridal Gallery Page"
-              >
-                <span>Full Bridal Gallery Page</span>
-                <ArrowRight className="w-3.5 h-3.5 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
-          </div>
-
+      <section id="bridal" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-16 space-y-6">
+        
+        {/* Simple Heading & Short Subtitle */}
+        <div className="text-center space-y-1.5">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
+            Bridal Makeup
+          </h2>
+          <p className="text-sm sm:text-base text-stone-600 font-light">
+            Your special day, your perfect look.
+          </p>
         </div>
+
+        {/* Beautiful, Large Bridal Photo Immediately */}
+        <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full rounded-3xl overflow-hidden shadow-lg bg-stone-900 border border-stone-200 group">
+          <img
+            src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792325848/enrich/direct_uploads/rwtxitnjispxjnyy2hqs.jpg"
+            alt="Royal Rajasthani Bridal Makeup by Anu Saini"
+            className="w-full h-full object-cover object-top group-hover:scale-102 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent pointer-events-none" />
+
+          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs">
+            <span className="font-semibold bg-stone-900/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+              Anu Saini • Enrich Sikar
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsBridalModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/95 hover:bg-white text-stone-900 font-bold transition-colors cursor-pointer shadow-sm"
+            >
+              <Camera className="w-3.5 h-3.5 text-rose-700" />
+              <span>View Photos</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Clear Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a
+            href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20want%20to%20book%20an%20appointment%20for%20Bridal%20Makeup%20at%20Enrich%20Sikar."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white bg-rose-700 hover:bg-rose-800 active:bg-rose-900 shadow-sm transition-all cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4 fill-current shrink-0" />
+            <span>Book Bridal Makeup</span>
+          </a>
+
+          <button
+            type="button"
+            onClick={() => setIsBridalModalOpen(true)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-stone-800 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors cursor-pointer"
+          >
+            <Camera className="w-4 h-4 text-rose-700" />
+            <span>View Bridal Portfolio</span>
+          </button>
+
+          <Link
+            to="/book?service=Bridal"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-stone-700 hover:text-stone-900 hover:bg-stone-50 border border-stone-200 transition-colors"
+          >
+            <Calendar className="w-4 h-4 text-stone-500" />
+            <span>Book Online</span>
+          </Link>
+        </div>
+
+        {/* Collapsible Additional Details Section */}
+        <div className="border border-stone-200 rounded-2xl overflow-hidden bg-white">
+          <button
+            type="button"
+            onClick={() => setIsBridalDetailsOpen(!isBridalDetailsOpen)}
+            className="w-full p-4 flex items-center justify-between text-left text-xs sm:text-sm font-bold text-stone-800 hover:bg-stone-50 transition-colors cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-rose-700" />
+              <span>What's Included in Bridal Packages</span>
+            </span>
+            <span className="text-xs text-rose-700 font-semibold">
+              {isBridalDetailsOpen ? 'Hide Details ▲' : 'Show Details ▼'}
+            </span>
+          </button>
+
+          {isBridalDetailsOpen && (
+            <div className="p-4 sm:p-6 border-t border-stone-100 bg-stone-50/50 space-y-3 text-xs sm:text-sm text-stone-700">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-1">
+                  <p className="font-bold text-stone-900">HD Airbrush Base</p>
+                  <p className="text-xs text-stone-600">18-hour waterproof & tear-resistant finish designed for HD wedding photography.</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-1">
+                  <p className="font-bold text-stone-900">Rajasthani Draping</p>
+                  <p className="text-xs text-stone-600">Traditional poshak, double-veil pinning, matha patti and royal jewelry styling.</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-1">
+                  <p className="font-bold text-stone-900">Pre-Bridal Glow</p>
+                  <p className="text-xs text-stone-600">Hydrafacial skin preparation, body polishing, and hair spa rituals.</p>
+                </div>
+              </div>
+
+              <div className="pt-2 text-center text-xs text-stone-500">
+                Personal consultation with Lead Cosmetologist Anu Saini included with all bookings.
+              </div>
+            </div>
+          )}
+        </div>
+
       </section>
 
 

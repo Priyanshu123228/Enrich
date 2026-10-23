@@ -161,6 +161,37 @@ export default function Contact() {
           <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-light">
             Have questions regarding our bridal packages, hydrafacials, or hair transformations? Our team in Sikar is ready to assist you.
           </p>
+
+          {/* Quick Direct Actions: Call, WhatsApp, Directions */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="tel:+919667900313"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold shadow-xs transition-colors"
+            >
+              <Phone className="w-4 h-4 text-rose-300" />
+              <span>Call +91 96679 00313</span>
+            </a>
+
+            <a
+              href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20have%20an%20inquiry%20regarding%20services%20and%20booking."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Chat on WhatsApp</span>
+            </a>
+
+            <a
+              href={SALON_CONFIG.location?.googleMapsUrl || "https://maps.google.com"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 text-xs font-bold shadow-xs transition-colors"
+            >
+              <MapPin className="w-4 h-4 text-rose-700" />
+              <span>Get Directions</span>
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

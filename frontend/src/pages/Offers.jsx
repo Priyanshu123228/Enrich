@@ -1,9 +1,14 @@
 import SEO from '../components/common/SEO';
-import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { offerService } from '../services/offer.service';
 import {
+  resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
+import {
+  useState, useEffect } from 'react';
+import {
+  Link } from 'react-router-dom';
+import {
+  offerService } from '../services/offer.service';
+import {
+  MessageCircle,
   Gift,
   Tag,
   Clock,
@@ -242,15 +247,27 @@ export default function Offers() {
                   </div>
                 </div>
 
-                {/* Card Action Button */}
-                <div className="p-5 pt-0">
+                {/* Card Action Buttons: Book Online & WhatsApp Claim */}
+                <div className="p-4 sm:p-5 pt-0 flex items-center gap-2">
                   <Link
                     to={`/book?promo=${offer.code}`}
-                    className="w-full flex items-center justify-center py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs shadow-xs transition-colors"
+                    className="flex-1 inline-flex items-center justify-center py-2.5 px-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs shadow-xs transition-colors"
                   >
-                    <span>Book With This Offer</span>
-                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    <span>Book Offer</span>
                   </Link>
+
+                  <a
+                    href={`https://wa.me/919667900313?text=${encodeURIComponent(
+                      `Hi Enrich Salon, I want to book an appointment with offer "${offer.title}" (Code: ${offer.code}).`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold border border-emerald-200 transition-colors"
+                    title="Claim offer on WhatsApp"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-current" />
+                    <span>WhatsApp</span>
+                  </a>
                 </div>
 
               </div>
