@@ -53,6 +53,14 @@ const ICON_MAP = {
   MapPin
 };
 
+function WhatsAppIcon({ className = "w-5 h-5" }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.971.53 1.77.813 2.796.813h.005c3.179 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.773-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.693.075-2.09-.493-1.637-.665-2.73-2.317-2.813-2.427-.082-.11-1.002-1.332-1.002-2.54 0-1.209.636-1.803.86-2.048.225-.246.491-.307.655-.307.164 0 .328.003.47.01.15.008.351-.057.55.421.205.492.697 1.701.758 1.824.061.123.102.266.02.43-.082.163-.123.266-.246.409-.123.143-.258.32-.369.43-.123.122-.251.255-.108.5.144.246.638 1.053 1.37 1.705.942.84 1.737 1.1 1.983 1.223.246.123.389.102.533-.061.143-.164.614-.716.778-.962.164-.246.327-.205.55-.123.224.082 1.413.666 1.659.789.245.123.409.184.47.287.062.102.062.593-.082.998zM12 2C6.477 2 2 6.477 2 12c0 1.891.526 3.66 1.438 5.168L2 22l4.98-1.306A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+    </svg>
+  );
+}
+
 export default function Home() {
   const { isAuthenticated } = useAuth();
   // ---------------------------------------------------------------------------
@@ -796,7 +804,7 @@ export default function Home() {
           </div>
         )}
       </section>
-      {/* =========================================================================
+            {/* =========================================================================
           SECTION 4: OWNER PROFILE & ABOUT ME (FOUNDER SPOTLIGHT)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -816,24 +824,39 @@ export default function Home() {
                     ownerProfile?.url || DEFAULT_AVATAR_PLACEHOLDER,
                     DEFAULT_AVATAR_PLACEHOLDER
                   )}
-                  alt={ownerProfile?.title || 'Enrich Salon Founder & Lead Cosmetologist'}
+                  alt={ownerProfile?.title || 'Anu Saini - Enrich Salon Founder & Lead Aesthetician'}
                   loading="lazy"
                   onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
                   className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                 />
 
+                {/* Top Editorial Distinction Badge */}
+                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-stone-950/75 backdrop-blur-md border border-white/20 text-white text-xs font-medium flex items-center gap-1.5 shadow-lg">
+                  <Award className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Master Cosmetologist</span>
+                </div>
+
                 {/* Gradient vignette for text contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/20 to-transparent" />
 
                 {/* Floating Aesthetic Seal Badge */}
-                <div className="absolute bottom-4 left-4 right-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-white/60 shadow-lg flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-md">
-                    <Sparkles className="w-5 h-5" />
+                <div className="absolute bottom-4 left-4 right-4 p-3.5 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-white/80 shadow-2xl shadow-stone-950/30 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 via-rose-500 to-rose-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-rose-500/20">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm sm:text-base font-serif font-bold text-stone-900 leading-snug truncate">
+                        Anu Saini
+                      </p>
+                      <p className="text-[11px] font-semibold text-rose-700 tracking-wider uppercase truncate">
+                        Founder &amp; Master Aesthetician
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-serif font-bold text-stone-900 truncate">
-                      Anu Saini
-                    </p>
+                  <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-semibold shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Verified Master
                   </div>
                 </div>
               </div>
@@ -852,9 +875,12 @@ export default function Home() {
                   {ownerProfile?.title || 'Crafting Confidence, Redefining Elegance'}
                 </h2>
 
-                <p className="text-xs sm:text-sm font-semibold tracking-wider text-rose-700 uppercase">
-                  Anu Saini • Founder & Lead Aesthetician
-                </p>
+                <div className="flex items-center gap-3">
+                  <div className="h-0.5 w-8 bg-gradient-to-r from-rose-600 to-amber-500 rounded-full" />
+                  <p className="text-xs sm:text-sm font-semibold tracking-wider text-rose-700 uppercase">
+                    Anu Saini • Founder &amp; Lead Aesthetician
+                  </p>
+                </div>
               </div>
 
               {/* Story Body */}
@@ -866,7 +892,7 @@ export default function Home() {
                 ) : (
                   <>
                     <p>
-                      Welcome to Enrich Beauty Parlour & Cosmetic Clinic. Founded with an unwavering commitment to combining modern hair design, high-definition bridal artistry, and clinical skincare precision, my mission has always been to elevate personal confidence.
+                      Welcome to Enrich Beauty Parlour &amp; Cosmetic Clinic. Founded with an unwavering commitment to combining modern hair design, high-definition bridal artistry, and clinical skincare precision, my mission has always been to elevate personal confidence.
                     </p>
                     <p>
                       Every treatment begins with a personal 1-on-1 assessment to understand your skin tone, hair integrity, and aesthetic aspirations. Under strict medical-grade hygiene and sterilization standards, our certified team delivers personalized beauty rituals that leave you glowing inside and out.
@@ -876,44 +902,72 @@ export default function Home() {
               </div>
 
               {/* Key Highlights / Badges */}
-              <div className="grid grid-cols-3 gap-3 pt-2">
-                <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 text-center">
-                  <span className="block font-serif font-bold text-lg sm:text-2xl text-stone-900">
+              <div className="grid grid-cols-3 gap-3 pt-1">
+                <div className="p-4 rounded-2xl bg-gradient-to-b from-stone-50 to-rose-50/25 border border-stone-200/80 hover:border-rose-300 hover:shadow-md transition-all duration-300 text-center group">
+                  <span className="block font-serif font-bold text-xl sm:text-3xl text-stone-900 group-hover:text-rose-700 transition-colors">
                     12+
                   </span>
-                  <span className="text-[10px] sm:text-xs text-stone-600 font-medium">
+                  <span className="text-[11px] sm:text-xs text-stone-600 font-medium">
                     Years Experience
                   </span>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 text-center">
-                  <span className="block font-serif font-bold text-lg sm:text-2xl text-stone-900">
+                <div className="p-4 rounded-2xl bg-gradient-to-b from-stone-50 to-rose-50/25 border border-stone-200/80 hover:border-rose-300 hover:shadow-md transition-all duration-300 text-center group">
+                  <span className="block font-serif font-bold text-xl sm:text-3xl text-stone-900 group-hover:text-rose-700 transition-colors">
                     5,000+
                   </span>
-                  <span className="text-[10px] sm:text-xs text-stone-600 font-medium">
+                  <span className="text-[11px] sm:text-xs text-stone-600 font-medium">
                     Happy Clients
                   </span>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 text-center">
-                  <span className="block font-serif font-bold text-lg sm:text-2xl text-stone-900">
+                <div className="p-4 rounded-2xl bg-gradient-to-b from-stone-50 to-rose-50/25 border border-stone-200/80 hover:border-rose-300 hover:shadow-md transition-all duration-300 text-center group">
+                  <span className="block font-serif font-bold text-xl sm:text-3xl text-stone-900 group-hover:text-rose-700 transition-colors">
                     100%
                   </span>
-                  <span className="text-[10px] sm:text-xs text-stone-600 font-medium">
+                  <span className="text-[11px] sm:text-xs text-stone-600 font-medium">
                     Certified Hygiene
                   </span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-wrap items-center gap-3">
+              {/* Action Buttons & Direct WhatsApp Consultation */}
+              <div className="pt-2 space-y-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <a
+                    href="https://wa.me/919667900313?text=Hi%20Anu%2C%20I%20would%20like%20to%20consult%20with%20you%20at%20Enrich%20Beauty%20Parlour."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-600/25 transition-all duration-200 hover:-translate-y-0.5"
+                  >
+                    <WhatsAppIcon className="w-5 h-5 fill-current" />
+                    <span>Chat with Anu Saini on WhatsApp</span>
+                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+                  </a>
 
-                <a
-                  href="https://wa.me/919667900313?text=Hi%20Anu%2C%20I%20would%20like%20to%20consult%20with%20you%20at%20Enrich%20Beauty%20Parlour."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs sm:text-sm font-medium transition-colors"
-                >
-                  Personal WhatsApp Chat
-                </a>
+                  <Link
+                    to="/gallery"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-stone-300 hover:border-rose-300 bg-white hover:bg-rose-50/40 text-stone-800 text-xs sm:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 shadow-2xs group"
+                  >
+                    <Camera className="w-4 h-4 text-rose-600" />
+                    <span>Explore Bridal Gallery</span>
+                    <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-rose-600 group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+                </div>
+
+                {/* Trust Badges Bar */}
+                <div className="flex flex-wrap items-center gap-y-2 gap-x-5 pt-1 text-[11px] sm:text-xs text-stone-500">
+                  <span className="inline-flex items-center gap-1.5 font-medium text-stone-600">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    Medical-Grade Sterilization
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 font-medium text-stone-600">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    Personal 1-on-1 Skin &amp; Hair Analysis
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 font-medium text-stone-600">
+                    <MapPin className="w-3.5 h-3.5 text-rose-600" />
+                    Piprali Road, Sikar
+                  </span>
+                </div>
               </div>
 
             </div>
@@ -921,8 +975,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* =========================================================================
+{/* =========================================================================
           SECTION 8: SOCIAL MEDIA SECTION (Follow Our Journey)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
