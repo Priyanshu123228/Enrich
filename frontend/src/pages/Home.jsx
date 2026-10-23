@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { serviceService } from '../services/service.service';
-import { staffService } from '../services/staff.service';
 import { offerService } from '../services/offer.service';
 import { reviewService } from '../services/review.service';
 import { mediaService } from '../services/media.service';
@@ -67,7 +66,6 @@ export default function Home() {
   // Data States
   // ---------------------------------------------------------------------------
   const [services, setServices] = useState([]);
-  const [staffList, setStaffList] = useState([]);
   const [offers, setOffers] = useState([]);
   const [mediaItems, setMediaItems] = useState({ photos: [], videos: [], transformations: [], all: [] });
 
@@ -95,7 +93,6 @@ export default function Home() {
 
         const [
           servicesRes,
-          staffRes,
           offersRes,
           mediaRes,
           heroRes,
@@ -103,7 +100,6 @@ export default function Home() {
           allVideosRes
         ] = await Promise.allSettled([
           serviceService.getAllServices({ limit: 50 }),
-          staffService.getStaff({ limit: 12 }),
           offerService.getActiveOffers(),
           mediaService.getFeaturedMedia(),
           mediaService.getHeroPhoto(),

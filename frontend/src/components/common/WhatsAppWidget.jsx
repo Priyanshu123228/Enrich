@@ -17,7 +17,7 @@ export default function WhatsAppWidget() {
   const location = useLocation();
 
   // Hide on admin and staff portals so it doesn't block operational UI
-  if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/staff')) {
+  if (location.pathname.startsWith('/admin')) {
     return null;
   }
 

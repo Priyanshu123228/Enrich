@@ -236,10 +236,7 @@ export default function MyAppointments() {
                   </h3>
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-stone-500 pt-1">
-                    <span className="flex items-center text-stone-700 font-medium">
-                      <Scissors className="w-3.5 h-3.5 mr-1 text-stone-500" />
-                      Stylist: {app.staff?.name}
-                    </span>
+
                     <span className="flex items-center">
                       <Calendar className="w-3.5 h-3.5 mr-1 text-stone-400" />
                       {app.date}

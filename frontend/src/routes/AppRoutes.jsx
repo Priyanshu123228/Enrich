@@ -12,8 +12,6 @@ const Services = lazy(() => import('../pages/Services'));
 const ServiceDetail = lazy(() => import('../pages/ServiceDetail'));
 const Cosmetics = lazy(() => import('../pages/Cosmetics'));
 const ProductDetail = lazy(() => import('../pages/ProductDetail'));
-const StaffList = lazy(() => import('../pages/StaffList'));
-const StaffDetail = lazy(() => import('../pages/StaffDetail'));
 const Gallery = lazy(() => import('../pages/Gallery'));
 const Offers = lazy(() => import('../pages/Offers'));
 const About = lazy(() => import('../pages/About'));
@@ -77,8 +75,8 @@ export default function AppRoutes() {
           <Route path="cosmetics/:id" element={<ProductDetail />} />
           <Route path="products" element={<Cosmetics />} />
           <Route path="products/:id" element={<ProductDetail />} />
-          <Route path="staff" element={<StaffList />} />
-          <Route path="staff/:id" element={<StaffDetail />} />
+          <Route path="staff" element={<Navigate to="/about" replace />} />
+          <Route path="staff/:id" element={<Navigate to="/about" replace />} />
           <Route path="gallery" element={<Gallery />} />
           <Route path="offers" element={<Offers />} />
           <Route path="about" element={<About />} />

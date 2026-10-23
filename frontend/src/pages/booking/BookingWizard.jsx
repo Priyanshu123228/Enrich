@@ -3,7 +3,6 @@ import { resolveImageUrl, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER 
 import { getTodayDateString, isSlotPassed } from '../../utils/dateUtils';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { serviceService } from '../../services/service.service';
-import { staffService } from '../../services/staff.service';
 import { slotService } from '../../services/slot.service';
 import { appointmentService } from '../../services/appointment.service';
 import { paymentService } from '../../services/payment.service';
@@ -70,7 +69,6 @@ export default function BookingWizard() {
 
   // Data states
   const [services, setServices] = useState([]);
-  const [staffMembers, setStaffMembers] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
 
   // Step 1 Filters
@@ -79,7 +77,7 @@ export default function BookingWizard() {
 
   // Selection states
   const [selectedService, setSelectedService] = useState(null);
-  const [selectedStaff, setSelectedStaff] = useState('any'); // 'any' or staff object
+  const selectedStaff = 'any';
   const [selectedDate, setSelectedDate] = useState(() => getTodayDateString());
   const [selectedSlot, setSelectedSlot] = useState('');
   const [notes, setNotes] = useState('');

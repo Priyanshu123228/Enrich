@@ -541,10 +541,7 @@ export default function CustomerDashboard() {
                             <h3 className="font-bold text-base font-serif text-stone-900 leading-snug">
                               {app.service?.name}
                             </h3>
-                            <p className="text-xs text-stone-600 flex items-center mt-1">
-                              <Scissors className="w-3.5 h-3.5 mr-1 text-stone-400" />
-                              Stylist: <strong>{app.staff?.name || 'Assigned Stylist'}</strong>
-                            </p>
+                            
                           </div>
                         </div>
 
@@ -650,7 +647,7 @@ export default function CustomerDashboard() {
                           </div>
                           <h4 className="font-bold text-base font-serif text-stone-900">{app.service?.name}</h4>
                           <p className="text-stone-500">
-                            Stylist: {app.staff?.name} • {app.date} at {app.startTime}
+                            {app.date} at {app.startTime}
                           </p>
                         </div>
                       </div>
@@ -792,7 +789,7 @@ export default function CustomerDashboard() {
                             #{app.bookingId} • {app.date}
                           </span>
                           <h5 className="font-bold text-stone-900 font-serif">{app.service?.name}</h5>
-                          <p className="text-stone-500 text-[11px]">with {app.staff?.name}</p>
+                          
                         </div>
 
                         <button
@@ -837,7 +834,7 @@ export default function CustomerDashboard() {
                       </p>
 
                       <div className="text-[11px] text-stone-400 flex justify-between pt-1 border-t border-stone-100">
-                        <span>Stylist: {rev.staff?.name || 'Stylist'}</span>
+                        
                         <span>{new Date(rev.date || rev.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
@@ -982,10 +979,7 @@ export default function CustomerDashboard() {
                 <span className="text-stone-500">Treatment:</span>
                 <span className="font-semibold text-stone-900">{detailModalApp.service?.name}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-stone-500">Stylist:</span>
-                <span className="font-semibold text-stone-900">{detailModalApp.staff?.name}</span>
-              </div>
+              
               <div className="flex justify-between">
                 <span className="text-stone-500">Scheduled:</span>
                 <span className="font-bold text-stone-900">
@@ -1157,7 +1151,7 @@ export default function CustomerDashboard() {
             <form onSubmit={handleReviewSubmit} className="space-y-4 text-xs">
               <div>
                 <p className="text-xs text-stone-500 mb-2">
-                  Treatment: <strong className="text-stone-900">{reviewModalApp.service?.name}</strong> with {reviewModalApp.staff?.name}
+                  Treatment: <strong className="text-stone-900">{reviewModalApp.service?.name}</strong> 
                 </p>
                 <label className="block font-semibold uppercase text-stone-700 mb-1.5">Rating (1 to 5 Stars)</label>
                 <div className="flex items-center space-x-2">
@@ -1187,7 +1181,7 @@ export default function CustomerDashboard() {
                   required
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
-                  placeholder="Share details about the service, stylist care, and results..."
+                  placeholder="Share details about the service, salon care, and results..."
                   className="w-full p-3 rounded-lg border border-stone-300 text-xs focus:outline-stone-500"
                 />
               </div>
