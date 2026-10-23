@@ -9,7 +9,6 @@ import { appointmentService } from '../../services/appointment.service';
 import { paymentService } from '../../services/payment.service';
 import { offerService } from '../../services/offer.service';
 import { authService } from '../../services/auth.service';
-import { loadRazorpayScript } from '../../utils/loadRazorpay';
 import { useAuth } from '../../context/AuthContext';
 import {
   schedule2HourReminder,
@@ -296,7 +295,7 @@ export default function BookingWizard() {
   }, []);
 
   // Payment states
-  const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' | 'counter'
+  const [paymentMethod, setPaymentMethod] = useState('counter'); // Pay at Salon
 
   // Handle Promo Code Validation
   const handleApplyPromo = async () => {
@@ -492,14 +491,14 @@ export default function BookingWizard() {
     setIsSubmitting(true);
 
     try {
-      // 1. Create Appointment Reservation
+      // Create Appointment Reservation (Pay at Salon Desk)
       const appRes = await appointmentService.createAppointment({
         serviceId: selectedService._id,
         staffId: selectedStaff === 'any' ? 'any' : selectedStaff._id,
         date: selectedDate,
         startTime: selectedSlot,
         notes,
-        promoCode: appliedOffer?.code
+        paymentMethod: 'counter'
       });
 
       const newApp = appRes?.data;
@@ -507,109 +506,10 @@ export default function BookingWizard() {
         throw new Error('Could not create appointment');
       }
 
-      // If user chose Pay at Counter / Salon
-      if (paymentMethod === 'counter') {
-        saveAndScheduleBooking(newApp);
-        setCurrentStep(4);
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 2. User chose Pay Online with Razorpay -> Create backend Razorpay Order
-      const orderRes = await paymentService.createOrder({
-        appointmentId: newApp._id
-      });
-
-      if (!orderRes?.data?.orderId) {
-        throw new Error('Failed to generate payment order');
-      }
-
-      const isLoaded = await loadRazorpayScript();
-      if (!isLoaded) {
-        throw new Error('Razorpay SDK failed to load. Please check your internet connection.');
-      }
-
-      const options = {
-        key: orderRes.data.keyId,
-        amount: orderRes.data.amount,
-        currency: orderRes.data.currency,
-        name: 'Enrich Ladies Beauty Parlor & Cosmetic Clinic',
-        description: `${selectedService.name} Booking Reservation`,
-        image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=200&q=80',
-        order_id: orderRes.data.orderId,
-        prefill: {
-          name: user?.name || guestName || orderRes.data.customer?.name || '',
-          email: user?.email || orderRes.data.customer?.email || '',
-          contact: user?.phone || guestPhone || orderRes.data.customer?.phone || ''
-        },
-        theme: {
-          color: '#1c1917'
-        },
-        handler: async (response) => {
-          setIsSubmitting(true);
-          try {
-            await paymentService.verifyPayment({
-              appointmentId: newApp._id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              paymentMethod: 'razorpay'
-            });
-
-            const paidApp = {
-              ...newApp,
-              paymentStatus: 'paid',
-              status: 'confirmed',
-              razorpayPaymentId: response.razorpay_payment_id
-            };
-            saveAndScheduleBooking(paidApp);
-            setCurrentStep(4);
-          } catch (verErr) {
-            setErrorMsg(verErr.message || 'Payment verification failed on server');
-            const failedApp = {
-              ...newApp,
-              paymentStatus: 'failed',
-              status: 'pending'
-            };
-            saveAndScheduleBooking(failedApp);
-            setCurrentStep(4);
-          } finally {
-            setIsSubmitting(false);
-          }
-        },
-        modal: {
-          ondismiss: async () => {
-            await paymentService.reportFailure({
-              appointmentId: newApp._id,
-              razorpay_order_id: orderRes.data.orderId,
-              error_description: 'Payment popup closed by customer'
-            });
-            const pendingApp = {
-              ...newApp,
-              paymentStatus: 'pending',
-              status: 'pending'
-            };
-            saveAndScheduleBooking(pendingApp);
-            setCurrentStep(4);
-            setIsSubmitting(false);
-          }
-        }
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', async (response) => {
-        await paymentService.reportFailure({
-          appointmentId: newApp._id,
-          razorpay_order_id: response.error?.metadata?.order_id || orderRes.data.orderId,
-          error_code: response.error?.code,
-          error_description: response.error?.description,
-          error_reason: response.error?.reason
-        });
-        setErrorMsg(`Payment failed: ${response.error?.description || 'Transaction unsuccessful'}`);
-        setIsSubmitting(false);
-      });
-
-      rzp.open();
+      saveAndScheduleBooking(newApp);
+      setCurrentStep(4);
+      setIsSubmitting(false);
+      return;
     } catch (err) {
       const isAuthErr = err.status === 401 || err.message?.toLowerCase().includes('token') || err.message?.toLowerCase().includes('unauthorized');
       const errorText = isAuthErr
@@ -1307,60 +1207,28 @@ export default function BookingWizard() {
                 )}
               </div>
 
-              {/* Payment Preference */}
+              {/* Payment Preference - Exclusively Pay at Salon */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
-                  Select Payment Preference *
+                  Payment Preference
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Option 1: Razorpay Online */}
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('online')}
-                    className={`p-3.5 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
-                      paymentMethod === 'online'
-                        ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
-                        : 'border-stone-200 bg-white hover:border-stone-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center space-x-2">
-                        <div className="p-1.5 rounded-md bg-stone-100 text-stone-800">
-                          <CreditCard className="w-4 h-4" />
-                        </div>
-                        <span className="font-bold text-xs text-stone-900">Pay Online</span>
-                      </div>
-                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-stone-200 text-stone-800">
-                        Razorpay
+                <div className="p-4 rounded-xl border border-stone-200 bg-stone-50 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2.5 rounded-xl bg-stone-900 text-white shrink-0 shadow-xs">
+                      <Building2 className="w-5 h-5 text-rose-300" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-xs sm:text-sm text-stone-900 block">
+                        Pay at Salon Reception
                       </span>
+                      <p className="text-[11px] text-stone-500 leading-snug">
+                        Pay via UPI, Cash, or Card at the front desk upon your visit
+                      </p>
                     </div>
-                    <p className="text-[11px] text-stone-500 leading-snug">
-                      UPI, Cards, NetBanking, Instant Refund
-                    </p>
-                  </button>
-
-                  {/* Option 2: Pay at Salon */}
-                  <button
-                    type="button"
-                    onClick={() => setPaymentMethod('counter')}
-                    className={`p-3.5 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
-                      paymentMethod === 'counter'
-                        ? 'border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900'
-                        : 'border-stone-200 bg-white hover:border-stone-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center space-x-2">
-                        <div className="p-1.5 rounded-md bg-stone-100 text-stone-800">
-                          <Building2 className="w-4 h-4" />
-                        </div>
-                        <span className="font-bold text-xs text-stone-900">Pay at Salon</span>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-stone-500 leading-snug">
-                      Pay via Cash or Card at front desk on visit
-                    </p>
-                  </button>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                    Pay on Visit
+                  </span>
                 </div>
               </div>
 
@@ -1403,12 +1271,12 @@ export default function BookingWizard() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {paymentMethod === 'online' ? 'Launching Checkout...' : 'Confirming Booking...'}
+                  Confirming Booking...
                 </>
               ) : (
                 <>
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  {paymentMethod === 'online' ? 'Proceed to Razorpay Checkout' : 'Confirm and Pay at Salon'}
+                  <Check className="w-4 h-4 mr-2 text-emerald-400" />
+                  Confirm & Pay at Salon
                 </>
               )}
             </button>
@@ -1458,25 +1326,10 @@ export default function BookingWizard() {
             {/* Payment Status Summary */}
             <div className="flex justify-between border-t border-stone-200 pt-2.5 items-center">
               <span className="text-stone-500">Payment Status:</span>
-              <span
-                className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                  confirmedBooking.paymentStatus === 'paid'
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                    : 'bg-amber-50 text-amber-800 border-amber-300'
-                }`}
-              >
-                {confirmedBooking.paymentStatus === 'paid'
-                  ? 'Paid Online (Razorpay)'
-                  : 'Payment Pending at Reception'}
+              <span className="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider border bg-amber-50 text-amber-800 border-amber-300">
+                Pay at Salon Reception
               </span>
             </div>
-
-            {confirmedBooking.razorpayPaymentId && (
-              <div className="flex justify-between font-mono text-[11px] text-stone-500">
-                <span>Razorpay Txn ID:</span>
-                <span className="font-semibold text-stone-800">{confirmedBooking.razorpayPaymentId}</span>
-              </div>
-            )}
           </div>
 
           {/* 2-HOUR PUSH NOTIFICATION REMINDER */}
@@ -1662,7 +1515,7 @@ export default function BookingWizard() {
                     {selectedService?.name}
                   </span>
                   <span className="text-[10px] font-medium text-stone-500">
-                    {paymentMethod === 'online' ? 'Razorpay Online' : 'Pay at Reception'}
+                    Pay at Salon Reception
                   </span>
                 </div>
               )}
@@ -1737,7 +1590,7 @@ export default function BookingWizard() {
                   ) : (
                     <>
                       <Check className="w-4 h-4 mr-1.5 text-emerald-400" />
-                      <span>Confirm Booking</span>
+                      <span>Confirm & Pay at Salon</span>
                     </>
                   )}
                 </button>
