@@ -960,7 +960,282 @@ export default function Home() {
           </div>
         </div>
       </section>
-{/* =========================================================================
+
+      {/* =========================================================================
+          SECTION 5: SIGNATURE BRIDAL ATELIER (COUTURE MAKEOVER SHOWCASE)
+          ========================================================================= */}
+      <section id="bridal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-16">
+        <div className="bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5ECE1] rounded-3xl border border-rose-200/60 p-6 sm:p-10 lg:p-14 shadow-xl shadow-stone-900/5 relative overflow-hidden space-y-10">
+
+          {/* Decorative Warm Ambient Glows */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-rose-200/30 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-100/40 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20" />
+
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-4 relative z-10">
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest text-rose-800 uppercase bg-rose-50 border border-rose-200/80 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-rose-600" />
+              The Royal Bridal Experience • Enrich Sikar
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
+              Timeless Elegance For Your Once-in-a-Lifetime Celebration
+            </h2>
+            <p className="text-stone-600 text-xs sm:text-sm md:text-base leading-relaxed font-light">
+              Crafted under the personal direction of Lead Cosmetologist <strong>Anu Saini</strong>, our bridal atelier unites high-definition waterproof cosmetics, heritage Rajasthani draping, and clinical skin-prep rituals to make you radiate pure royalty.
+            </p>
+          </div>
+
+          {/* 3 Bridal Pillars Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 relative z-10">
+
+            {/* Pillar 1: Signature HD Airbrush */}
+            <div className="group bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
+              <div>
+                <div className="relative aspect-[4/3] overflow-hidden bg-stone-900">
+                  <img
+                    src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792227018/enrich/direct_uploads/vyyui5c3eyspxjmmrncu.jpg"
+                    alt="Signature HD Airbrush Bridal Makeup"
+                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-rose-600 text-white shadow-md">
+                    Signature Makeover
+                  </span>
+                </div>
+
+                <div className="p-6 space-y-3">
+                  <h3 className="text-lg font-serif font-bold text-stone-900 leading-snug">
+                    HD Airbrush Bridal Glam
+                  </h3>
+                  <p className="text-xs text-stone-600 leading-relaxed font-light">
+                    Micro-fine airbrush application that creates a featherlight, poreless, 18-hour waterproof finish built for high-definition wedding photography and tear-resistant longevity.
+                  </p>
+
+                  <ul className="space-y-1.5 pt-2 text-xs text-stone-700">
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>MAC, Huda Beauty &amp; Charlotte Tilbury</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>3D Silk Lash Extensions &amp; Brow Sculpting</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>18-Hour Transfer-Resistant Formulation</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-6 pt-0">
+                <a
+                  href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20inquire%20about%20the%20Signature%20HD%20Airbrush%20Bridal%20Package."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-stone-100 group-hover:bg-rose-700 text-stone-800 group-hover:text-white text-xs font-semibold transition-colors duration-200"
+                >
+                  <WhatsAppIcon className="w-4 h-4 fill-current" />
+                  <span>Inquire for Wedding Dates</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Pillar 2: Royal Rajasthani & Shekhawati Artistry */}
+            <div className="group bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
+              <div>
+                <div className="relative aspect-[4/3] overflow-hidden bg-stone-900">
+                  <img
+                    src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792227121/enrich/direct_uploads/g85tb2zulgvdbzfubmec.jpg"
+                    alt="Royal Rajasthani Bridal Artistry"
+                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-600 text-white shadow-md">
+                    Heritage Royal
+                  </span>
+                </div>
+
+                <div className="p-6 space-y-3">
+                  <h3 className="text-lg font-serif font-bold text-stone-900 leading-snug">
+                    Royal Heritage &amp; Phera Artistry
+                  </h3>
+                  <p className="text-xs text-stone-600 leading-relaxed font-light">
+                    Specialized in regal Rajasthani bridal styling with authentic Borla, Mathapatti, and Nath setting, intricate crown hair braiding, and couture double-dupatta pleating.
+                  </p>
+
+                  <ul className="space-y-1.5 pt-2 text-xs text-stone-700">
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Authentic Borla, Kundan &amp; Nath Setting</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Intricate Crown Braid with Fresh Florals</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Double Dupatta &amp; Heavy Lehenga Draping</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-6 pt-0">
+                <a
+                  href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20inquire%20about%20the%20Royal%20Rajasthani%20Bridal%20Package."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-stone-100 group-hover:bg-rose-700 text-stone-800 group-hover:text-white text-xs font-semibold transition-colors duration-200"
+                >
+                  <WhatsAppIcon className="w-4 h-4 fill-current" />
+                  <span>Inquire for Wedding Dates</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Pillar 3: Pre-Bridal Skin Transformation & Engagement Glam */}
+            <div className="group bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
+              <div>
+                <div className="relative aspect-[4/3] overflow-hidden bg-stone-900">
+                  <img
+                    src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792325848/enrich/direct_uploads/rwtxitnjispxjnyy2hqs.jpg"
+                    alt="Pre-Bridal Clinical Skincare & Engagement Makeover"
+                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-stone-900 text-white shadow-md">
+                    Complete Ritual
+                  </span>
+                </div>
+
+                <div className="p-6 space-y-3">
+                  <h3 className="text-lg font-serif font-bold text-stone-900 leading-snug">
+                    Pre-Bridal Clinical Skincare
+                  </h3>
+                  <p className="text-xs text-stone-600 leading-relaxed font-light">
+                    A customized 30-day pre-bridal transformation regimen combining clinical hydrafacials, body polishing, luxury manicure, and dewy engagement &amp; sangeet makeovers.
+                  </p>
+
+                  <ul className="space-y-1.5 pt-2 text-xs text-stone-700">
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Clinical Hydrafacial &amp; Glass Skin Infusion</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Full Body Polishing &amp; Aromatherapy Care</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Engagement, Sangeet &amp; Reception Looks</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-6 pt-0">
+                <a
+                  href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20inquire%20about%20the%20Pre-Bridal%20Skincare%20Package."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-stone-100 group-hover:bg-rose-700 text-stone-800 group-hover:text-white text-xs font-semibold transition-colors duration-200"
+                >
+                  <WhatsAppIcon className="w-4 h-4 fill-current" />
+                  <span>Inquire for Wedding Dates</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bridal Standards & Reassurance Strip */}
+          <div className="bg-white/90 backdrop-blur-xs rounded-2xl border border-rose-200/80 p-6 sm:p-8 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
+                  <Award className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-serif font-bold text-stone-900">1-on-1 Bridal Trial</h4>
+                  <p className="text-xs text-stone-600 font-light mt-0.5">Pre-wedding consultation and veil placement trial.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-serif font-bold text-stone-900">Luxury Brands Only</h4>
+                  <p className="text-xs text-stone-600 font-light mt-0.5">100% authentic MAC, Kryolan, Huda Beauty &amp; NARS.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-serif font-bold text-stone-900">Hospital-Grade Hygiene</h4>
+                  <p className="text-xs text-stone-600 font-light mt-0.5">Sanitized brushes, disposable sponges, and sterile tools.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
+                  <HeartHandshake className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-serif font-bold text-stone-900">Private Bridal Suite</h4>
+                  <p className="text-xs text-stone-600 font-light mt-0.5">Tranquil, air-conditioned studio for peaceful preparation.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Callout Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 relative z-10 border-t border-rose-200/60 pt-6">
+            <div className="space-y-1 text-center sm:text-left">
+              <p className="text-xs font-bold uppercase tracking-wider text-rose-800">
+                Planning Your Wedding Dates?
+              </p>
+              <p className="text-stone-600 text-xs sm:text-sm font-light">
+                Bridal dates fill fast during the wedding season in Sikar. Early booking recommended.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-center">
+              <a
+                href="https://wa.me/919667900313?text=Hi%20Anu%20Saini%2C%20I%20would%20like%20to%20check%20availability%20for%20my%20wedding%20dates%20at%20Enrich%20Salon."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-600/20 transition-all duration-200 hover:-translate-y-0.5"
+              >
+                <WhatsAppIcon className="w-4 h-4 fill-current" />
+                <span>Chat with Anu Saini on WhatsApp</span>
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+              </a>
+
+              <Link
+                to="/gallery"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-stone-300 hover:border-rose-300 bg-white hover:bg-stone-50 text-stone-800 text-xs sm:text-sm font-medium transition-all shadow-2xs"
+              >
+                <Camera className="w-4 h-4 text-rose-600" />
+                <span>View Bridal Portfolio</span>
+                <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* =========================================================================
           SECTION 8: SOCIAL MEDIA SECTION (Follow Our Journey)
           ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1106,7 +1381,7 @@ export default function Home() {
               Reserve Your Salon Visit
             </h2>
             <p className="text-stone-300 max-w-lg mx-auto text-xs sm:text-sm leading-relaxed font-light">
-              Select your preferred service, choose your specialist, and confirm your appointment with real-time schedule verification.
+              Select your preferred service, choose your date and time, and confirm your appointment with real-time schedule verification.
             </p>
           </div>
 
