@@ -1207,30 +1207,7 @@ export default function BookingWizard() {
                 )}
               </div>
 
-              {/* Payment Preference - Exclusively Pay at Salon */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
-                  Payment Preference
-                </label>
-                <div className="p-4 rounded-xl border border-stone-200 bg-stone-50 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2.5 rounded-xl bg-stone-900 text-white shrink-0 shadow-xs">
-                      <Building2 className="w-5 h-5 text-rose-300" />
-                    </div>
-                    <div>
-                      <span className="font-bold text-xs sm:text-sm text-stone-900 block">
-                        Pay at Salon Reception
-                      </span>
-                      <p className="text-[11px] text-stone-500 leading-snug">
-                        Pay via UPI, Cash, or Card at the front desk upon your visit
-                      </p>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
-                    Pay on Visit
-                  </span>
-                </div>
-              </div>
+
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5">
