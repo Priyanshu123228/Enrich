@@ -1088,54 +1088,7 @@ export default function BookingWizard() {
                 </span>
               </div>
 
-              {/* Promo Code Input Box */}
-              <div className="pt-2 border-t border-stone-200/60 space-y-2">
-                <label className="block text-[10px] uppercase font-bold text-stone-500 tracking-wider">
-                  Have a Promo Code?
-                </label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Tag className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-                    <input
-                      type="text"
-                      disabled={appliedOffer !== null}
-                      value={promoCodeInput}
-                      onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
-                      placeholder="e.g. WELCOME10"
-                      className="w-full pl-8 pr-3 py-2 rounded-lg border border-stone-300 font-mono font-bold text-xs uppercase focus:outline-stone-500 disabled:bg-stone-100 disabled:text-stone-500"
-                    />
-                  </div>
-                  {appliedOffer ? (
-                    <button
-                      type="button"
-                      onClick={handleRemovePromo}
-                      className="px-3 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs border border-stone-300 cursor-pointer"
-                    >
-                      Remove
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleApplyPromo}
-                      disabled={isValidatingPromo || !promoCodeInput.trim()}
-                      className="px-4 py-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs disabled:opacity-50 cursor-pointer flex items-center gap-1"
-                    >
-                      {isValidatingPromo ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Apply'}
-                    </button>
-                  )}
-                </div>
 
-                {promoFeedback.message && (
-                  <p
-                    className={`text-[11px] font-medium flex items-center gap-1 ${
-                      promoFeedback.type === 'success' ? 'text-emerald-700' : 'text-red-600'
-                    }`}
-                  >
-                    {promoFeedback.type === 'success' && <Check className="w-3.5 h-3.5 text-emerald-600" />}
-                    {promoFeedback.message}
-                  </p>
-                )}
-              </div>
 
               {/* Booking Summary Note */}
               <div className="pt-3 border-t border-stone-200 space-y-1.5">
@@ -1143,12 +1096,7 @@ export default function BookingWizard() {
                   <span>Appointment Type:</span>
                   <span className="font-semibold text-stone-800">Confirmed Salon Visit</span>
                 </div>
-                {appliedOffer && (
-                  <div className="flex justify-between text-emerald-700 font-semibold text-xs">
-                    <span>Promo Code Applied:</span>
-                    <span>{appliedOffer.code}</span>
-                  </div>
-                )}
+
                 <div className="pt-2 border-t border-stone-200/60 flex justify-between items-center text-xs text-stone-600">
                   <span>Billing & Consultation:</span>
                   <span className="font-semibold text-stone-900">Payable at Salon Counter</span>
