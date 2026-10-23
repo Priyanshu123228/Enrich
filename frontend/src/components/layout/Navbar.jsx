@@ -65,12 +65,27 @@ export default function Navbar() {
 
   const { user, isAuthenticated, logout } = useAuth();
 
-  const handleNavClick = () => {
+  const handleNavClick = (path) => {
     setMobileMenuOpen(false);
-    try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    } catch (_) {
-      window.scrollTo(0, 0);
+    if (path && path.includes('#bridal')) {
+      if (location.pathname === '/') {
+        const el = document.getElementById('bridal');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+      } else {
+        navigate('/#bridal');
+        return;
+      }
+    }
+
+    if (!path || !path.includes('#')) {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch (_) {
+        window.scrollTo(0, 0);
+      }
     }
   };
   const navigate = useNavigate();
@@ -78,6 +93,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Services', path: '/services' },
+    { name: 'Bridal', path: '/#bridal' },
     { name: 'Cosmetics', path: '/cosmetics' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'About', path: '/about' },
@@ -130,22 +146,35 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden lg:flex lg:space-x-1 items-center">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.path}
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `px-3.5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ${
-                    isActive
-                      ? 'bg-rose-50 text-rose-800 font-bold border border-rose-200/80 shadow-2xs'
-                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/70'
-                  }`
-                }
-              >
-                {link.name}
-              </NavLink>
-            ))}
+            {navLinks.map((link) => {
+              const isBridal = link.name === 'Bridal';
+              return (
+                <NavLink
+                  key={link.name}
+                  to={link.path}
+                  onClick={(e) => {
+                    if (isBridal && location.pathname === '/') {
+                      e.preventDefault();
+                      handleNavClick(link.path);
+                    } else {
+                      handleNavClick(link.path);
+                    }
+                  }}
+                  className={({ isActive }) => {
+                    const active = isBridal
+                      ? location.pathname === '/' && location.hash === '#bridal'
+                      : isActive && (!isBridal || location.hash !== '#bridal');
+                    return `px-3.5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 ${
+                      active
+                        ? 'bg-rose-50 text-rose-800 font-bold border border-rose-200/80 shadow-2xs'
+                        : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/70'
+                    }`;
+                  }}
+                >
+                  {link.name}
+                </NavLink>
+              );
+            })}
           </div>
 
           {/* Right Action CTA & User Menu */}
@@ -305,22 +334,35 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-stone-200 px-5 pt-3 pb-8 space-y-4 shadow-lg animate-in slide-in-from-top-2 max-h-[85vh] overflow-y-auto">
           <div className="flex flex-col space-y-1.5">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.path}
-                onClick={handleNavClick}
-                className={({ isActive }) =>
-                  `block px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-rose-50 text-rose-800 font-bold border border-rose-200/80'
-                      : 'text-stone-700 hover:bg-stone-50 hover:text-rose-700'
-                  }`
-                }
-              >
-                {link.name}
-              </NavLink>
-            ))}
+            {navLinks.map((link) => {
+              const isBridal = link.name === 'Bridal';
+              return (
+                <NavLink
+                  key={link.name}
+                  to={link.path}
+                  onClick={(e) => {
+                    if (isBridal && location.pathname === '/') {
+                      e.preventDefault();
+                      handleNavClick(link.path);
+                    } else {
+                      handleNavClick(link.path);
+                    }
+                  }}
+                  className={({ isActive }) => {
+                    const active = isBridal
+                      ? location.pathname === '/' && location.hash === '#bridal'
+                      : isActive && (!isBridal || location.hash !== '#bridal');
+                    return `block px-4 py-2.5 rounded-2xl text-sm font-semibold transition-colors ${
+                      active
+                        ? 'bg-rose-50 text-rose-800 font-bold border border-rose-200/80'
+                        : 'text-stone-700 hover:bg-stone-50 hover:text-rose-700'
+                    }`;
+                  }}
+                >
+                  {link.name}
+                </NavLink>
+              );
+            })}
           </div>
 
           <div className="pt-4 border-t border-stone-100 flex flex-col space-y-2.5">

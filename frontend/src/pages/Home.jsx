@@ -2,7 +2,7 @@ import SEO from '../components/common/SEO';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../utils/imageUrl';
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { serviceService } from '../services/service.service';
 import { offerService } from '../services/offer.service';
 import { reviewService } from '../services/review.service';
@@ -80,6 +80,19 @@ export default function Home() {
   const [heroPhotoUrl, setHeroPhotoUrl] = useState('');
   const [ownerProfile, setOwnerProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash === '#bridal') {
+      const timer = setTimeout(() => {
+        const el = document.getElementById('bridal');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [location.hash]);
 
   // ---------------------------------------------------------------------------
   // Fetch dynamic data on mount

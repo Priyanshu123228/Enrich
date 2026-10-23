@@ -174,6 +174,7 @@ export default function Footer() {
               {[
                 { name: 'Home', path: '/' },
                 { name: 'Services', path: '/services' },
+                { name: 'Bridal Artistry', path: '/#bridal' },
                 { name: 'Cosmetics & Retail', path: '/cosmetics' },
                 { name: 'Salon Gallery & Media', path: '/gallery' },
                 { name: 'About Our Studio', path: '/about' },
