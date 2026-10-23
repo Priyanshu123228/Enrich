@@ -172,9 +172,8 @@ export default function Footer() {
             <ul className="space-y-2 text-xs sm:text-sm font-medium">
               {[
                 { name: 'Home', path: '/' },
-                { name: 'Services & Pricing', path: '/services' },
+                { name: 'Services', path: '/services' },
                 { name: 'Cosmetics & Retail', path: '/cosmetics' },
-                { name: 'Offers & Packages', path: '/offers' },
                 { name: 'Salon Gallery & Media', path: '/gallery' },
                 { name: 'About Our Studio', path: '/about' },
                 { name: 'Contact Us', path: '/contact' }
