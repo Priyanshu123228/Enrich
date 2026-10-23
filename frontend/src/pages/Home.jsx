@@ -9,6 +9,7 @@ import { reviewService } from '../services/review.service';
 import { mediaService } from '../services/media.service';
 import { SALON_CONFIG } from '../config/salonConfig';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
+import BridalPortfolioModal from '../components/gallery/BridalPortfolioModal';
 import VideoModal from '../components/gallery/VideoModal';
 import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
 import SocialMediaSection from '../components/SocialMediaSection';
@@ -61,6 +62,7 @@ function WhatsAppIcon({ className = "w-5 h-5" }) {
 }
 
 export default function Home() {
+  const [isBridalModalOpen, setIsBridalModalOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   // ---------------------------------------------------------------------------
   // Data States
@@ -941,14 +943,15 @@ export default function Home() {
                     <span className="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
                   </a>
 
-                  <Link
-                    to="/gallery"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-stone-300 hover:border-rose-300 bg-white hover:bg-rose-50/40 text-stone-800 text-xs sm:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 shadow-2xs group"
+                  <button
+                    type="button"
+                    onClick={() => setIsBridalModalOpen(true)}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-stone-300 hover:border-rose-300 bg-white hover:bg-rose-50/40 text-stone-800 text-xs sm:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 shadow-2xs group cursor-pointer"
                   >
-                    <Camera className="w-4 h-4 text-rose-600" />
-                    <span>Explore Bridal Gallery</span>
+                    <Camera className="w-4 h-4 text-rose-600 group-hover:scale-110 transition-transform" />
+                    <span>View Bridal Portfolio</span>
                     <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-rose-600 group-hover:translate-x-0.5 transition-all" />
-                  </Link>
+                  </button>
                 </div>
 
                 {/* Trust Badges Bar */}
@@ -1233,13 +1236,23 @@ export default function Home() {
                 <span className="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
               </a>
 
-              <Link
-                to="/gallery"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-stone-300 hover:border-rose-300 bg-white hover:bg-stone-50 text-stone-800 text-xs sm:text-sm font-medium transition-all shadow-2xs"
+              <button
+                type="button"
+                onClick={() => setIsBridalModalOpen(true)}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-rose-300 hover:border-rose-400 bg-rose-50 hover:bg-rose-100 text-rose-900 text-xs sm:text-sm font-bold transition-all shadow-sm hover:shadow-md cursor-pointer group"
               >
-                <Camera className="w-4 h-4 text-rose-600" />
+                <Camera className="w-4 h-4 text-rose-700 group-hover:scale-110 transition-transform" />
                 <span>View Bridal Portfolio</span>
-                <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
+                <ArrowRight className="w-3.5 h-3.5 text-rose-700 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+
+              <Link
+                to="/gallery?category=Bridal"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl border border-stone-300 hover:border-stone-400 bg-white hover:bg-stone-50 text-stone-700 text-xs sm:text-sm font-medium transition-all shadow-2xs group"
+                title="Open Dedicated Bridal Gallery Page"
+              >
+                <span>Full Bridal Gallery Page</span>
+                <ArrowRight className="w-3.5 h-3.5 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
           </div>
@@ -1439,6 +1452,12 @@ export default function Home() {
           onClose={() => setActiveVideo(null)}
         />
       )}
+
+      {/* DEDICATED BRIDAL PORTFOLIO SHOWCASE MODAL */}
+      <BridalPortfolioModal
+        isOpen={isBridalModalOpen}
+        onClose={() => setIsBridalModalOpen(false)}
+      />
 
     </div>
   );
