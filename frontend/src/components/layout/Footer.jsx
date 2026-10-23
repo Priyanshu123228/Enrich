@@ -66,11 +66,11 @@ export default function Footer() {
   const status = getSalonStatus();
 
   return (
-    <footer className="relative bg-gradient-to-b from-[#FAF7F2] via-[#F6F1EA] to-[#EFE7DC] text-stone-700 border-t border-stone-200/90 pt-14 pb-24 md:pb-10 overflow-hidden">
+    <footer className="relative bg-[#FAF7F2] text-stone-700 border-t border-stone-200/80 pt-14 pb-24 md:pb-10 overflow-hidden">
       
-      {/* Decorative Warm Ambient Glow */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-rose-200/20 rounded-full blur-3xl pointer-events-none -translate-y-1/2" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl pointer-events-none" />
+      {/* Decorative Subtle Warm Ambient Glow */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-rose-100/25 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-stone-200/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
@@ -82,7 +82,7 @@ export default function Footer() {
           {/* Column 1: Brand & Heritage (4 Cols on LG) */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-700 via-rose-600 to-rose-500 text-white flex items-center justify-center shadow-md shadow-rose-950/15 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-10 h-10 rounded-xl bg-rose-700 text-white flex items-center justify-center shadow-xs">
                 <Scissors className="w-5 h-5" />
               </div>
               <div>
@@ -90,29 +90,30 @@ export default function Footer() {
                   Enrich <span className="text-rose-700 font-serif italic">Beauty</span>
                 </span>
                 <span className="text-[11px] font-medium tracking-wide text-stone-500 uppercase">
-                  Parlour & Cosmetic Clinic
+                  Parlour &amp; Cosmetic Clinic
                 </span>
               </div>
             </div>
 
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-light">
-              Premier beauty atelier & cosmetic clinic in Sikar, Rajasthan. Specializing in advanced hair styling, clinical skincare rituals, bridal artistry, and luxury salon retail.
+              Premier beauty atelier &amp; cosmetic clinic in Sikar, Rajasthan. Specializing in advanced hair styling, clinical skincare rituals, bridal artistry, and luxury salon retail.
             </p>
 
-            {/* Badges */}
+            {/* Badges - Unified Cohesive Styling */}
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-white text-stone-800 border border-stone-200 shadow-2xs">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-white text-stone-700 border border-stone-200/80 shadow-2xs">
+                <Star className="w-3.5 h-3.5 fill-rose-600 text-rose-600" />
                 4.9★ Google Verified
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-800 border border-rose-200/80 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-white text-stone-700 border border-stone-200/80 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
                 Est. 2018 • Sikar
               </span>
             </div>
 
-            {/* Social Media Links */}
+            {/* Social Media Links - Unified Palette */}
             <div className="pt-2 space-y-2">
-              <p className="text-xs font-bold tracking-wide text-stone-700">
+              <p className="text-xs font-semibold tracking-wider text-stone-900 uppercase">
                 Connect Online
               </p>
               <div className="flex flex-wrap gap-2">
@@ -123,7 +124,7 @@ export default function Footer() {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200/90 hover:border-rose-300 flex items-center justify-center transition-all duration-200 hover:scale-105 shadow-2xs"
+                      className="w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200/80 hover:border-rose-300 flex items-center justify-center transition-all duration-200 hover:scale-105 shadow-2xs"
                       title={`${link.displayName} - ${link.handle || link.url}`}
                     >
                       <SocialIcon platform={link.platform} className="w-4 h-4" />
@@ -135,7 +136,7 @@ export default function Footer() {
                       href={SALON_CONFIG.contact.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200/90 hover:border-rose-300 flex items-center justify-center transition-all hover:scale-105 shadow-2xs"
+                      className="w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200/80 hover:border-rose-300 flex items-center justify-center transition-all hover:scale-105 shadow-2xs"
                       title="Instagram"
                     >
                       <SocialIcon platform="instagram" className="w-4 h-4" />
@@ -144,7 +145,7 @@ export default function Footer() {
                       href={SALON_CONFIG.contact.whatsapp}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-xl bg-white hover:bg-emerald-50 text-stone-700 hover:text-emerald-700 border border-stone-200/90 hover:border-emerald-300 flex items-center justify-center transition-all hover:scale-105 shadow-2xs"
+                      className="w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200/80 hover:border-rose-300 flex items-center justify-center transition-all hover:scale-105 shadow-2xs"
                       title="WhatsApp"
                     >
                       <SocialIcon platform="whatsapp" className="w-4 h-4" />
@@ -153,7 +154,7 @@ export default function Footer() {
                       href={SALON_CONFIG.contact.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 rounded-xl bg-white hover:bg-blue-50 text-stone-700 hover:text-blue-700 border border-stone-200/90 hover:border-blue-300 flex items-center justify-center transition-all hover:scale-105 shadow-2xs"
+                      className="w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200/80 hover:border-rose-300 flex items-center justify-center transition-all hover:scale-105 shadow-2xs"
                       title="Facebook"
                     >
                       <SocialIcon platform="facebook" className="w-4 h-4" />
@@ -200,18 +201,14 @@ export default function Footer() {
               </h3>
             </div>
 
-            {/* Live Status Pill */}
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border ${
-              status.isOpen
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                : 'bg-stone-100 text-stone-700 border-stone-200'
-            }`}>
+            {/* Live Status Pill - Harmonized with overall palette */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-white text-stone-700 border border-stone-200/80 shadow-2xs">
               <span className={`w-2 h-2 rounded-full ${status.isOpen ? 'bg-emerald-500 animate-pulse' : 'bg-stone-400'}`} />
-              <span>{status.label}</span>
+              <span className="font-semibold text-stone-800">{status.label}</span>
             </div>
 
             {/* Timings Card */}
-            <div className="bg-white/80 backdrop-blur-xs rounded-2xl border border-stone-200 p-4 space-y-2.5 shadow-2xs text-xs sm:text-sm">
+            <div className="bg-white rounded-2xl border border-stone-200/80 p-4 space-y-2.5 shadow-2xs text-xs sm:text-sm">
               <div className="flex justify-between items-center text-stone-700 pb-2 border-b border-stone-100">
                 <span className="font-semibold text-stone-900">Mon – Fri</span>
                 <span className="font-medium text-stone-600">{SALON_CONFIG.hours.weekday}</span>
@@ -226,9 +223,9 @@ export default function Footer() {
               </div>
             </div>
 
-            <p className="text-[11px] text-stone-500 font-light flex items-center gap-1">
-              <CalendarCheck className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-              <span>Walk-ins & scheduled appointments welcome</span>
+            <p className="text-[11px] text-stone-500 font-light flex items-center gap-1.5">
+              <CalendarCheck className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+              <span>Walk-ins &amp; scheduled appointments welcome</span>
             </p>
           </div>
 
@@ -241,8 +238,8 @@ export default function Footer() {
             <div className="space-y-3 text-xs sm:text-sm">
               {/* Address */}
               <div className="flex items-start gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 mt-0.5 border border-rose-100">
-                  <MapPin className="w-3.5 h-3.5" />
+                <div className="w-8 h-8 rounded-xl bg-white text-rose-700 border border-stone-200/80 shadow-2xs flex items-center justify-center shrink-0 mt-0.5">
+                  <MapPin className="w-4 h-4" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-stone-700 leading-snug font-medium">
@@ -252,7 +249,7 @@ export default function Footer() {
                     href={SALON_CONFIG.contact.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-xs font-bold text-rose-700 hover:text-rose-800 transition-colors pt-0.5"
+                    className="inline-flex items-center text-xs font-semibold text-rose-700 hover:text-rose-800 transition-colors pt-0.5"
                   >
                     <span>View on Google Maps</span>
                     <ExternalLink className="w-3 h-3 ml-1" />
@@ -262,12 +259,12 @@ export default function Footer() {
 
               {/* Phone */}
               <div className="flex items-center gap-2.5 pt-1">
-                <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
-                  <Phone className="w-3.5 h-3.5" />
+                <div className="w-8 h-8 rounded-xl bg-white text-rose-700 border border-stone-200/80 shadow-2xs flex items-center justify-center shrink-0">
+                  <Phone className="w-4 h-4" />
                 </div>
                 <a
                   href={SALON_CONFIG.contact.phoneTel}
-                  className="font-bold text-stone-800 hover:text-rose-700 transition-colors"
+                  className="font-semibold text-stone-900 hover:text-rose-700 transition-colors"
                 >
                   {SALON_CONFIG.contact.phone}
                 </a>
@@ -275,8 +272,8 @@ export default function Footer() {
 
               {/* Email */}
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100">
-                  <Mail className="w-3.5 h-3.5" />
+                <div className="w-8 h-8 rounded-xl bg-white text-rose-700 border border-stone-200/80 shadow-2xs flex items-center justify-center shrink-0">
+                  <Mail className="w-4 h-4" />
                 </div>
                 <a
                   href={SALON_CONFIG.contact.emailMailto}
@@ -287,11 +284,11 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Quick Action Button */}
+            {/* Quick Action Button - Solid Rose-700 Anchor */}
             <div className="pt-2">
               <Link
                 to="/book"
-                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-stone-50 text-rose-700 font-bold text-xs border border-rose-200/90 shadow-2xs hover:shadow-xs transition-all"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-semibold text-xs tracking-wide shadow-sm shadow-rose-950/10 hover:shadow-md transition-all duration-200"
               >
                 <span>Book Appointment Online</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -302,9 +299,9 @@ export default function Footer() {
         </div>
 
         {/* =========================================================================
-            BOTTOM BAR (WITH CLEAR RIGHT MARGIN FOR WHATSAPP FLOATING BUTTON)
+            BOTTOM BAR
             ========================================================================= */}
-        <div className="pt-8 border-t border-stone-200/90 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-500 lg:pr-40 sm:pr-32">
+        <div className="pt-8 border-t border-stone-200/80 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-500 lg:pr-40 sm:pr-32">
           
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
             <p>
@@ -317,15 +314,15 @@ export default function Footer() {
               </Link>
               <span>•</span>
               <Link to="/terms-and-conditions" className="hover:text-rose-700 transition-colors">
-                Terms & Conditions
+                Terms &amp; Conditions
               </Link>
             </div>
           </div>
 
           <p className="flex items-center gap-1.5 text-stone-600 font-medium">
-            <span>Appointments & Walk-ins Welcome</span>
+            <span>Appointments &amp; Walk-ins Welcome</span>
             <span>•</span>
-            <span className="font-bold text-rose-700">Chandpol, Sikar</span>
+            <span className="font-semibold text-stone-800">Chandpol, Sikar</span>
           </p>
 
         </div>
