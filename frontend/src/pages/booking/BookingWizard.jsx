@@ -21,7 +21,9 @@ export default function BookingWizard() {
   const promoCode = searchParams.get('promo');
 
   const [services, setServices] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState(
+    preSelectedServiceId?.toLowerCase() === 'bridal' ? 'Bridal' : 'All'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
@@ -62,9 +64,13 @@ export default function BookingWizard() {
   );
 
   const getWhatsAppUrl = (serviceName) => {
+    let target = serviceName;
+    if (!target && preSelectedServiceId?.toLowerCase() === 'bridal') {
+      target = 'Bridal Makeup';
+    }
     let msg = `Hi Enrich Salon, I would like to book an appointment`;
-    if (serviceName) {
-      msg += ` for "${serviceName}"`;
+    if (target) {
+      msg += ` for "${target}"`;
     }
     if (promoCode) {
       msg += ` using offer code: ${promoCode}`;
