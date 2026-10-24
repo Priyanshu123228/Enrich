@@ -1,4 +1,5 @@
 import SEO from '../components/common/SEO';
+import BridalShowcase from '../components/bridal/BridalShowcase';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER, DEFAULT_AVATAR_PLACEHOLDER } from '../utils/imageUrl';
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -911,111 +912,10 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          SECTION 5: SIMPLIFIED BRIDAL SECTION (IMAGE-FIRST, DIRECT BOOKING)
+          SECTION 5: ROYAL BRIDAL STUDIO SHOWCASE (16 LOOKS, PACKAGES & WHATSAPP)
           ========================================================================= */}
-      <section id="bridal" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-16 space-y-6">
-        
-        {/* Simple Heading & Short Subtitle */}
-        <div className="text-center space-y-1.5">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight">
-            Bridal Makeup
-          </h2>
-          <p className="text-sm sm:text-base text-stone-600 font-light">
-            Your special day, your perfect look.
-          </p>
-        </div>
-
-        {/* Beautiful, Large Bridal Photo Immediately */}
-        <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full rounded-3xl overflow-hidden shadow-lg bg-stone-900 border border-stone-200 group">
-          <img
-            src="https://res.cloudinary.com/dzahy6r3o/image/upload/v1792325848/enrich/direct_uploads/rwtxitnjispxjnyy2hqs.jpg"
-            alt="Royal Rajasthani Bridal Makeup by Anu Saini"
-            className="w-full h-full object-cover object-top group-hover:scale-102 transition-transform duration-500"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent pointer-events-none" />
-
-          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs">
-            <span className="font-semibold bg-stone-900/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-              Anu Saini • Enrich Sikar
-            </span>
-            <button
-              type="button"
-              onClick={() => setIsBridalModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/95 hover:bg-white text-stone-900 font-bold transition-colors cursor-pointer shadow-sm"
-            >
-              <Camera className="w-3.5 h-3.5 text-rose-700" />
-              <span>View Photos</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Clear Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <a
-            href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20want%20to%20book%20an%20appointment%20for%20Bridal%20Makeup%20at%20Enrich%20Sikar."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white bg-rose-700 hover:bg-rose-800 active:bg-rose-900 shadow-sm transition-all cursor-pointer"
-          >
-            <MessageCircle className="w-4 h-4 fill-current shrink-0" />
-            <span>Book Bridal Makeup</span>
-          </a>
-
-          <button
-            type="button"
-            onClick={() => setIsBridalModalOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-stone-800 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors cursor-pointer"
-          >
-            <Camera className="w-4 h-4 text-rose-700" />
-            <span>View Bridal Portfolio</span>
-          </button>
-
-
-        </div>
-
-        {/* Collapsible Additional Details Section */}
-        <div className="border border-stone-200 rounded-2xl overflow-hidden bg-white">
-          <button
-            type="button"
-            onClick={() => setIsBridalDetailsOpen(!isBridalDetailsOpen)}
-            className="w-full p-4 flex items-center justify-between text-left text-xs sm:text-sm font-bold text-stone-800 hover:bg-stone-50 transition-colors cursor-pointer"
-          >
-            <span className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-rose-700" />
-              <span>What's Included in Bridal Packages</span>
-            </span>
-            <span className="text-xs text-rose-700 font-semibold">
-              {isBridalDetailsOpen ? 'Hide Details ▲' : 'Show Details ▼'}
-            </span>
-          </button>
-
-          {isBridalDetailsOpen && (
-            <div className="p-4 sm:p-6 border-t border-stone-100 bg-stone-50/50 space-y-3 text-xs sm:text-sm text-stone-700">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-1">
-                  <p className="font-bold text-stone-900">HD Airbrush Base</p>
-                  <p className="text-xs text-stone-600">18-hour waterproof & tear-resistant finish designed for HD wedding photography.</p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-1">
-                  <p className="font-bold text-stone-900">Rajasthani Draping</p>
-                  <p className="text-xs text-stone-600">Traditional poshak, double-veil pinning, matha patti and royal jewelry styling.</p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-white border border-stone-200 space-y-1">
-                  <p className="font-bold text-stone-900">Pre-Bridal Glow</p>
-                  <p className="text-xs text-stone-600">Hydrafacial skin preparation, body polishing, and hair spa rituals.</p>
-                </div>
-              </div>
-
-              <div className="pt-2 text-center text-xs text-stone-500">
-                Personal consultation with Lead Cosmetologist Anu Saini included with all bookings.
-              </div>
-            </div>
-          )}
-        </div>
-
+      <section id="bridal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
+        <BridalShowcase isEmbedded={true} />
       </section>
 
 
