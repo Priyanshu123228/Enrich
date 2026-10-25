@@ -61,7 +61,7 @@ const DEFAULT_FALLBACK_REELS = [
  */
 function HomeReelCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const videoPreviewRef = useRef(null);
 
   const handleToggleMute = (e) => {
@@ -88,14 +88,22 @@ function HomeReelCard({ video, onSelectVideo }) {
     if (!videoPreviewRef.current || !hasVideoUrl) return;
     if (isHovered) {
       videoPreviewRef.current.currentTime = 0;
+      videoPreviewRef.current.muted = isMuted;
       const playPromise = videoPreviewRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {});
+        playPromise.catch(() => {
+          // If unmuted autoplay is blocked by browser policy before user interaction,
+          // fallback gracefully to muted playback
+          if (videoPreviewRef.current) {
+            videoPreviewRef.current.muted = true;
+            videoPreviewRef.current.play().catch(() => {});
+          }
+        });
       }
     } else {
       videoPreviewRef.current.pause();
     }
-  }, [isHovered, hasVideoUrl]);
+  }, [isHovered, hasVideoUrl, isMuted]);
 
   return (
     <div
