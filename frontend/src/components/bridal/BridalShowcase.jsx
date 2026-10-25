@@ -230,27 +230,34 @@ export default function BridalShowcase({ isEmbedded = false }) {
           </p>
         </div>
 
-        {/* Featured Bridal Photo - Completely occupies complete space */}
-        <div className="w-full max-w-4xl mx-auto space-y-3.5">
-          {/* Main Featured Photo: Portrait framing so entire poshak, jewelry, and look are 100% visible */}
+        {/* Featured Bridal Photo - 100% Completely Visible in True 3:4 Portrait Ratio */}
+        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto space-y-3.5">
+          
+          {/* Main Featured Photo Frame: object-contain with ambient backdrop ensures ZERO cropping */}
           <div
             onClick={() => openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx)}
-            className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-[16/11] max-h-[640px] w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl bg-stone-950 border border-stone-200/90 group cursor-pointer"
+            className="relative aspect-[3/4] w-full max-h-[540px] sm:max-h-[580px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl bg-stone-950 border border-stone-200/90 group cursor-pointer flex items-center justify-center mx-auto"
           >
+            {/* Ambient Blurred Backdrop so letterboxing is luxurious */}
+            <img
+              src={resolveImageUrl(activeHeroPhoto.url, DEFAULT_SALON_PLACEHOLDER)}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-110 pointer-events-none"
+            />
+
+            {/* Main Uncropped Photo: 100% visible from matha patti to poshak */}
             <img
               key={activeHeroPhoto.url}
               src={resolveImageUrl(activeHeroPhoto.url, DEFAULT_SALON_PLACEHOLDER)}
               alt={activeHeroPhoto.title}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
+              className="relative z-1 w-full h-full object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.01]"
               onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
             />
 
-            {/* Subtle light gradient at bottom */}
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent pointer-events-none" />
-
             {/* Top Badges */}
-            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between pointer-events-auto">
-              <span className="text-[11px] font-bold text-white bg-rose-700/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-rose-400/30 shadow-sm flex items-center gap-1.5">
+            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between z-10 pointer-events-auto">
+              <span className="text-[11px] font-bold text-white bg-rose-700/95 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-rose-400/30 shadow-md flex items-center gap-1.5">
                 <Sparkle className="w-3 h-3 text-amber-300 fill-current" />
                 <span>{activeHeroPhoto.tag}</span>
               </span>
@@ -269,23 +276,23 @@ export default function BridalShowcase({ isEmbedded = false }) {
                 <span>View Full Photo</span>
               </button>
             </div>
+          </div>
 
-            {/* Bottom Caption Overlay: Compact so it never blocks the bride */}
-            <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white space-y-0.5 pointer-events-none">
-              <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">
-                {activeHeroPhoto.categoryLabel}
-              </span>
-              <h3 className="text-base sm:text-xl font-serif font-bold leading-tight drop-shadow-md">
-                {activeHeroPhoto.title}
-              </h3>
-              <p className="text-xs text-stone-200 line-clamp-1 font-light drop-shadow-sm">
-                {activeHeroPhoto.description}
-              </p>
-            </div>
+          {/* Title & Description: Cleanly positioned BELOW the photo so nothing covers the bride */}
+          <div className="text-center space-y-1 px-2 pt-1">
+            <span className="text-[11px] font-bold text-rose-700 uppercase tracking-widest block">
+              {activeHeroPhoto.categoryLabel}
+            </span>
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 tracking-tight">
+              {activeHeroPhoto.title}
+            </h3>
+            <p className="text-xs sm:text-sm text-stone-600 font-light max-w-lg mx-auto leading-relaxed">
+              {activeHeroPhoto.description}
+            </p>
           </div>
 
           {/* 5 Thumbnails Row in Natural Portrait 3:4 Aspect Ratio */}
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 pt-1">
             <div className="flex items-center justify-between text-[11px] text-stone-500 px-0.5">
               <span className="font-semibold text-stone-700 uppercase tracking-wider">
                 Featured Looks (Tap to switch):
@@ -300,7 +307,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
                     key={thumb.id}
                     type="button"
                     onClick={() => setActiveHeroIdx(idx)}
-                    className={`group relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
+                    className={`group relative aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 ${
                       isSelected
                         ? 'ring-2 ring-rose-700 ring-offset-2 ring-offset-white scale-[1.03] shadow-md'
                         : 'border border-stone-200 opacity-80 hover:opacity-100 hover:scale-[1.01]'
@@ -321,7 +328,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
           </div>
 
           {/* Direct Actions: Book on WhatsApp + Call */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <a
               href={getWhatsAppUrl(`Hi Anu Saini, I am interested in booking the "${activeHeroPhoto.title}" bridal look for my wedding.`)}
               target="_blank"
