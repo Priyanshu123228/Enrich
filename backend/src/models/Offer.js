@@ -44,7 +44,7 @@ const offerSchema = new mongoose.Schema(
       required: [true, 'End date is required']
     },
     validTill: {
-      type: Date // Kept in sync with endDate for backwards compatibility
+      type: Date
     },
     applicableServices: [
       {
@@ -97,7 +97,6 @@ const offerSchema = new mongoose.Schema(
   }
 );
 
-// Pre-save hook to ensure validTill and endDate stay synced
 offerSchema.pre('save', function (next) {
   if (this.endDate && !this.validTill) {
     this.validTill = this.endDate;

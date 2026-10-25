@@ -45,9 +45,9 @@ function assert(condition, testName, details = '') {
   }
 }
 
-/**
- * Robust JSON fetcher with connection error handling
- */
+
+// Robust JSON fetcher with connection error handling
+
 async function fetchJson(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
   try {
@@ -72,9 +72,9 @@ async function fetchJson(endpoint, options = {}) {
   }
 }
 
-/**
- * Pre-flight check: Verify that the Express backend is running and reachable
- */
+
+//  Pre-flight check: Verify that the Express backend is running and reachable
+
 async function checkBackendAvailability() {
   console.log('Checking backend availability...');
   console.log(`API Base URL: ${API_BASE}\n`);
@@ -115,9 +115,8 @@ async function checkBackendAvailability() {
   }
 }
 
-/**
- * Display formatted test summary and exit code
- */
+//  Display formatted test summary and exit code
+
 function printSummary(abortedReason = null) {
   const successRate =
     stats.total === 0
@@ -146,9 +145,7 @@ function printSummary(abortedReason = null) {
 }
 
 async function runTestSuite() {
-  console.log('\n======================================================');
   console.log('   ENRICH SYSTEMATIC TEST SUITE');
-  console.log('======================================================\n');
 
   // 0. Pre-flight Backend Availability Check
   const isAvailable = await checkBackendAvailability();
@@ -209,9 +206,7 @@ async function runTestSuite() {
 
     console.log(`Test Execution Date Context: ${testDate} (Day of Week: ${futureDate.getDay()})\n`);
 
-    // ----------------------------------------------------------------
     // SECTION 1: AUTHENTICATION TESTS
-    // ----------------------------------------------------------------
     console.log('--- SECTION 1: AUTHENTICATION TESTS ---');
 
     // 1.1 Customer Registration
@@ -345,9 +340,7 @@ async function runTestSuite() {
     assert(noToken.status === 401, '1.10 /auth/me without token returns HTTP 401 Unauthorized');
 
 
-    // ----------------------------------------------------------------
     // SECTION 2: AUTHORIZATION & RBAC TESTS
-    // ----------------------------------------------------------------
     console.log('\n--- SECTION 2: AUTHORIZATION (RBAC) TESTS ---');
 
     // 2.1 Customer attempting Admin-only endpoint
@@ -363,9 +356,9 @@ async function runTestSuite() {
     assert(adminAppRes.status === 200, '2.2 Admin accessing /appointments/admin/all returns HTTP 200 OK');
 
 
-    // ----------------------------------------------------------------
+
     // SECTION 3: SERVICES & STAFF CATALOG TESTS
-    // ----------------------------------------------------------------
+
     console.log('\n--- SECTION 3: SERVICES & STAFF TESTS ---');
 
     const servicesRes = await fetchJson('/services?limit=10');
@@ -381,9 +374,9 @@ async function runTestSuite() {
     testStaffId = staffList[0]?._id;
 
 
-    // ----------------------------------------------------------------
+
     // SECTION 4: 8 IMPORTANT BOOKING SCENARIOS
-    // ----------------------------------------------------------------
+
     console.log('\n--- SECTION 4: 8 CRITICAL BOOKING SCENARIOS ---');
 
     // SCENARIO 5 FIRST (Verify 60-min service duration calculation)
@@ -565,9 +558,9 @@ async function runTestSuite() {
     appointment3Id = user1Reclaim.data.data?._id;
 
 
-    // ----------------------------------------------------------------
+
     // SECTION 5: PAYMENTS & RAZORPAY INTEGRATION TESTS
-    // ----------------------------------------------------------------
+
     console.log('\n--- SECTION 5: PAYMENTS INTEGRATION TESTS ---');
 
     // 5.1 Create Order
@@ -628,9 +621,9 @@ async function runTestSuite() {
     );
 
 
-    // ----------------------------------------------------------------
+
     // SECTION 6: REVIEWS & RATINGS TESTS
-    // ----------------------------------------------------------------
+
     console.log('\n--- SECTION 6: REVIEWS & RATINGS TESTS ---');
 
     // 6.1 Cannot review uncompleted appointment
@@ -701,9 +694,9 @@ async function runTestSuite() {
       '6.5 Customer cannot review an appointment belonging to another customer (HTTP 403)'
     );
 
-    // ----------------------------------------------------------------
+
     // TEARDOWN: Clean up test records
-    // ----------------------------------------------------------------
+
     await User.deleteMany({ email: { $in: [testEmail1, testEmail2, testAdminEmail] } });
     await Appointment.deleteMany({ _id: { $in: [appointment1Id, appointment2Id, appointment3Id].filter(Boolean) } });
     await Payment.deleteMany({ orderId: razorpayOrderId });

@@ -3,9 +3,6 @@ import { Service } from '../models/Service.js';
 import { Appointment } from '../models/Appointment.js';
 import { ApiError } from '../utils/apiError.js';
 
-/**
- * Convert time string ("09:30") to minutes from midnight (570)
- */
 export const timeToMinutes = (timeStr) => {
   if (!timeStr || !timeStr.includes(':')) return 0;
   const [hours, minutes] = timeStr.split(':').map(Number);
@@ -86,7 +83,7 @@ export const getSalonNow = () => {
 };
 
 /**
- * Generate available time slots for a given service, staff member, and date
+ 
  * 
  * @param {Object} params
  * @param {string} params.serviceId - ID of selected service
@@ -253,9 +250,7 @@ export const getAvailableSlots = async ({ serviceId, staffId, date }) => {
   };
 };
 
-/**
- * Validate collision before saving an appointment
- */
+
 export const checkSlotCollision = async ({ staffId, date, startTime, duration, excludeAppointmentId }) => {
   const startMins = timeToMinutes(startTime);
   const endMins = startMins + duration;
@@ -266,6 +261,7 @@ export const checkSlotCollision = async ({ staffId, date, startTime, duration, e
     date,
     status: { $in: ['pending', 'confirmed'] }
   };
+
 
   if (excludeAppointmentId) {
     query._id = { $ne: excludeAppointmentId };
