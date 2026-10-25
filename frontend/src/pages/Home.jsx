@@ -583,14 +583,14 @@ export default function Home() {
                 // Transformation component handling
                 if (isTransformation) {
                   return (
-                    <div key={item._id || idx} className="rounded-2xl overflow-hidden shadow-md border border-stone-200 bg-white">
-                      <BeforeAfterSlider
-                        beforeImage={resolveImageUrl(item.beforeAfter?.beforeUrl || item.beforeImage, DEFAULT_SALON_PLACEHOLDER)}
-                        afterImage={resolveImageUrl(item.beforeAfter?.afterUrl || item.afterImage, DEFAULT_SALON_PLACEHOLDER)}
-                        title={item.title || 'Salon Transformation'}
-                        category={item.category || 'Before & After'}
-                      />
-                    </div>
+                    <BeforeAfterSlider
+                      key={item._id || idx}
+                      beforeImage={resolveImageUrl(item.beforeAfter?.beforeUrl || item.beforeImage, DEFAULT_SALON_PLACEHOLDER)}
+                      afterImage={resolveImageUrl(item.beforeAfter?.afterUrl || item.afterImage, DEFAULT_SALON_PLACEHOLDER)}
+                      title={item.title || 'Salon Transformation'}
+                      category={item.category || 'Before & After'}
+                      aspectRatio="aspect-[3/4]"
+                    />
                   );
                 }
 
