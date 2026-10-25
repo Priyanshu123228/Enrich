@@ -1,3 +1,4 @@
+import { getHinglishSubtitle } from '../utils/hinglishSubtitles';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { serviceService } from '../services/service.service';
@@ -5,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { customerService } from '../services/customer.service';
 import {
   Clock,
+  Phone,
   Star,
   Check,
   ShieldCheck,
@@ -80,6 +82,8 @@ export default function ServiceDetail() {
     );
   }
 
+  
+  const hinglishText = getHinglishSubtitle(service);
   const images = service.images && service.images.length > 0
     ? service.images
     : [{ url: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80' }];
@@ -268,9 +272,21 @@ export default function ServiceDetail() {
                 )}
               </div>
 
+
               <h1 className="text-2xl font-serif font-bold text-stone-900">
                 {service.name}
               </h1>
+
+              {hinglishText && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200/80 text-rose-800 text-xs font-medium flex items-start gap-2">
+                  <Sparkles className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block text-[11px] uppercase tracking-wider text-rose-900">Aasan Hindi Me:</span>
+                    <span>{hinglishText}</span>
+                  </div>
+                </div>
+              )}
+
             </div>
 
             {/* Duration & Service Appointment Details */}
@@ -307,14 +323,22 @@ export default function ServiceDetail() {
             <div className="space-y-2.5 pt-2">
               <a
                 href={`https://wa.me/919667900313?text=${encodeURIComponent(
-                  `Hi Enrich Salon, I would like to book an appointment for "${service.name}". Please let me know available slots.`
+                  `Namaste Enrich Salon, I would like to book an appointment for "${service.name}". Please let me know available slots.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center py-3.5 px-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs tracking-wide transition-all shadow-md cursor-pointer"
+                className="w-full flex items-center justify-center py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs tracking-wide transition-all shadow-md cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Book on WhatsApp
+              </a>
+
+              <a
+                href="tel:+919667900313"
+                className="w-full flex items-center justify-center py-3 px-6 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs tracking-wide transition-all shadow-xs cursor-pointer"
+              >
+                <Phone className="w-4 h-4 mr-2 text-rose-300" />
+                Direct Call: 96679 00313
               </a>
 
 

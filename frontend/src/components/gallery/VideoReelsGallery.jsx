@@ -10,7 +10,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Pause,
-  RotateCcw
+  RotateCcw,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
@@ -42,23 +44,43 @@ export function formatVideoDuration(seconds) {
  */
 export function FeaturedHeroCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(false); // SOUND ON BY DEFAULT
   const videoPreviewRef = useRef(null);
   const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
   const videoSrc = resolveImageUrl(video?.url || video?.videoUrl);
   const isImageThumb = video?.thumbnail && !video.thumbnail.includes('.mp4') && !video.thumbnail.includes('.webm') && video.thumbnail !== video?.url;
 
+  const toggleSound = (e) => {
+    e.stopPropagation();
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    if (videoPreviewRef.current) {
+      videoPreviewRef.current.muted = nextMuted;
+      if (!nextMuted) {
+        videoPreviewRef.current.play().catch(() => {});
+      }
+    }
+  };
+
   useEffect(() => {
     if (!videoPreviewRef.current || !hasVideoUrl) return;
     if (isHovered) {
       videoPreviewRef.current.currentTime = 0;
+      videoPreviewRef.current.muted = isMuted;
       const playPromise = videoPreviewRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {});
+        playPromise.catch(() => {
+          // Fallback to muted if browser blocks unmuted autoplay prior to interaction
+          if (!isMuted && videoPreviewRef.current) {
+            videoPreviewRef.current.muted = true;
+            videoPreviewRef.current.play().catch(() => {});
+          }
+        });
       }
     } else {
       videoPreviewRef.current.pause();
     }
-  }, [isHovered, hasVideoUrl]);
+  }, [isHovered, hasVideoUrl, isMuted]);
 
   if (!video) return null;
 
@@ -97,7 +119,7 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
           <video
             ref={videoPreviewRef}
             src={videoSrc}
-            muted
+            muted={isMuted}
             playsInline
             loop
             preload="metadata"
@@ -127,16 +149,35 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
           )}
         </div>
 
-        {video.duration ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/70 text-stone-300 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-stone-700/50">
-            <Clock className="w-3 h-3 text-rose-400" />
-            <span>{formatVideoDuration(video.duration)}</span>
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/70 text-stone-300 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-stone-700/50">
-            <span>4K ULTRA HD</span>
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {video.duration ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 text-stone-200 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-stone-700/50">
+              <Clock className="w-3 h-3 text-rose-400" />
+              <span>{formatVideoDuration(video.duration)}</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 text-stone-200 text-[10px] sm:text-xs font-mono backdrop-blur-md border border-stone-700/50">
+              <span>4K ULTRA HD</span>
+            </span>
+          )}
+
+          {/* Audio / Music Toggle Button */}
+          {hasVideoUrl && (
+            <button
+              type="button"
+              onClick={toggleSound}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/75 hover:bg-stone-900 border border-stone-700/80 flex items-center justify-center text-white backdrop-blur-md transition-all active:scale-90 hover:scale-105 shadow-sm cursor-pointer pointer-events-auto"
+              title={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
+              aria-label={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
+            >
+              {isMuted ? (
+                <VolumeX className="w-3.5 h-3.5 text-stone-300" />
+              ) : (
+                <Volume2 className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* CENTER IMMERSIVE PLAY BUTTON */}
@@ -184,23 +225,43 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
  */
 export function VideoReelCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(false); // SOUND ON BY DEFAULT
   const videoPreviewRef = useRef(null);
   const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
   const videoSrc = resolveImageUrl(video?.url || video?.videoUrl);
   const isImageThumb = video?.thumbnail && !video.thumbnail.includes('.mp4') && !video.thumbnail.includes('.webm') && video.thumbnail !== video?.url;
 
+  const toggleSound = (e) => {
+    e.stopPropagation();
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    if (videoPreviewRef.current) {
+      videoPreviewRef.current.muted = nextMuted;
+      if (!nextMuted) {
+        videoPreviewRef.current.play().catch(() => {});
+      }
+    }
+  };
+
   useEffect(() => {
     if (!videoPreviewRef.current || !hasVideoUrl) return;
     if (isHovered) {
       videoPreviewRef.current.currentTime = 0;
+      videoPreviewRef.current.muted = isMuted;
       const playPromise = videoPreviewRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {});
+        playPromise.catch(() => {
+          // Fallback to muted if browser blocks unmuted autoplay prior to interaction
+          if (!isMuted && videoPreviewRef.current) {
+            videoPreviewRef.current.muted = true;
+            videoPreviewRef.current.play().catch(() => {});
+          }
+        });
       }
     } else {
       videoPreviewRef.current.pause();
     }
-  }, [isHovered, hasVideoUrl]);
+  }, [isHovered, hasVideoUrl, isMuted]);
 
   if (!video) return null;
 
@@ -237,7 +298,7 @@ export function VideoReelCard({ video, onSelectVideo }) {
           <video
             ref={videoPreviewRef}
             src={videoSrc}
-            muted
+            muted={isMuted}
             playsInline
             loop
             preload="metadata"
@@ -251,18 +312,37 @@ export function VideoReelCard({ video, onSelectVideo }) {
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-stone-950/20" />
       </div>
 
-      {/* Top Meta Bar: Category Pill & Duration */}
-      <div className="relative p-3 sm:p-3.5 flex items-center justify-between z-10 gap-2">
+      {/* Top Meta Bar: Category Pill & Duration + Music/Audio Toggle (Default ON) */}
+      <div className="relative p-3 sm:p-3.5 flex items-center justify-between z-10 gap-2 pointer-events-auto">
         <span className="px-2.5 py-0.5 rounded-full bg-stone-900/80 border border-stone-700/60 text-stone-200 text-[9px] sm:text-[10px] font-medium backdrop-blur-xs">
           {video.category || 'Reel'}
         </span>
 
-        {video.duration ? (
-          <span className="px-2 py-0.5 rounded-full bg-black/70 text-stone-300 text-[9px] sm:text-[10px] font-mono backdrop-blur-xs flex items-center gap-1 border border-stone-800">
-            <Clock className="w-2.5 h-2.5 text-rose-400" />
-            <span>{formatVideoDuration(video.duration)}</span>
-          </span>
-        ) : null}
+        <div className="flex items-center gap-1.5">
+          {video.duration ? (
+            <span className="px-2 py-0.5 rounded-full bg-black/75 text-stone-300 text-[9px] sm:text-[10px] font-mono backdrop-blur-xs flex items-center gap-1 border border-stone-800">
+              <Clock className="w-2.5 h-2.5 text-rose-400" />
+              <span>{formatVideoDuration(video.duration)}</span>
+            </span>
+          ) : null}
+
+          {/* Audio / Music Toggle Button */}
+          {hasVideoUrl && (
+            <button
+              type="button"
+              onClick={toggleSound}
+              className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/75 hover:bg-stone-900 border border-stone-700/80 flex items-center justify-center text-white backdrop-blur-md transition-all active:scale-90 hover:scale-105 shadow-sm cursor-pointer"
+              title={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
+              aria-label={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
+            >
+              {isMuted ? (
+                <VolumeX className="w-3 h-3 text-stone-300" />
+              ) : (
+                <Volume2 className="w-3 h-3 text-rose-400 animate-pulse" />
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Centered Minimal Play Icon */}

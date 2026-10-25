@@ -2,7 +2,8 @@ import SEO from '../components/common/SEO';
 import { useState, useEffect } from 'react';
 import { serviceService } from '../services/service.service';
 import ServiceCard from '../components/services/ServiceCard';
-import { Search, SlidersHorizontal, AlertCircle, Database } from 'lucide-react';
+import { CATEGORY_HINGLISH_GUIDE } from '../utils/hinglishSubtitles';
+import { Search, SlidersHorizontal, AlertCircle, Database, Phone, MessageCircle } from 'lucide-react';
 
 export default function Services() {
   const [services, setServices] = useState([]);
@@ -66,20 +67,6 @@ export default function Services() {
     return () => clearTimeout(delayDebounce);
   }, [selectedCategory, searchQuery]);
 
-  // One-click Seed Sample Data
-  const handleSeedData = async () => {
-    setIsSeeding(true);
-    try {
-      await serviceService.seedDefaultServices();
-      await fetchCategories();
-      await fetchServices();
-    } catch (err) {
-      alert(`Seed failed: ${err.message}`);
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
       <SEO
@@ -88,14 +75,35 @@ export default function Services() {
         url="/services"
       />
 
-      {/* Simplified, Short Header */}
-      <div className="text-center max-w-xl mx-auto space-y-1.5 pt-2">
+      {/* Simplified, Short Header with 1-Tap Direct Help */}
+      <div className="text-center max-w-xl mx-auto space-y-2 pt-2">
         <h1 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">
-          Beauty Services
+          Beauty & Salon Services
         </h1>
         <p className="text-xs sm:text-sm text-stone-600 font-light">
-          Tap <strong>Book Now</strong> on any service to reserve directly on WhatsApp.
+          Har treatment ki aasan Hindi samjh ke sath. Kisi bhi service par <strong>Book on WhatsApp</strong> tap karein ya direct call milayein.
         </p>
+
+        {/* 1-Tap Quick Action Row */}
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+          <a
+            href="https://wa.me/919667900313?text=Namaste%20Enrich%20Salon!%20Mujhe%20services%20aur%20rates%20ke%20bare%20mein%20puchna%20hai."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition-all active:scale-95"
+          >
+            <MessageCircle className="w-3.5 h-3.5 fill-current" />
+            <span>Rate List on WhatsApp</span>
+          </a>
+
+          <a
+            href="tel:+919667900313"
+            className="inline-flex items-center gap-1.5 py-1.5 px-3.5 rounded-full bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs shadow-2xs transition-all active:scale-95"
+          >
+            <Phone className="w-3.5 h-3.5 text-rose-300" />
+            <span>Call: 96679 00313</span>
+          </a>
+        </div>
       </div>
 
       {/* Compact Search & Category Filter */}
@@ -109,12 +117,12 @@ export default function Services() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search hair, facial, bridal, nails..."
+            placeholder="Search hair, facial, bridal, nails, waxing..."
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-white focus:outline-none focus:border-rose-700 text-xs sm:text-sm shadow-2xs"
           />
         </div>
 
-        {/* Category Filter Pills (Horizontal Scroll on Mobile) */}
+        {/* Category Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none justify-start sm:justify-center">
           {categories.map((cat) => (
             <button
@@ -141,6 +149,13 @@ export default function Services() {
             </button>
           ))}
         </div>
+
+        {/* Hinglish Category Subtitle Banner */}
+        <div className="text-center">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200/80 shadow-2xs">
+            ✨ {CATEGORY_HINGLISH_GUIDE[selectedCategory] || 'Sabhi Salon Services & Treatments'}
+          </span>
+        </div>
       </div>
 
       {/* Error Alert */}
@@ -151,45 +166,39 @@ export default function Services() {
         </div>
       )}
 
-      {/* Services Grid: Compact 2-Column on Mobile, 3 on Tablet, 4 on Desktop */}
+      {/* Services Grid (ServiceCard includes Hinglish Subtitles & WhatsApp Action) */}
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl border border-stone-200 p-3 h-56 animate-pulse flex flex-col justify-between"
+              className="bg-white rounded-2xl border border-stone-200 p-4 h-64 animate-pulse flex flex-col justify-between"
             >
-              <div className="h-32 bg-stone-200 rounded-xl w-full" />
-              <div className="space-y-1.5">
-                <div className="h-3.5 bg-stone-200 rounded w-3/4" />
-                <div className="h-7 bg-stone-200 rounded-lg w-full" />
-              </div>
+              <div className="h-36 bg-stone-200 rounded-xl w-full" />
+              <div className="h-6 bg-stone-200 rounded-lg w-full" />
             </div>
           ))}
         </div>
       ) : services.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {services.map((service) => (
             <ServiceCard key={service._id} service={service} />
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-stone-200 p-8 sm:p-12 text-center space-y-3 max-w-md mx-auto">
-          <div className="w-10 h-10 rounded-xl bg-stone-100 text-stone-700 flex items-center justify-center mx-auto">
-            <SlidersHorizontal className="w-5 h-5" />
-          </div>
-          <h3 className="text-base font-bold text-stone-900">No Services Found</h3>
-          <p className="text-xs text-stone-500">
-            No treatments found for "{searchQuery || selectedCategory}".
+        <div className="text-center py-12 bg-white rounded-3xl border border-stone-200/90 p-8 space-y-4 max-w-md mx-auto">
+          <p className="text-xs sm:text-sm text-stone-600">
+            Koi specific service nahi mili. Direct WhatsApp par baat karke koi bhi parlour service book karein.
           </p>
-          <button
-            onClick={handleSeedData}
-            disabled={isSeeding}
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
+          <a
+            href="https://wa.me/919667900313?text=Namaste%20Enrich%20Salon!%20Mujhe%20services%20book%20karna%20hai."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs"
           >
-            <Database className="w-3.5 h-3.5 mr-1.5" />
-            <span>{isSeeding ? 'Loading...' : 'Populate Catalog'}</span>
-          </button>
+            <MessageCircle className="w-4 h-4 fill-current" />
+            <span>Chat on WhatsApp Directly</span>
+          </a>
         </div>
       )}
 

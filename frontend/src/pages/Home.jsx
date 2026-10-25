@@ -909,21 +909,7 @@ export default function Home() {
                   </button>
                 </div>
 
-                {/* Trust Badges Bar */}
-                <div className="flex flex-wrap items-center gap-y-2 gap-x-5 pt-1 text-[11px] sm:text-xs text-stone-500">
-                  <span className="inline-flex items-center gap-1.5 font-medium text-stone-600">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    Medical-Grade Sterilization
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 font-medium text-stone-600">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    Personal 1-on-1 Skin &amp; Hair Analysis
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 font-medium text-stone-600">
-                    <MapPin className="w-3.5 h-3.5 text-rose-600" />
-                    Piprali Road, Sikar
-                  </span>
-                </div>
+
               </div>
 
             </div>
@@ -1080,32 +1066,40 @@ export default function Home() {
 
           <div className="relative z-10 space-y-3">
             <span className="text-xs font-bold tracking-widest text-rose-300 uppercase block">
-              Appointments & Consultations
+              ⚡ 1-Tap Quick Salon Booking
             </span>
             <h2 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-white">
               Reserve Your Salon Visit
             </h2>
-            <p className="text-stone-300 max-w-lg mx-auto text-xs sm:text-sm leading-relaxed font-light">
-              Select your preferred service, choose your date and time, and confirm your appointment with real-time schedule verification.
+            <p className="text-stone-200 max-w-lg mx-auto text-xs sm:text-sm leading-relaxed font-light">
+              Kisi lambe online form ko bharne ki zaroorat nahi — WhatsApp par baat karein ya direct phone milayein!
             </p>
           </div>
 
-          <div className="pt-2 flex flex-col sm:flex-row justify-center gap-4 relative z-10">
+          <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3 relative z-10">
             <a
-              href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
+              href="https://wa.me/919667900313?text=Namaste%20Enrich%20Salon!%20Mujhe%20appointment%20book%20karna%20hai."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-2xl text-xs sm:text-sm font-bold text-rose-950 bg-white hover:bg-rose-50 transition-all shadow-xl hover:shadow-2xl cursor-pointer active:scale-95"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-2xl text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all shadow-xl hover:shadow-2xl cursor-pointer active:scale-95"
             >
-              <MessageCircle className="w-4 h-4 mr-2 text-emerald-600 fill-current" />
+              <MessageCircle className="w-4 h-4 mr-2 fill-current" />
               Book on WhatsApp
             </a>
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center px-7 py-4 rounded-2xl text-xs sm:text-sm font-bold text-white bg-white/10 hover:bg-white/20 border border-white/25 backdrop-blur-xs transition-all cursor-pointer active:scale-95"
+
+            <a
+              href="tel:+919667900313"
+              className="inline-flex items-center justify-center px-7 py-4 rounded-2xl text-xs sm:text-sm font-bold text-white bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-xs transition-all cursor-pointer active:scale-95"
             >
               <Phone className="w-4 h-4 mr-2 text-rose-300" />
-              Contact Concierge
+              Call: 96679 00313
+            </a>
+
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center px-6 py-4 rounded-2xl text-xs sm:text-sm font-bold text-stone-300 hover:text-white bg-black/20 hover:bg-black/30 border border-white/10 transition-all cursor-pointer active:scale-95"
+            >
+              <span>Salon Address & Map →</span>
             </Link>
           </div>
         </div>

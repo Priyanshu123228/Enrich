@@ -1,16 +1,17 @@
 import { Link } from 'react-router-dom';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
+import { getHinglishSubtitle } from '../../utils/hinglishSubtitles';
 import { MessageCircle } from 'lucide-react';
 
 /**
  * ServiceCard
  * 
- * Simplified, mobile-first service card.
- * 1. Service Image
- * 2. Short Service Name
- * 3. ONLY ONE ACTION: Direct "Book on WhatsApp"
- * 
- * No online calendar, no date/slot selection.
+ * Simplified, mobile-first service card tailored for local customers:
+ * 1. Service Image with category badge
+ * 2. Service Name in English
+ * 3. Conversational Hinglish Subtitle (explains what it actually does in simple words)
+ * 4. Transparent Price (No hidden cost fear)
+ * 5. 1-Tap Direct 'Book on WhatsApp' CTA
  */
 export default function ServiceCard({ service }) {
   const rawImage =
@@ -21,8 +22,10 @@ export default function ServiceCard({ service }) {
     '';
   const imageUrl = resolveImageUrl(rawImage, DEFAULT_SALON_PLACEHOLDER);
 
+  const hinglishSubtitle = getHinglishSubtitle(service);
+
   const whatsappUrl = `https://wa.me/919667900313?text=${encodeURIComponent(
-    `Hi Enrich Salon, I would like to book an appointment for "${service.name}".`
+    `Namaste Enrich Salon! I would like to book / inquire about "${service.name}". Please share available timings.`
   )}`;
 
   return (
@@ -44,17 +47,24 @@ export default function ServiceCard({ service }) {
           onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
         />
         
-        {/* Subtle category badge on top-left */}
+        {/* Category badge on top-left */}
         {service.category && (
           <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-stone-900/80 text-white backdrop-blur-xs">
             {service.category}
           </span>
         )}
+
+        {/* Optional price tag on top-right */}
+        {service.price > 0 && (
+          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[11px] font-bold bg-white/95 text-stone-900 shadow-xs backdrop-blur-xs">
+            ₹{service.discountPrice && service.discountPrice < service.price ? service.discountPrice : service.price}
+          </span>
+        )}
       </a>
 
-      {/* 2. Short Service Name & Quick Info */}
+      {/* 2. Service Name & Hinglish Subtitle */}
       <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between space-y-2.5">
-        <div>
+        <div className="space-y-1">
           <a
             href={whatsappUrl}
             target="_blank"
@@ -66,14 +76,21 @@ export default function ServiceCard({ service }) {
             </h3>
           </a>
 
+          {/* Hinglish Subtitle Explainer */}
+          {hinglishSubtitle && (
+            <p className="text-[11px] text-rose-800 font-medium leading-snug line-clamp-2 bg-rose-50/80 border border-rose-100 rounded-lg px-2 py-1">
+              ✨ {hinglishSubtitle}
+            </p>
+          )}
+
           {service.duration && (
-            <p className="text-[11px] text-stone-500 font-medium pt-0.5">
-              {service.duration} mins • Salon Service
+            <p className="text-[10px] text-stone-400 font-normal pt-0.5">
+              ⏱️ {service.duration} mins • Genuine Branded Products
             </p>
           )}
         </div>
 
-        {/* 3. ONLY ONE OPTION: Book on WhatsApp */}
+        {/* 3. 1-Tap WhatsApp Booking CTA */}
         <div className="pt-1">
           <a
             href={whatsappUrl}

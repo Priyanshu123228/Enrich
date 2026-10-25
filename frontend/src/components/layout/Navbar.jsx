@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   Scissors,
+  Phone,
   MessageCircle,
   Menu,
   X,
@@ -410,15 +411,27 @@ export default function Navbar() {
               </Link>
             )}
 
-            <a
-              href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleNavClick}
-              className="w-full text-center py-3.5 px-6 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-md shadow-emerald-900/20"
-            >
-              Book on WhatsApp
-            </a>
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <a
+                href="https://wa.me/919667900313?text=Namaste%20Enrich%20Salon!%20Mujhe%20appointment%20book%20karna%20hai."
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleNavClick}
+                className="w-full inline-flex items-center justify-center gap-1.5 py-3 px-3 rounded-2xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-900/15"
+              >
+                <MessageCircle className="w-4 h-4 fill-current shrink-0" />
+                <span className="truncate">WhatsApp</span>
+              </a>
+
+              <a
+                href="tel:+919667900313"
+                onClick={handleNavClick}
+                className="w-full inline-flex items-center justify-center gap-1.5 py-3 px-3 rounded-2xl text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 shadow-md"
+              >
+                <Phone className="w-4 h-4 text-rose-300 shrink-0" />
+                <span className="truncate">Call Salon</span>
+              </a>
+            </div>
           </div>
         </div>
       )}
