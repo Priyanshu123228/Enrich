@@ -3,26 +3,24 @@ import {
   Home,
   Scissors,
   CalendarCheck,
-  Sparkles,
-  User
+  Film,
+  Sparkles
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 
 /**
  * MobileQuickActionBar / PWA Bottom Navigation Bar
  * 
  * High-reachability native app navigation for mobile devices & PWAs.
  * Features 5 core user journeys in the thumb reach zone:
- * 1. Home
- * 2. Services (Price list & menu)
+ * 1. Home (Main hub)
+ * 2. Services (Price list & salon menu)
  * 3. Book (Center highlighted CTA pill button)
- * 4. Bridal (Flagship bridal studio & looks)
- * 5. Account (Appointments & Profile)
+ * 4. Gallery (Watch 4K Video Reels & Transformations)
+ * 5. Bridal (Flagship bridal studio & looks)
  */
 export default function MobileQuickActionBar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth?.() || {};
 
   // Hide only on admin panel routes
   if (location.pathname.startsWith('/admin')) {
@@ -36,6 +34,19 @@ export default function MobileQuickActionBar() {
     if (pathname === '/' && !hash) {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleGalleryClick = (e) => {
+    if (pathname === '/') {
+      e.preventDefault();
+      const el = document.getElementById('gallery');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        window.history.replaceState(null, '', '#gallery');
+      } else {
+        navigate('/gallery');
+      }
     }
   };
 
@@ -77,24 +88,20 @@ export default function MobileQuickActionBar() {
       isActive: pathname.startsWith('/book')
     },
     {
+      id: 'gallery',
+      label: 'Gallery',
+      icon: Film,
+      to: pathname === '/' ? '#gallery' : '/gallery',
+      onClick: handleGalleryClick,
+      isActive: pathname.startsWith('/gallery') || (pathname === '/' && hash === '#gallery')
+    },
+    {
       id: 'bridal',
       label: 'Bridal',
       icon: Sparkles,
       to: pathname === '/' ? '#bridal' : '/bridal',
       onClick: handleBridalClick,
       isActive: pathname.startsWith('/bridal') || (pathname === '/' && hash === '#bridal')
-    },
-    {
-      id: 'account',
-      label: user ? 'Account' : 'Account',
-      icon: User,
-      to: user ? '/dashboard' : '/login',
-      isActive:
-        pathname.startsWith('/dashboard') ||
-        pathname.startsWith('/profile') ||
-        pathname.startsWith('/login') ||
-        pathname.startsWith('/signup') ||
-        pathname.startsWith('/my-appointments')
     }
   ];
 

@@ -512,6 +512,8 @@ export default function Home() {
         </div>
       </section>
 
+      {/* GALLERY & 4K VIDEO REELS SHOWCASE ANCHOR */}
+      <div id="gallery" className="scroll-mt-16 sm:scroll-mt-20">
       {/* =========================================================================
           SECTION 1B: STUDIO VIDEO REELS & TRANSFORMATIONS (4 SHORT 4K REELS)
           ========================================================================= */}
@@ -680,6 +682,8 @@ export default function Home() {
 
         </div>
       </section>
+
+      </div>
 
       {/* CONTAINERIZED HOMEPAGE SECTIONS */}
       <div className="space-y-16 sm:space-y-24 pt-14 sm:pt-20">
