@@ -589,7 +589,7 @@ export default function Home() {
                     }}
                   >
                     {/* Media Thumbnail Container */}
-                    <div className="relative aspect-[4/4.5] sm:aspect-[4/4.8] sm:h-80 md:h-88 lg:h-96 w-full overflow-hidden bg-stone-900">
+                    <div className="relative aspect-[3/4] w-full overflow-hidden bg-stone-100">
                       {isVideo && (!item.thumbnail || item.thumbnail.includes('.mp4') || item.thumbnail.includes('.webm') || item.thumbnail === item.url) ? (
                         <video
                           src={resolveImageUrl(item.url || item.videoUrl)}

@@ -16,13 +16,15 @@ import {
   ShieldCheck,
   CheckCircle2,
   Clock,
-  Sparkle
+  Sparkle,
+  ZoomIn
 } from 'lucide-react';
 import PhotoLightbox from '../gallery/PhotoLightbox';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
 /**
  * 16 Real Bridal Photographs from Enrich Beauty Parlour & Cosmetic Clinic, Sikar
+ * All photos are verified portrait orientations (3:4 or 2:3) capturing full bridal looks.
  */
 export const ALL_BRIDAL_PHOTOS = [
   {
@@ -81,93 +83,93 @@ export const ALL_BRIDAL_PHOTOS = [
   },
   {
     id: 'bridal_7',
-    title: 'Traditional Shekhawati Poshak Styling',
-    category: 'rajasthani',
-    categoryLabel: 'Royal Rajasthani',
-    description: 'Marwari and Shekhawati traditional bridal poshak with authentic borla and nath setting.',
-    url: '/images/bridal/bridal1.webp',
-    tag: 'Traditional Poshak'
-  },
-  {
-    id: 'bridal_8',
-    title: 'Couture Bridal Hair Bun & Floral Artistry',
-    category: 'veil',
-    categoryLabel: 'Veil & Draping',
-    description: 'Intricate wedding hair updo adorned with fresh roses, baby breath, and secure dupatta anchoring.',
-    url: '/images/bridal/bridal2.webp',
-    tag: 'Floral Hair Bun'
-  },
-  {
-    id: 'bridal_9',
-    title: 'Modern Reception Glow & Velvet Lips',
+    title: 'Evening Champagne Reception Glam',
     category: 'reception',
     categoryLabel: 'Reception & Sangeet',
-    description: 'Contemporary evening bridal glam with dewy finish and modern rose lip shades.',
-    url: '/images/bridal/bridal3.webp',
+    description: 'Contemporary champagne bridal gown makeover with sculpted neckline and diamond choker styling.',
+    url: '/images/bridal/bridal1.webp',
     tag: 'Reception Glam'
   },
   {
-    id: 'bridal_10',
-    title: 'Heritage Matha Patti & Eye Detailing',
+    id: 'bridal_8',
+    title: 'Royal Haldi & Mehendi Yellow Poshak',
     category: 'rajasthani',
     categoryLabel: 'Royal Rajasthani',
-    description: 'Precision eye artistry, winged definition, custom luxury lashes, and symmetrical jewelry alignment.',
-    url: '/images/bridal/bridal4.jpeg',
-    tag: 'Eye Artistry'
+    description: 'Vibrant mustard poshak with emerald jadau jewelry, kundan matha patti, and fresh dewy glow.',
+    url: '/images/bridal/bridal2.webp',
+    tag: 'Haldi & Mehendi'
+  },
+  {
+    id: 'bridal_9',
+    title: 'Vibrant Turquoise Sheer Veil Styling',
+    category: 'veil',
+    categoryLabel: 'Veil & Draping',
+    description: 'Luminous teal bridal draping with lightweight poshak pinning and glowing natural radiance.',
+    url: '/images/bridal/bridal3.webp',
+    tag: 'Veil Styling'
+  },
+  {
+    id: 'bridal_10',
+    title: 'Royal Lilac & Mauve Shimmer Lehenga',
+    category: 'reception',
+    categoryLabel: 'Reception & Sangeet',
+    description: 'Modern pastel lilac bridal ensemble with soft rose lips, winged liner, and fine diamond set.',
+    url: '/images/bridal/bridal4.webp',
+    tag: 'Pastel Lehenga'
   },
   {
     id: 'bridal_11',
-    title: 'Shekhawati Royal Bride Portrait',
+    title: 'Grand Rajputana Gotta Patti Poshak',
     category: 'rajasthani',
     categoryLabel: 'Royal Rajasthani',
-    description: 'Regal bridal elegance curated for traditional Sikar ceremonies with long-lasting flawless base.',
-    url: '/images/bridal/bridal5.jpeg',
-    tag: 'Royal Bride'
+    description: 'Traditional Marwari orange and gold royal poshak styling with heavy gotta patti and borla.',
+    url: '/images/bridal/bridal5.webp',
+    tag: 'Royal Poshak'
   },
   {
     id: 'bridal_12',
-    title: 'Flawless High-Definition Camera Base',
-    category: 'airbrush',
-    categoryLabel: 'HD Airbrush',
-    description: 'Tear-resistant, sweat-proof HD formula designed for high-resolution video and photo shoots.',
+    title: 'Traditional Shekhawati Pink Bridal Look',
+    category: 'rajasthani',
+    categoryLabel: 'Royal Rajasthani',
+    description: 'Signature Rajasthani crimson-pink poshak, authentic bridal nath, borla, and chuda styling.',
     url: '/images/bridal/bridal6.webp',
-    tag: 'HD 4K Ready'
+    tag: 'Shekhawati Bride'
   },
   {
     id: 'bridal_13',
-    title: 'Bridal Jewelry & Dupatta Setting',
-    category: 'veil',
-    categoryLabel: 'Veil & Draping',
-    description: 'Secure, weight-balanced dupatta pinning and jewelry arrangement for all-day comfort.',
-    url: '/images/bridal/bridal7.jpeg',
-    tag: 'Dupatta Styling'
+    title: 'Outdoor Wedding Courtyard Portrait',
+    category: 'airbrush',
+    categoryLabel: 'HD Airbrush',
+    description: 'Flawless daytime wedding makeup with floral courtyard setting, fresh roses, and gold kundan.',
+    url: '/images/bridal/bridal7.webp',
+    tag: 'Courtyard Bridal'
   },
   {
     id: 'bridal_14',
-    title: 'Radiant Day Wedding Bridal Makeover',
-    category: 'airbrush',
-    categoryLabel: 'HD Airbrush',
-    description: 'Luminous daytime wedding makeup with delicate peach and golden highlights.',
-    url: '/images/bridal/bridal8.jpeg',
-    tag: 'Day Bridal'
+    title: 'Peacock Royal Blue Poshak Makeover',
+    category: 'rajasthani',
+    categoryLabel: 'Royal Rajasthani',
+    description: 'Rich peacock blue poshak with silver zardozi border, heritage matha patti, and glass skin.',
+    url: '/images/bridal/bridal8.webp',
+    tag: 'Royal Blue Poshak'
   },
   {
     id: 'bridal_15',
-    title: 'Grand Wedding Celebration Look',
+    title: 'Couture Lavender Floral Sangeet Glam',
     category: 'reception',
     categoryLabel: 'Reception & Sangeet',
-    description: 'Glamorous post-wedding party makeup with soft illumination and sculpted features.',
-    url: '/images/bridal/bridal9.jpeg',
-    tag: 'Party Glam'
+    description: 'Romantic evening bridal look with intricate floral backdrop, mauve lids, and dewy finish.',
+    url: '/images/bridal/bridal9.webp',
+    tag: 'Sangeet Look'
   },
   {
     id: 'bridal_16',
-    title: 'Enrich Royal Sikar Bride Portrait',
-    category: 'reception',
-    categoryLabel: 'Reception & Sangeet',
-    description: 'Signature bridal transformation created under the personal direction of Anu Saini.',
-    url: '/images/bridal/bridal10.jpeg.jpg',
-    tag: 'Signature Bride'
+    title: 'Grand Banquet Hall Bride in Lilac',
+    category: 'rajasthani',
+    categoryLabel: 'Royal Rajasthani',
+    description: 'Royal aisle entrance look in soft lilac poshak with floral walkway and full jewelry ensemble.',
+    url: '/images/bridal/bridal10.webp',
+    tag: 'Royal Aisle'
   }
 ];
 
@@ -287,7 +289,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
     <div className={`space-y-10 sm:space-y-14 ${isEmbedded ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
       
       {/* =========================================================================
-          HERO SPOTLIGHT: Left = Large Photo & Thumbnails; Right = Consultation Card
+          HERO SPOTLIGHT: Left = Large Full-Portrait Photo & Thumbnails; Right = Consultation Card
           ========================================================================= */}
       <div className="space-y-6">
         {/* Title Header */}
@@ -307,18 +309,23 @@ export default function BridalShowcase({ isEmbedded = false }) {
         {/* Hero Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           
-          {/* Left 7 Columns: Featured Photo & 5 Thumbnails */}
+          {/* Left 7 Columns: Featured Full-Portrait Photo & 5 Thumbnails */}
           <div className="lg:col-span-7 space-y-3">
-            <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl bg-stone-900 border border-stone-200/90 group">
+            {/* Main Featured Photo Container: Portrait aspect-ratio so entire poshak, jewelry, and look are fully visible */}
+            <div
+              onClick={() => openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx)}
+              className="relative aspect-[3/4] sm:aspect-[4/5] w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl bg-stone-900 border border-stone-200/90 group cursor-pointer"
+            >
               <img
                 key={activeHeroPhoto.url}
                 src={resolveImageUrl(activeHeroPhoto.url, DEFAULT_SALON_PLACEHOLDER)}
                 alt={activeHeroPhoto.title}
-                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-102"
+                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
                 onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-transparent to-stone-950/20 pointer-events-none" />
+              {/* Minimal light gradient only at bottom to ensure photo stays 100% visible */}
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent pointer-events-none" />
 
               {/* Top Badges */}
               <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between pointer-events-auto">
@@ -329,31 +336,34 @@ export default function BridalShowcase({ isEmbedded = false }) {
 
                 <button
                   type="button"
-                  onClick={() => openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx);
+                  }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-stone-900/85 hover:bg-stone-900 backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
                   title="View Fullscreen Photo"
                   aria-label="View photo in fullscreen lightbox"
                 >
                   <Maximize2 className="w-3.5 h-3.5 text-rose-300" />
-                  <span className="hidden sm:inline">Zoom Fullscreen</span>
+                  <span>View Full Photo</span>
                 </button>
               </div>
 
-              {/* Bottom Caption Overlay */}
-              <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white space-y-1">
+              {/* Bottom Caption Overlay: Compact so it never blocks the bride */}
+              <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white space-y-0.5 pointer-events-none">
                 <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">
                   {activeHeroPhoto.categoryLabel}
                 </span>
-                <h3 className="text-base sm:text-xl font-serif font-bold leading-tight drop-shadow-md">
+                <h3 className="text-base sm:text-lg font-serif font-bold leading-tight drop-shadow-md">
                   {activeHeroPhoto.title}
                 </h3>
-                <p className="text-xs text-stone-200 line-clamp-1 font-light drop-shadow-sm">
+                <p className="text-[11px] text-stone-200 line-clamp-1 font-light drop-shadow-sm">
                   {activeHeroPhoto.description}
                 </p>
               </div>
             </div>
 
-            {/* 5 Thumbnails Row */}
+            {/* 5 Thumbnails Row in Natural Portrait 3:4 Aspect Ratio */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-[11px] text-stone-500 px-0.5">
                 <span className="font-semibold text-stone-700 uppercase tracking-wider">
@@ -370,7 +380,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
                       key={thumb.id}
                       type="button"
                       onClick={() => setActiveHeroIdx(idx)}
-                      className={`group relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
+                      className={`group relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
                         isSelected
                           ? 'ring-2 ring-rose-700 ring-offset-2 ring-offset-white scale-[1.03] shadow-md'
                           : 'border border-stone-200 opacity-80 hover:opacity-100 hover:scale-[1.01]'
@@ -536,7 +546,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
       </div>
 
       {/* =========================================================================
-          PHOTO GALLERY: 16 Real Photos with "Book on WhatsApp" on Every Card
+          PHOTO GALLERY: 16 Real Photos Completely Visible with "Book on WhatsApp" on Every Card
           ========================================================================= */}
       <div className="space-y-6 pt-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200/80 pb-4">
@@ -581,74 +591,77 @@ export default function BridalShowcase({ isEmbedded = false }) {
         </div>
 
         {/* Responsive Grid: 2 cols on Mobile, 4 cols on Desktop */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
           {filteredPhotos.map((photo, idx) => (
             <div
               key={photo.id}
               className="group bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 overflow-hidden shadow-2xs hover:shadow-lg hover:border-rose-200 transition-all duration-300 flex flex-col"
             >
+              {/* Image Frame: Unobstructed, 3:4 portrait ratio matches photos */}
               <div
                 onClick={() => openLightbox(filteredPhotos, idx)}
-                className="relative aspect-[3/4] w-full overflow-hidden bg-stone-900 cursor-pointer"
+                className="relative aspect-[3/4] w-full overflow-hidden bg-stone-100 cursor-pointer"
               >
                 <img
                   src={resolveImageUrl(photo.url, DEFAULT_SALON_PLACEHOLDER)}
                   alt={photo.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover object-top group-hover:scale-104 transition-transform duration-500"
                   onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-stone-950/15 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300" />
-
-                <div className="absolute top-2.5 left-2.5 z-10">
-                  <span className="text-[10px] font-bold text-white bg-stone-900/80 backdrop-blur-xs px-2.5 py-0.5 rounded-full border border-white/20">
+                {/* Subtle top tag badge */}
+                <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
+                  <span className="text-[10px] font-bold text-white bg-stone-900/80 backdrop-blur-xs px-2.5 py-0.5 rounded-full border border-white/20 shadow-xs">
                     {photo.tag}
                   </span>
                 </div>
 
+                {/* Accessible Zoom Button on Photo */}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     openLightbox(filteredPhotos, idx);
                   }}
-                  className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-stone-900/80 hover:bg-rose-700 text-white flex items-center justify-center backdrop-blur-xs transition-colors z-10"
-                  title="Zoom Photo"
+                  className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-stone-900/80 hover:bg-rose-700 text-white flex items-center justify-center backdrop-blur-xs transition-colors z-10 shadow-xs cursor-pointer"
+                  title="View Fullscreen Photo"
+                  aria-label={`View ${photo.title} in fullscreen`}
                 >
                   <Eye className="w-4 h-4" />
                 </button>
 
-                <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-[10px] uppercase font-bold text-rose-300">
-                    {photo.categoryLabel}
+                {/* Subtle hover overlay hint only on desktop, never blocking photo on mobile */}
+                <div className="hidden sm:flex absolute inset-0 bg-stone-950/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center pointer-events-none">
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-stone-900/90 text-white text-xs font-semibold shadow-md">
+                    <Maximize2 className="w-3.5 h-3.5 text-rose-300" />
+                    <span>View Full Photo</span>
                   </span>
-                  <h4 className="font-serif font-bold text-xs sm:text-sm line-clamp-1 drop-shadow-sm">
-                    {photo.title}
-                  </h4>
                 </div>
               </div>
 
-              {/* Card Footer: Title & Direct Book on WhatsApp */}
-              <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1 space-y-2.5">
-                <div>
-                  <h4 className="font-serif font-bold text-xs sm:text-sm text-stone-900 line-clamp-1">
+              {/* Card Footer: Cleanly positioned BELOW image so photo is never obscured */}
+              <div className="p-3 sm:p-4 flex flex-col justify-between flex-1 space-y-2.5">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">
+                    {photo.categoryLabel}
+                  </span>
+                  <h4 className="font-serif font-bold text-xs sm:text-sm text-stone-900 line-clamp-1 leading-snug">
                     {photo.title}
                   </h4>
-                  <p className="text-[11px] text-stone-500 font-light line-clamp-1 mt-0.5">
+                  <p className="text-[11px] text-stone-500 font-light line-clamp-1 leading-relaxed">
                     {photo.description}
                   </p>
                 </div>
 
+                {/* Direct WhatsApp Booking Button */}
                 <a
-                  href={getWhatsAppUrl(`Hi Anu Saini, I saw the "${photo.title}" photo in your bridal gallery and would like to book an appointment for this look.`)}
+                  href={getWhatsAppUrl(`Hi Anu Saini, I saw the "${photo.title}" look in your bridal gallery and would like to book an appointment for my wedding.`)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-2xs transition-colors"
                   title="Book this bridal look on WhatsApp"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                  <MessageCircle className="w-3.5 h-3.5 fill-current shrink-0" />
                   <span>Book on WhatsApp</span>
                 </a>
               </div>
