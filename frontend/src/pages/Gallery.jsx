@@ -283,63 +283,6 @@ export default function Gallery() {
       ) : (
         <div className="space-y-20 sm:space-y-28">
 
-          {/* ========================================================================= */}
-          {/* SPECIAL SECTION: DEDICATED BRIDAL ATELIER BANNER (WHEN BRIDAL TAB IS ACTIVE) */}
-          {/* ========================================================================= */}
-          {selectedType === 'bridal' && (
-            <section className="relative overflow-hidden bg-gradient-to-r from-stone-950 via-[#261517] to-stone-950 rounded-3xl p-6 sm:p-10 text-white border border-rose-900/40 shadow-2xl">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-rose-600/15 rounded-full blur-3xl pointer-events-none" />
-              <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="space-y-3 max-w-2xl">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-semibold">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Exclusively Bridal Transformations • Enrich Sikar</span>
-                  </div>
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight text-white">
-                    Signature Royal Bridal Portfolio
-                  </h2>
-                  <p className="text-xs sm:text-sm text-stone-300 font-light leading-relaxed">
-                    Personally styled and crafted by Founder & Lead Cosmetologist <strong>Anu Saini</strong>. Featuring waterproof HD airbrush techniques, traditional Rajputana matha patti and poshak draping, and customized pre-bridal rituals.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-stone-300">
-                    <span className="flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                      18-Hr Waterproof Base
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                      Authentic Rajasthani Draping
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Heart className="w-4 h-4 text-rose-400" />
-                      Anu Saini Personal Direction
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
-                  <a
-                    href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20am%20viewing%20your%20Royal%20Bridal%20Portfolio%20and%20want%20to%20reserve%20wedding%20dates."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-600/30 transition-all cursor-pointer"
-                  >
-                    <MessageCircle className="w-4 h-4 fill-current" />
-                    <span>Inquire Wedding Dates on WhatsApp</span>
-                  </a>
-                  <a
-                    href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20am%20viewing%20your%20Royal%20Bridal%20Portfolio%20and%20want%20to%20reserve%20wedding%20dates."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer"
-                  >
-                    <MessageCircle className="w-4 h-4 text-rose-300" />
-                    <span>Inquire Bridal Dates on WhatsApp</span>
-                  </a>
-                </div>
-              </div>
-            </section>
-          )}
 
           {/* ========================================================================= */}
           {/* 2. FEATURED EXPERIENCE (MAIN 4K VISUAL ANCHOR - HIDDEN IN BRIDAL MODE) */}
