@@ -34,8 +34,16 @@ export const resolveImageUrl = (input, fallback = DEFAULT_SALON_PLACEHOLDER) => 
     return cleanUrl;
   }
 
-  // 3. Extract configured server host or fallback to localhost:5000
-  const apiBase = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'http://localhost:5000/api/v1';
+  // 3. Extract configured server host or dynamically use LAN IP on mobile devices
+  const apiBase = (() => {
+    if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) {
+      return import.meta.env.VITE_API_BASE_URL;
+    }
+    if (typeof window !== 'undefined' && window.location?.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return `${window.location.protocol}//${window.location.hostname}:5000/api/v1`;
+    }
+    return 'http://localhost:5000/api/v1';
+  })();
   const serverHost = apiBase.replace(/\/api\/v1\/?$/, '').replace(/\/+$/, '') || 'http://localhost:5000';
 
   // 4. Full HTTP / HTTPS URLs
