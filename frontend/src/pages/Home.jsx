@@ -395,25 +395,42 @@ export default function Home() {
               </p>
 
               {/* Clean Primary Actions */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5">
+              <div className="pt-2 flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-3">
                 <a
                   href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
                   target="_blank"
                   rel="noopener noreferrer"
                   id="hero-book-cta"
-                  className="btn-rose w-full sm:w-auto px-8 py-3.5 text-sm font-bold shadow-md shadow-rose-950/15 inline-flex items-center justify-center gap-2"
+                  className="btn-rose w-full sm:w-auto px-7 py-3.5 text-sm font-bold shadow-md shadow-rose-950/15 inline-flex items-center justify-center gap-2"
                 >
                   <MessageCircle className="w-4 h-4 fill-current" />
                   <span>Book on WhatsApp</span>
                 </a>
 
                 <a
+                  href="#bridal"
+                  id="hero-bridal-cta"
+                  onClick={(e) => {
+                    const el = document.getElementById('bridal');
+                    if (el) {
+                      e.preventDefault();
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="w-full sm:w-auto px-6 py-3.5 text-sm font-bold text-rose-900 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-2xl shadow-xs transition-all hover:scale-[1.02] active:scale-98 inline-flex items-center justify-center gap-2 cursor-pointer group"
+                >
+                  <Sparkles className="w-4 h-4 text-rose-700 group-hover:rotate-12 transition-transform" />
+                  <span>View Bridal Services</span>
+                  <ArrowRight className="w-4 h-4 ml-0.5 text-rose-600 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+
+                <a
                   href="#services"
                   id="hero-services-cta"
-                  className="btn-secondary w-full sm:w-auto px-7 py-3.5 text-sm"
+                  className="btn-secondary w-full sm:w-auto px-6 py-3.5 text-sm"
                 >
-                  View Services & Treatments
-                  <ArrowRight className="w-4 h-4 ml-2 text-stone-600" />
+                  <span>All Services</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5 text-stone-600" />
                 </a>
               </div>
 
