@@ -378,35 +378,58 @@ export default function BridalShowcase({ isEmbedded = false }) {
             </div>
           </div>
 
-          {/* Direct Actions: Book on WhatsApp + Call */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <a
-              href={getWhatsAppUrl(`Hi Anu Saini, I am interested in booking the "${activeHeroPhoto.title}" bridal look for my wedding.`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-8 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm shadow-md shadow-emerald-950/20 transition-all cursor-pointer active:scale-98"
-            >
-              <MessageCircle className="w-5 h-5 fill-current shrink-0" />
-              <span>Book this Bridal Look on WhatsApp</span>
-            </a>
-
-            <a
-              href="tel:+919667900313"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs sm:text-sm font-semibold border border-stone-200/80 transition-colors"
-            >
-              <Phone className="w-4 h-4 text-stone-700" />
-              <span>Call: 96679 00313</span>
-            </a>
-
-            {isEmbedded && (
-              <Link
-                to="/bridal"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs sm:text-sm font-semibold border border-stone-200/80 transition-colors"
+          {/* Direct Actions: Luxury Bridal Booking Console */}
+          <div className="w-full pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 max-w-2xl mx-auto">
+              {/* 1. Book on WhatsApp */}
+              <a
+                href={getWhatsAppUrl(`Hi Anu Saini, I am interested in booking the "${activeHeroPhoto.title}" bridal look for my wedding.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-12 inline-flex items-center justify-center gap-2 px-5 sm:px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-950/20 hover:shadow-lg transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] group flex-1 sm:flex-initial"
+                title="Book this bridal look on WhatsApp"
               >
-                <Camera className="w-4 h-4 text-rose-700" />
-                <span>View Dedicated Bridal Page</span>
-              </Link>
-            )}
+                <MessageCircle className="w-4.5 h-4.5 fill-current shrink-0 group-hover:scale-110 transition-transform" />
+                <span>Book Look on WhatsApp</span>
+              </a>
+
+              {/* 2. Direct Call Helpline */}
+              <a
+                href="tel:+919667900313"
+                className="h-12 inline-flex items-center justify-center gap-2 px-4 sm:px-5 rounded-2xl bg-white hover:bg-stone-50 text-stone-800 font-semibold text-xs sm:text-sm border border-stone-200/90 shadow-2xs hover:border-stone-300 transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] flex-1 sm:flex-initial"
+                title="Call Salon: +91 96679 00313"
+              >
+                <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Call: 96679 00313</span>
+              </a>
+
+              {/* 3. Dedicated Bridal Page */}
+              {isEmbedded ? (
+                <Link
+                  to="/bridal"
+                  className="h-12 inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-2xl bg-rose-50/80 hover:bg-rose-100/90 text-rose-900 font-semibold text-xs sm:text-sm border border-rose-200/80 shadow-2xs hover:border-rose-300 transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] group flex-1 sm:flex-initial"
+                  title="Open dedicated bridal studio page"
+                >
+                  <Sparkles className="w-4 h-4 text-rose-700 shrink-0 group-hover:scale-110 transition-transform" />
+                  <span>Dedicated Bridal Page</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-rose-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              ) : (
+                <a
+                  href="#portfolio"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="h-12 inline-flex items-center justify-center gap-1.5 px-4 sm:px-5 rounded-2xl bg-rose-50/80 hover:bg-rose-100/90 text-rose-900 font-semibold text-xs sm:text-sm border border-rose-200/80 shadow-2xs hover:border-rose-300 transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] group flex-1 sm:flex-initial"
+                  title="Explore all 16 bridal looks"
+                >
+                  <Sparkles className="w-4 h-4 text-rose-700 shrink-0 group-hover:scale-110 transition-transform" />
+                  <span>Explore All Looks</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-rose-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>
