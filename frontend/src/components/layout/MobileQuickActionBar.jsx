@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import {
   Home,
   Scissors,
@@ -15,12 +15,11 @@ import {
  * 1. Home (Main hub)
  * 2. Services (Price list & salon menu)
  * 3. Book (Center highlighted CTA pill button)
- * 4. Gallery (Watch 4K Video Reels & Transformations)
+ * 4. Gallery (Dedicated /gallery page: 4K Video Reels & Transformations)
  * 5. Bridal (Flagship bridal studio & looks)
  */
 export default function MobileQuickActionBar() {
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Hide only on admin panel routes
   if (location.pathname.startsWith('/admin')) {
@@ -37,19 +36,6 @@ export default function MobileQuickActionBar() {
     }
   };
 
-  const handleGalleryClick = (e) => {
-    if (pathname === '/') {
-      e.preventDefault();
-      const el = document.getElementById('gallery');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        window.history.replaceState(null, '', '#gallery');
-      } else {
-        navigate('/gallery');
-      }
-    }
-  };
-
   const handleBridalClick = (e) => {
     if (pathname === '/') {
       e.preventDefault();
@@ -57,8 +43,6 @@ export default function MobileQuickActionBar() {
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
         window.history.replaceState(null, '', '#bridal');
-      } else {
-        navigate('/bridal');
       }
     }
   };
@@ -91,9 +75,8 @@ export default function MobileQuickActionBar() {
       id: 'gallery',
       label: 'Gallery',
       icon: Film,
-      to: pathname === '/' ? '#gallery' : '/gallery',
-      onClick: handleGalleryClick,
-      isActive: pathname.startsWith('/gallery') || (pathname === '/' && hash === '#gallery')
+      to: '/gallery',
+      isActive: pathname.startsWith('/gallery')
     },
     {
       id: 'bridal',
