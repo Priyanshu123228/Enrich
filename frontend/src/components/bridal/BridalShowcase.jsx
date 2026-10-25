@@ -4,27 +4,17 @@ import {
   Sparkles,
   Camera,
   MessageCircle,
-  Scissors,
-  Layers,
-  HeartHandshake,
   ArrowRight,
   Maximize2,
-  CalendarCheck,
   Eye,
-  Star,
   Phone,
-  ShieldCheck,
-  CheckCircle2,
-  Clock,
-  Sparkle,
-  ZoomIn
+  Sparkle
 } from 'lucide-react';
 import PhotoLightbox from '../gallery/PhotoLightbox';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
 /**
  * 16 Real Bridal Photographs from Enrich Beauty Parlour & Cosmetic Clinic, Sikar
- * All photos are verified portrait orientations (3:4 or 2:3) capturing full bridal looks.
  */
 export const ALL_BRIDAL_PHOTOS = [
   {
@@ -189,7 +179,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
   const activeHeroPhoto = ALL_BRIDAL_PHOTOS[activeHeroIdx] || ALL_BRIDAL_PHOTOS[0];
 
   const getWhatsAppUrl = (customText) => {
-    const text = customText || 'Hi Anu Saini, I want to book a Bridal Makeup appointment at Enrich Sikar. Please share package details and available wedding dates.';
+    const text = customText || 'Hi Anu Saini, I want to book a Bridal Makeup appointment at Enrich Sikar. Please share available wedding dates.';
     return `https://wa.me/919667900313?text=${encodeURIComponent(text)}`;
   };
 
@@ -223,7 +213,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
     <div className={`space-y-10 sm:space-y-14 ${isEmbedded ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
       
       {/* =========================================================================
-          HERO SPOTLIGHT: Left = Large Full-Portrait Photo & Thumbnails; Right = Consultation Card
+          HERO SPOTLIGHT: Large Featured Full-Width Bridal Look & Switcher Thumbnails
           ========================================================================= */}
       <div className="space-y-6">
         {/* Title Header */}
@@ -240,196 +230,141 @@ export default function BridalShowcase({ isEmbedded = false }) {
           </p>
         </div>
 
-        {/* Hero Split Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          
-          {/* Left 7 Columns: Featured Full-Portrait Photo & 5 Thumbnails */}
-          <div className="lg:col-span-7 space-y-3">
-            {/* Main Featured Photo Container: Portrait aspect-ratio so entire poshak, jewelry, and look are fully visible */}
-            <div
-              onClick={() => openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx)}
-              className="relative aspect-[3/4] sm:aspect-[4/5] w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl bg-stone-900 border border-stone-200/90 group cursor-pointer"
-            >
-              <img
-                key={activeHeroPhoto.url}
-                src={resolveImageUrl(activeHeroPhoto.url, DEFAULT_SALON_PLACEHOLDER)}
-                alt={activeHeroPhoto.title}
-                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
-                onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
-              />
+        {/* Featured Bridal Photo - Completely occupies complete space */}
+        <div className="w-full max-w-4xl mx-auto space-y-3.5">
+          {/* Main Featured Photo: Portrait framing so entire poshak, jewelry, and look are 100% visible */}
+          <div
+            onClick={() => openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx)}
+            className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-[16/11] max-h-[640px] w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl bg-stone-950 border border-stone-200/90 group cursor-pointer"
+          >
+            <img
+              key={activeHeroPhoto.url}
+              src={resolveImageUrl(activeHeroPhoto.url, DEFAULT_SALON_PLACEHOLDER)}
+              alt={activeHeroPhoto.title}
+              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
+              onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+            />
 
-              {/* Minimal light gradient only at bottom to ensure photo stays 100% visible */}
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent pointer-events-none" />
+            {/* Subtle light gradient at bottom */}
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent pointer-events-none" />
 
-              {/* Top Badges */}
-              <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between pointer-events-auto">
-                <span className="text-[11px] font-bold text-white bg-rose-700/90 backdrop-blur-md px-3 py-1 rounded-full border border-rose-400/30 shadow-sm flex items-center gap-1.5">
-                  <Sparkle className="w-3 h-3 text-amber-300 fill-current" />
-                  <span>{activeHeroPhoto.tag}</span>
-                </span>
+            {/* Top Badges */}
+            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between pointer-events-auto">
+              <span className="text-[11px] font-bold text-white bg-rose-700/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-rose-400/30 shadow-sm flex items-center gap-1.5">
+                <Sparkle className="w-3 h-3 text-amber-300 fill-current" />
+                <span>{activeHeroPhoto.tag}</span>
+              </span>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-stone-900/85 hover:bg-stone-900 backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
-                  title="View Fullscreen Photo"
-                  aria-label="View photo in fullscreen lightbox"
-                >
-                  <Maximize2 className="w-3.5 h-3.5 text-rose-300" />
-                  <span>View Full Photo</span>
-                </button>
-              </div>
-
-              {/* Bottom Caption Overlay: Compact so it never blocks the bride */}
-              <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white space-y-0.5 pointer-events-none">
-                <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">
-                  {activeHeroPhoto.categoryLabel}
-                </span>
-                <h3 className="text-base sm:text-lg font-serif font-bold leading-tight drop-shadow-md">
-                  {activeHeroPhoto.title}
-                </h3>
-                <p className="text-[11px] text-stone-200 line-clamp-1 font-light drop-shadow-sm">
-                  {activeHeroPhoto.description}
-                </p>
-              </div>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-stone-900/85 hover:bg-stone-900 backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
+                title="View Fullscreen Photo"
+                aria-label="View photo in fullscreen lightbox"
+              >
+                <Maximize2 className="w-3.5 h-3.5 text-rose-300" />
+                <span>View Full Photo</span>
+              </button>
             </div>
 
-            {/* 5 Thumbnails Row in Natural Portrait 3:4 Aspect Ratio */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-[11px] text-stone-500 px-0.5">
-                <span className="font-semibold text-stone-700 uppercase tracking-wider">
-                  Featured Looks (Tap to switch):
-                </span>
-                <span className="text-stone-400">16 Total Looks Below ↓</span>
-              </div>
-
-              <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
-                {ALL_BRIDAL_PHOTOS.slice(0, 5).map((thumb, idx) => {
-                  const isSelected = activeHeroIdx === idx;
-                  return (
-                    <button
-                      key={thumb.id}
-                      type="button"
-                      onClick={() => setActiveHeroIdx(idx)}
-                      className={`group relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
-                        isSelected
-                          ? 'ring-2 ring-rose-700 ring-offset-2 ring-offset-white scale-[1.03] shadow-md'
-                          : 'border border-stone-200 opacity-80 hover:opacity-100 hover:scale-[1.01]'
-                      }`}
-                      aria-label={`Select ${thumb.title}`}
-                    >
-                      <img
-                        src={resolveImageUrl(thumb.url, DEFAULT_SALON_PLACEHOLDER)}
-                        alt={thumb.title}
-                        className="w-full h-full object-cover object-top"
-                        onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
-                      />
-                      <div className="absolute inset-0 bg-stone-950/20 group-hover:bg-transparent transition-colors" />
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Right 5 Columns: Professional Consultation Card */}
-          <div className="lg:col-span-5 bg-white rounded-3xl border border-stone-200/90 shadow-lg p-5 sm:p-7 space-y-5">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1 rounded-full w-fit border border-amber-200/80">
-                <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                <span>4.9★ Rated • 500+ Brides Styled in Sikar</span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 tracking-tight">
-                Book Your Wedding Look
+            {/* Bottom Caption Overlay: Compact so it never blocks the bride */}
+            <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 text-white space-y-0.5 pointer-events-none">
+              <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider">
+                {activeHeroPhoto.categoryLabel}
+              </span>
+              <h3 className="text-base sm:text-xl font-serif font-bold leading-tight drop-shadow-md">
+                {activeHeroPhoto.title}
               </h3>
-              <p className="text-xs text-stone-600 font-light leading-relaxed">
-                Personal 1-on-1 bridal styling under Lead Cosmetologist <strong>Anu Saini</strong> at our Sharda Heights studio.
+              <p className="text-xs text-stone-200 line-clamp-1 font-light drop-shadow-sm">
+                {activeHeroPhoto.description}
               </p>
             </div>
-
-            {/* Verified Feature Bullets */}
-            <div className="space-y-2.5 text-xs text-stone-700 border-y border-stone-100 py-3.5">
-              <div className="flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span><strong>18-Hour Waterproof Base:</strong> Tear-proof, humidity-resistant, 4K camera ready.</span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                <span><strong>Authentic Rajasthani Draping:</strong> Heavy poshak, double dupatta & matha patti pinning.</span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <span><strong>Premium Cosmetics:</strong> MAC, Huda Beauty, NARS, and Temptu HD Airbrush.</span>
-              </div>
-              <div className="flex items-start gap-2.5">
-                <Clock className="w-4 h-4 text-stone-600 shrink-0 mt-0.5" />
-                <span><strong>Private Suite:</strong> Air-conditioned bridal dressing room with dedicated vanity.</span>
-              </div>
-            </div>
-
-            {/* Primary Booking Actions: Book on WhatsApp */}
-            <div className="space-y-2.5 pt-1">
-              <a
-                href={getWhatsAppUrl(`Hi Anu Saini, I am interested in booking the "${activeHeroPhoto.title}" bridal look for my wedding.`)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm shadow-md shadow-emerald-950/20 transition-all cursor-pointer active:scale-98"
-              >
-                <MessageCircle className="w-5 h-5 fill-current shrink-0" />
-                <span>Book on WhatsApp</span>
-              </a>
-
-              <div className="grid grid-cols-2 gap-2">
-                <a
-                  href="tel:+919667900313"
-                  className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold border border-stone-200/80 transition-colors"
-                >
-                  <Phone className="w-3.5 h-3.5 text-stone-700" />
-                  <span>Call: 96679 00313</span>
-                </a>
-
-                <Link
-                  to="/bridal"
-                  className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold border border-stone-200/80 transition-colors"
-                >
-                  <Camera className="w-3.5 h-3.5 text-rose-700" />
-                  <span>View Bridal Page</span>
-                </Link>
-              </div>
-            </div>
-
-            <p className="text-[11px] text-stone-500 text-center font-light">
-              ⚡ Only 2 brides accepted per auspicious wedding date for undivided focus.
-            </p>
           </div>
 
+          {/* 5 Thumbnails Row in Natural Portrait 3:4 Aspect Ratio */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] text-stone-500 px-0.5">
+              <span className="font-semibold text-stone-700 uppercase tracking-wider">
+                Featured Looks (Tap to switch):
+              </span>
+            </div>
+
+            <div className="grid grid-cols-5 gap-2 sm:gap-3">
+              {ALL_BRIDAL_PHOTOS.slice(0, 5).map((thumb, idx) => {
+                const isSelected = activeHeroIdx === idx;
+                return (
+                  <button
+                    key={thumb.id}
+                    type="button"
+                    onClick={() => setActiveHeroIdx(idx)}
+                    className={`group relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
+                      isSelected
+                        ? 'ring-2 ring-rose-700 ring-offset-2 ring-offset-white scale-[1.03] shadow-md'
+                        : 'border border-stone-200 opacity-80 hover:opacity-100 hover:scale-[1.01]'
+                    }`}
+                    aria-label={`Select ${thumb.title}`}
+                  >
+                    <img
+                      src={resolveImageUrl(thumb.url, DEFAULT_SALON_PLACEHOLDER)}
+                      alt={thumb.title}
+                      className="w-full h-full object-cover object-top"
+                      onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
+                    />
+                    <div className="absolute inset-0 bg-stone-950/20 group-hover:bg-transparent transition-colors" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Direct Actions: Book on WhatsApp + Call */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+            <a
+              href={getWhatsAppUrl(`Hi Anu Saini, I am interested in booking the "${activeHeroPhoto.title}" bridal look for my wedding.`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 py-3.5 px-8 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm shadow-md shadow-emerald-950/20 transition-all cursor-pointer active:scale-98"
+            >
+              <MessageCircle className="w-5 h-5 fill-current shrink-0" />
+              <span>Book this Bridal Look on WhatsApp</span>
+            </a>
+
+            <a
+              href="tel:+919667900313"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs sm:text-sm font-semibold border border-stone-200/80 transition-colors"
+            >
+              <Phone className="w-4 h-4 text-stone-700" />
+              <span>Call: 96679 00313</span>
+            </a>
+
+            {isEmbedded && (
+              <Link
+                to="/bridal"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs sm:text-sm font-semibold border border-stone-200/80 transition-colors"
+              >
+                <Camera className="w-4 h-4 text-rose-700" />
+                <span>View Dedicated Bridal Page</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
       {/* =========================================================================
           PHOTO GALLERY: 16 Real Photos Completely Visible with "Book on WhatsApp" on Every Card
           ========================================================================= */}
-      <div className="space-y-6 pt-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200/80 pb-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 uppercase tracking-wider">
-              <Camera className="w-3.5 h-3.5" />
-              <span>Real Brides of Enrich Atelier</span>
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight mt-0.5">
-              Bridal Portfolio ({ALL_BRIDAL_PHOTOS.length} Looks)
-            </h3>
-            <p className="text-xs sm:text-sm text-stone-600 font-light">
-              Tap any photo to zoom in high-definition, or tap "Book on WhatsApp" to reserve that exact look.
-            </p>
+      <div className="space-y-6 pt-4">
+        <div className="border-b border-stone-200/80 pb-3">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 uppercase tracking-wider">
+            <Camera className="w-3.5 h-3.5" />
+            <span>Real Brides of Enrich Atelier</span>
           </div>
-
-          <span className="text-xs font-mono text-stone-500 bg-stone-100 px-3 py-1 rounded-full self-start sm:self-end">
-            Showing {filteredPhotos.length} of {ALL_BRIDAL_PHOTOS.length} Looks
-          </span>
+          <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 tracking-tight mt-0.5">
+            Bridal Portfolio
+          </h3>
         </div>
 
         {/* Category Filter Pills */}
