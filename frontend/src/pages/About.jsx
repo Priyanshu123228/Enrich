@@ -84,16 +84,6 @@ export default function About() {
           </a>
 
           <a
-            href="https://wa.me/919667900313?text=Hi%20Anu%20Saini,%20I%20have%20an%20inquiry%20regarding%20Enrich%20Salon."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors"
-          >
-            <MessageCircle className="w-4 h-4 fill-current" />
-            <span>Chat on WhatsApp</span>
-          </a>
-
-          <a
             href={SALON_CONFIG.contact.phoneTel}
             className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold border border-stone-200 transition-colors"
           >

@@ -20,6 +20,7 @@ import {
   Star,
   ArrowRight,
   MessageCircle,
+  Phone,
   Image as ImageIcon,
   CheckCircle2,
   ExternalLink,
@@ -570,23 +571,24 @@ export default function Gallery() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
-              <a
-                href="https://wa.me/919667900313?text=Hi%20Enrich%20Salon,%20I%20would%20like%20to%20book%20an%20appointment."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold tracking-wider uppercase transition-colors shadow-xs"
-              >
-                <MessageCircle className="w-4 h-4 mr-2 fill-current" />
-                <span>BOOK ON WHATSAPP</span>
-              </a>
-
               <button
+                type="button"
                 onClick={handleWhatsAppChat}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold tracking-wider uppercase transition-colors cursor-pointer shadow-xs"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold tracking-wider uppercase transition-all shadow-md shadow-emerald-950/20 active:scale-95 cursor-pointer"
+                title="Book on WhatsApp"
               >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                <span>{selectedType === 'bridal' ? 'CHAT WITH ANU SAINI' : 'CHAT ON WHATSAPP'}</span>
+                <MessageCircle className="w-4 h-4 mr-2 fill-current shrink-0" />
+                <span>BOOK ON WHATSAPP</span>
               </button>
+
+              <a
+                href="tel:+919667900313"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-xl bg-white hover:bg-stone-100 text-stone-800 text-xs font-bold tracking-wider uppercase border border-stone-300 transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
+                title="Call Enrich Salon Desk"
+              >
+                <Phone className="w-4 h-4 mr-2 text-emerald-600 shrink-0" />
+                <span>CALL SALON</span>
+              </a>
             </div>
           </section>
 
