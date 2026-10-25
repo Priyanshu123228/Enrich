@@ -469,64 +469,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
         </div>
       </div>
 
-      {/* =========================================================================
-          ANU SAINI ARTIST SPOTLIGHT
-          ========================================================================= */}
-      <div className="rounded-3xl bg-gradient-to-br from-stone-900 via-stone-850 to-stone-950 text-white p-6 sm:p-10 shadow-2xl relative overflow-hidden border border-stone-800">
-        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 sm:gap-8">
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-rose-400/50 shadow-xl shrink-0">
-            <img
-              src={ALL_BRIDAL_PHOTOS[0].url}
-              alt="Lead Artist Anu Saini"
-              className="w-full h-full object-cover object-top"
-            />
-          </div>
-
-          <div className="space-y-2 text-center md:text-left flex-1">
-            <span className="text-[11px] font-bold text-rose-300 uppercase tracking-widest bg-rose-950/60 border border-rose-800/60 px-3 py-1 rounded-full">
-              Lead Cosmetologist & Bridal Specialist
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
-              Anu Saini • Enrich Sikar
-            </h3>
-            <p className="text-xs sm:text-sm text-stone-300 font-light max-w-xl leading-relaxed">
-              Specializing in couture Rajasthani bridal transformations, precision jewelry setting, and long-wear HD airbrush artistry. Every bride receives undivided personal consultation and custom styling.
-            </p>
-
-            <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <a
-                href={getWhatsAppUrl('Hi Anu Saini, I would like to schedule a personal bridal consultation and makeup trial at your Sikar salon.')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all active:scale-95"
-              >
-                <MessageCircle className="w-4 h-4 fill-current" />
-                <span>Book on WhatsApp</span>
-              </a>
-
-              <a
-                href="tel:+919667900313"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-colors"
-              >
-                <Phone className="w-4 h-4 text-rose-300" />
-                <span>Call: +91 96679 00313</span>
-              </a>
-
-              {isEmbedded && (
-                <Link
-                  to="/bridal"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-semibold text-xs transition-colors"
-                >
-                  <span>Open Dedicated Bridal Page</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Accessible Full-Screen Lightbox */}
+            {/* Accessible Full-Screen Lightbox */}
       {lightboxState.isOpen && (
         <PhotoLightbox
           mediaList={lightboxState.list}
