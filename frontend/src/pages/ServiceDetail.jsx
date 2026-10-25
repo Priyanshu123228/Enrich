@@ -246,9 +246,9 @@ export default function ServiceDetail() {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-sm font-semibold font-serif">Hospital-Grade Sterilization</h4>
+              <h4 className="text-sm font-semibold font-serif">Clean & Hygienic Salon Standards</h4>
               <p className="text-xs text-stone-400 leading-relaxed font-light">
-                All metal implements are sterilized in clinical autoclaves between each appointment. Disposable single-use towels and linens are used for every client.
+                Fresh disposable towels, sanitized tools, and clean linens are used for every client to ensure 100% safety and hygiene.
               </p>
             </div>
           </div>

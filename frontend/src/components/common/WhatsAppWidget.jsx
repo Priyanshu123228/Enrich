@@ -54,7 +54,7 @@ export default function WhatsAppWidget() {
   };
 
   return (
-    <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] md:bottom-6 right-3 sm:right-6 z-30 flex flex-col items-end">
+    <div className="fixed bottom-[calc(7.25rem+env(safe-area-inset-bottom,0px))] md:bottom-6 right-3 sm:right-6 z-30 flex flex-col items-end">
       
       {/* Interactive Popover Window */}
       {isOpen && (

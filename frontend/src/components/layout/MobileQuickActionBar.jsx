@@ -4,7 +4,8 @@ import {
   Scissors,
   CalendarCheck,
   Film,
-  Sparkles
+  Sparkles,
+  PhoneCall
 } from 'lucide-react';
 
 /**
@@ -82,6 +83,7 @@ export default function MobileQuickActionBar() {
       id: 'bridal',
       label: 'Bridal',
       icon: Sparkles,
+  PhoneCall,
       to: pathname === '/' ? '#bridal' : '/bridal',
       onClick: handleBridalClick,
       isActive: pathname.startsWith('/bridal') || (pathname === '/' && hash === '#bridal')
@@ -93,6 +95,29 @@ export default function MobileQuickActionBar() {
       aria-label="PWA Mobile Bottom Navigation"
       className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-stone-950/95 backdrop-blur-xl border-t border-stone-800/80 shadow-[0_-4px_20px_rgba(0,0,0,0.35)] px-2 pt-1.5 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] select-none transition-transform duration-200"
     >
+      {/* 1-Tap Direct Call Header Strip (Always within thumb reach) */}
+      <div className="max-w-md mx-auto mb-1.5 flex items-center justify-between px-3 py-1 rounded-2xl bg-stone-900/90 border border-stone-800/80 shadow-inner">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span className="text-[11px] font-semibold text-stone-300 tracking-tight">
+            Salon Help Desk (Sikar)
+          </span>
+        </div>
+
+        <a
+          href="tel:+919667900313"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-[11px] shadow-sm active:scale-95 transition-all cursor-pointer"
+          title="Direct Call to 96679 00313"
+          aria-label="Call Salon directly at 96679 00313"
+        >
+          <PhoneCall className="w-3.5 h-3.5 text-emerald-100 shrink-0" />
+          <span>Call 96679 00313</span>
+        </a>
+      </div>
+
       <div className="max-w-md mx-auto flex items-center justify-between px-1">
         {navItems.map((item) => {
           const Icon = item.icon;

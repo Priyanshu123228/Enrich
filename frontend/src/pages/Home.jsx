@@ -850,7 +850,7 @@ export default function Home() {
                       Welcome to Enrich Beauty Parlour &amp; Cosmetic Clinic. Founded with an unwavering commitment to combining modern hair design, high-definition bridal artistry, and clinical skincare precision, my mission has always been to elevate personal confidence.
                     </p>
                     <p>
-                      Every treatment begins with a personal 1-on-1 assessment to understand your skin tone, hair integrity, and aesthetic aspirations. Under strict medical-grade hygiene and sterilization standards, our certified team delivers personalized beauty rituals that leave you glowing inside and out.
+                      Every treatment is tailored to your unique skin type, hair texture, and bridal vision. Using authentic international branded products and clean disposable kits, our experienced all-female team delivers beauty rituals that leave you feeling radiant and confident.
                     </p>
                   </>
                 )}
