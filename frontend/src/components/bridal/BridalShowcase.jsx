@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { mediaService } from '../../services/media.service';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
@@ -172,11 +173,61 @@ const CATEGORY_TABS = [
 ];
 
 export default function BridalShowcase({ isEmbedded = false }) {
+  const [bridalPhotos, setBridalPhotos] = useState(ALL_BRIDAL_PHOTOS);
   const [activeHeroIdx, setActiveHeroIdx] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [lightboxState, setLightboxState] = useState({ isOpen: false, index: 0, list: [] });
 
-  const activeHeroPhoto = ALL_BRIDAL_PHOTOS[activeHeroIdx] || ALL_BRIDAL_PHOTOS[0];
+  // Dynamically fetch any newly uploaded bridal photos from Admin Gallery
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDynamicBridalMedia() {
+      try {
+        const res = await mediaService.getGalleryMedia({ category: 'Bridal', limit: 50 });
+        const mediaList = res?.data?.media || res?.data || [];
+        if (!isMounted || !Array.isArray(mediaList) || mediaList.length === 0) return;
+
+        const formattedDbPhotos = mediaList
+          .filter((item) => item.isActive !== false && (item.url || item.thumbnail))
+          .map((item) => {
+            const cat = (item.subcategory || item.category || 'Bridal').toLowerCase();
+            let mappedCat = 'rajasthani';
+            if (cat.includes('airbrush') || cat.includes('hd')) mappedCat = 'airbrush';
+            else if (cat.includes('reception') || cat.includes('sangeet') || cat.includes('cocktail')) mappedCat = 'reception';
+            else if (cat.includes('veil') || cat.includes('draping')) mappedCat = 'veil';
+
+            return {
+              id: item._id || item.id,
+              title: item.title || 'Enrich Royal Bridal Look',
+              category: mappedCat,
+              categoryLabel: item.subcategory || item.category || 'Royal Bridal',
+              description: item.description || 'Custom bridal makeover and royal poshak styling by Anu Saini.',
+              url: item.url || item.thumbnail,
+              tag: item.tags?.[0] || 'Latest Bridal Look',
+              createdAt: item.createdAt
+            };
+          });
+
+        // Avoid duplicates by matching URLs
+        const existingUrls = new Set(ALL_BRIDAL_PHOTOS.map((p) => p.url));
+        const newUploads = formattedDbPhotos.filter((p) => !existingUrls.has(p.url));
+
+        if (newUploads.length > 0 && isMounted) {
+          // Prepend latest admin uploads so they are immediately visible
+          setBridalPhotos([...newUploads, ...ALL_BRIDAL_PHOTOS]);
+        }
+      } catch (err) {
+        console.warn('Could not load dynamic bridal media, using curated looks:', err);
+      }
+    }
+
+    loadDynamicBridalMedia();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const activeHeroPhoto = bridalPhotos[activeHeroIdx] || bridalPhotos[0];
 
   const getWhatsAppUrl = (customText) => {
     const text = customText || 'Hi Anu Saini, I want to book a Bridal Makeup appointment at Enrich Sikar. Please share available wedding dates.';
@@ -184,9 +235,9 @@ export default function BridalShowcase({ isEmbedded = false }) {
   };
 
   const filteredPhotos = useMemo(() => {
-    if (selectedCategory === 'all') return ALL_BRIDAL_PHOTOS;
-    return ALL_BRIDAL_PHOTOS.filter((p) => p.category === selectedCategory);
-  }, [selectedCategory]);
+    if (selectedCategory === 'all') return bridalPhotos;
+    return bridalPhotos.filter((p) => p.category === selectedCategory);
+  }, [selectedCategory, bridalPhotos]);
 
   const openLightbox = (list, index) => {
     setLightboxState({
@@ -235,7 +286,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
           
           {/* Main Featured Photo Frame: object-contain with ambient backdrop ensures ZERO cropping */}
           <div
-            onClick={() => openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx)}
+            onClick={() => openLightbox(bridalPhotos, activeHeroIdx)}
             className="relative aspect-[3/4] w-full max-h-[540px] sm:max-h-[580px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl bg-stone-950 border border-stone-200/90 group cursor-pointer flex items-center justify-center mx-auto"
           >
             {/* Ambient Blurred Backdrop so letterboxing is luxurious */}
@@ -266,7 +317,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  openLightbox(ALL_BRIDAL_PHOTOS, activeHeroIdx);
+                  openLightbox(bridalPhotos, activeHeroIdx);
                 }}
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white bg-stone-900/85 hover:bg-stone-900 backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
                 title="View Fullscreen Photo"
@@ -300,7 +351,7 @@ export default function BridalShowcase({ isEmbedded = false }) {
             </div>
 
             <div className="grid grid-cols-5 gap-2 sm:gap-3">
-              {ALL_BRIDAL_PHOTOS.slice(0, 5).map((thumb, idx) => {
+              {bridalPhotos.slice(0, 5).map((thumb, idx) => {
                 const isSelected = activeHeroIdx === idx;
                 return (
                   <button
