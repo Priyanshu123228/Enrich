@@ -6,7 +6,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { mediaService } from '../services/media.service';
 import PhotoLightbox from '../components/gallery/PhotoLightbox';
 import VideoModal from '../components/gallery/VideoModal';
-import { FeaturedHeroCard, ReelsCarousel } from '../components/gallery/VideoReelsGallery';
+import { FeaturedHeroCard, ReelsCarousel, DEFAULT_FALLBACK_REELS } from '../components/gallery/VideoReelsGallery';
 import BeforeAfterSlider from '../components/gallery/BeforeAfterSlider';
 import EmptyState from '../components/common/EmptyState';
 import ErrorState from '../components/common/ErrorState';
@@ -119,7 +119,11 @@ export default function Gallery() {
 
   const videoList = useMemo(() => {
     if (selectedType === 'bridal') return [];
-    return safeMediaList.filter((m) => m?.type === 'video');
+    const list = safeMediaList.filter((m) => m?.type === 'video');
+    if (list.length === 0) {
+      return DEFAULT_FALLBACK_REELS;
+    }
+    return list;
   }, [safeMediaList, selectedType]);
 
   const transformationList = useMemo(() => {

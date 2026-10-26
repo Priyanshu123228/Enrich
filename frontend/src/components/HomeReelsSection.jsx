@@ -17,7 +17,7 @@ function formatVideoDuration(seconds) {
 /**
  * Default fallback reels if backend has not loaded or is offline
  */
-const DEFAULT_FALLBACK_REELS = [
+export const DEFAULT_FALLBACK_REELS = [
   {
     _id: 'fallback_reel_1',
     title: 'Couture Bridal Hair & Veil Placement',
@@ -60,8 +60,8 @@ const DEFAULT_FALLBACK_REELS = [
  * Individual Smartphone Reel Card
  */
 function HomeReelCard({ video, onSelectVideo }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true); // REEL ON BY DEFAULT
+  const [isMuted, setIsMuted] = useState(false); // SOUND ON BY DEFAULT
   const videoPreviewRef = useRef(null);
 
   const handleToggleMute = (e) => {
@@ -85,25 +85,34 @@ function HomeReelCard({ video, onSelectVideo }) {
     video.thumbnail !== video?.url;
 
   useEffect(() => {
-    if (!videoPreviewRef.current || !hasVideoUrl) return;
-    if (isHovered) {
-      videoPreviewRef.current.currentTime = 0;
-      videoPreviewRef.current.muted = isMuted;
-      const playPromise = videoPreviewRef.current.play();
+    const el = videoPreviewRef.current;
+    if (!el || !hasVideoUrl) return;
+
+    el.muted = isMuted;
+    if (isPlaying) {
+      const playPromise = el.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // If unmuted autoplay is blocked by browser policy before user interaction,
-          // fallback gracefully to muted playback
-          if (videoPreviewRef.current) {
-            videoPreviewRef.current.muted = true;
-            videoPreviewRef.current.play().catch(() => {});
+          // If unmuted autoplay is blocked prior to user interaction, play muted immediately
+          if (el) {
+            el.muted = true;
+            el.play().catch(() => {});
           }
+          const unmuteOnInteraction = () => {
+            if (el && !isMuted) {
+              el.muted = false;
+            }
+            window.removeEventListener('click', unmuteOnInteraction);
+            window.removeEventListener('touchstart', unmuteOnInteraction);
+          };
+          window.addEventListener('click', unmuteOnInteraction, { once: true });
+          window.addEventListener('touchstart', unmuteOnInteraction, { once: true });
         });
       }
     } else {
-      videoPreviewRef.current.pause();
+      el.pause();
     }
-  }, [isHovered, hasVideoUrl, isMuted]);
+  }, [hasVideoUrl, isPlaying, isMuted]);
 
   return (
     <div
@@ -132,9 +141,7 @@ function HomeReelCard({ video, onSelectVideo }) {
             src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
             alt={video.title || 'Salon Reel Poster'}
             loading="lazy"
-            className={`w-full h-full object-cover object-top transition-transform duration-700 ${
-              isHovered ? 'scale-108 opacity-40' : 'scale-100 opacity-95'
-            }`}
+            className="w-full h-full object-cover object-top opacity-30 scale-100"
             onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
           />
         ) : null}
@@ -144,13 +151,12 @@ function HomeReelCard({ video, onSelectVideo }) {
           <video
             ref={videoPreviewRef}
             src={videoSrc}
-            muted={isMuted}
+            autoPlay
             playsInline
             loop
-            preload="metadata"
-            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 ${
-              isHovered || !isImageThumb ? 'opacity-95' : 'opacity-0'
-            }`}
+            muted={isMuted}
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover object-top opacity-95 transition-opacity duration-300"
           />
         ) : null}
 
