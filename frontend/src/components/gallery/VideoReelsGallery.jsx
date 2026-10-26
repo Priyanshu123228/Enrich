@@ -29,53 +29,6 @@ export const VIDEO_CATEGORIES = [
 ];
 
 /**
- * 4K Fallback video reels for studio showcase
- */
-export const DEFAULT_FALLBACK_REELS = [
-  {
-    _id: 'fallback_reel_1',
-    title: 'Couture Bridal Hair & Veil Placement',
-    category: 'Bridal Artistry',
-    type: 'video',
-    isFeatured: true,
-    url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226953/enrich/direct_uploads/qkdiswgerwtf7heyyamp.mp4',
-    thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226953/enrich/direct_uploads/qkdiswgerwtf7heyyamp.mp4',
-    duration: 45,
-    description: 'Behind the scenes master styling for our royal bride featuring intricate crown braiding.'
-  },
-  {
-    _id: 'fallback_reel_2',
-    title: 'New Vibes, New Glow Studio Tour',
-    category: 'Salon Tour',
-    type: 'video',
-    url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226758/enrich/direct_uploads/qafpuiy3hlluqdftavcv.mp4',
-    thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226758/enrich/direct_uploads/qafpuiy3hlluqdftavcv.mp4',
-    duration: 36,
-    description: 'Step inside the newly renovated Enrich Beauty Salon at Sharda Heights, Sikar.'
-  },
-  {
-    _id: 'fallback_reel_3',
-    title: 'Artisan Chrome Ombre Nail Process',
-    category: 'Nail Atelier',
-    type: 'video',
-    url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226670/enrich/direct_uploads/y96ogvxcfdc6iqbqs35j.mp4',
-    thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226670/enrich/direct_uploads/y96ogvxcfdc6iqbqs35j.mp4',
-    duration: 75,
-    description: 'Watch master nail technician craft mirror-finish French ombre nails in 4K.'
-  },
-  {
-    _id: 'fallback_reel_4',
-    title: 'Client Experience & Joyful Glow',
-    category: 'Customer Experience',
-    type: 'video',
-    url: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226785/enrich/direct_uploads/vw13ercmaiu47gvomdxb.mp4',
-    thumbnail: 'https://res.cloudinary.com/dzahy6r3o/video/upload/v1792226785/enrich/direct_uploads/vw13ercmaiu47gvomdxb.mp4',
-    duration: 20,
-    description: 'Real smiles, client love, and glowing transformation feedback at Enrich.'
-  }
-];
-
-/**
  * Format duration in seconds to MM:SS or Xs
  */
 export function formatVideoDuration(seconds) {
@@ -88,10 +41,9 @@ export function formatVideoDuration(seconds) {
 
 /**
  * 100% Full-Width Cinematic Featured Hero Card (Mobile-Optimized Overlay Layout)
- * Video reel is ON BY DEFAULT with sound ON by default.
  */
 export function FeaturedHeroCard({ video, onSelectVideo }) {
-  const [isPlaying, setIsPlaying] = useState(true); // REEL ON BY DEFAULT
+  const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(false); // SOUND ON BY DEFAULT
   const videoPreviewRef = useRef(null);
   const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
@@ -100,7 +52,6 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
 
   const toggleSound = (e) => {
     e.stopPropagation();
-    e.preventDefault();
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
     if (videoPreviewRef.current) {
@@ -111,59 +62,33 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
     }
   };
 
-  const togglePlayPause = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (!videoPreviewRef.current) return;
-    if (isPlaying) {
-      videoPreviewRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoPreviewRef.current.play().catch(() => {});
-      setIsPlaying(true);
-    }
-  };
-
-  // Autoplay Reel ON BY DEFAULT on mount & keep sound on
   useEffect(() => {
-    const el = videoPreviewRef.current;
-    if (!el || !hasVideoUrl) return;
-
-    el.muted = isMuted;
-    if (isPlaying) {
-      const playPromise = el.play();
+    if (!videoPreviewRef.current || !hasVideoUrl) return;
+    if (isHovered) {
+      videoPreviewRef.current.currentTime = 0;
+      videoPreviewRef.current.muted = isMuted;
+      const playPromise = videoPreviewRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // If browser policy blocks unmuted autoplay prior to user interaction:
-          // Play muted immediately so video is running ON BY DEFAULT
-          if (el) {
-            el.muted = true;
-            el.play().catch(() => {});
+          // Fallback to muted if browser blocks unmuted autoplay prior to interaction
+          if (!isMuted && videoPreviewRef.current) {
+            videoPreviewRef.current.muted = true;
+            videoPreviewRef.current.play().catch(() => {});
           }
-          // And automatically unmute once user taps, clicks, or scrolls anywhere
-          const unmuteOnInteraction = () => {
-            if (el && !isMuted) {
-              el.muted = false;
-            }
-            window.removeEventListener('click', unmuteOnInteraction);
-            window.removeEventListener('touchstart', unmuteOnInteraction);
-            window.removeEventListener('scroll', unmuteOnInteraction);
-          };
-          window.addEventListener('click', unmuteOnInteraction, { once: true });
-          window.addEventListener('touchstart', unmuteOnInteraction, { once: true });
-          window.addEventListener('scroll', unmuteOnInteraction, { once: true });
         });
       }
     } else {
-      el.pause();
+      videoPreviewRef.current.pause();
     }
-  }, [hasVideoUrl, isPlaying, isMuted]);
+  }, [isHovered, hasVideoUrl, isMuted]);
 
   if (!video) return null;
 
   return (
     <div
       className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-950 border border-stone-800 shadow-2xl group cursor-pointer transition-all duration-300 hover:border-rose-700/60 min-h-[380px] sm:min-h-[440px] lg:min-h-[500px] flex flex-col justify-between active:scale-[0.99]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelectVideo(video)}
       tabIndex={0}
       role="button"
@@ -177,36 +102,39 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
     >
       {/* 100% FULL-WIDTH BACKGROUND MEDIA */}
       <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
-        {/* High-Res Static Poster Thumbnail (Loaded under video) */}
+        {/* High-Res Static Poster Thumbnail */}
         {isImageThumb ? (
           <img
             src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
             alt={video.title || 'Featured Salon Video'}
-            className="absolute inset-0 w-full h-full object-cover object-top opacity-30 scale-100"
+            className={'absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ' + (
+              isHovered ? 'scale-105 opacity-20' : 'scale-100 opacity-90'
+            )}
             onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
           />
         ) : null}
 
-        {/* Video Reel: ON BY DEFAULT (AutoPlay & Loop) */}
+        {/* Muted Smooth Video Preview on Desktop Hover */}
         {hasVideoUrl ? (
           <video
             ref={videoPreviewRef}
             src={videoSrc}
-            autoPlay
+            muted={isMuted}
             playsInline
             loop
-            muted={isMuted}
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover object-top opacity-95 transition-opacity duration-500"
+            preload="metadata"
+            className={'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 ' + (
+              isHovered || !isImageThumb ? 'opacity-90' : 'opacity-0'
+            )}
           />
         ) : null}
 
         {/* Multi-tier Cinematic Dark Gradients for maximum overlay text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-stone-950/20 pointer-events-none" />
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-stone-950/30 to-stone-950/80 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-stone-950/20" />
+        <div className="absolute inset-0 bg-radial-gradient from-transparent via-stone-950/30 to-stone-950/80" />
       </div>
 
-      {/* TOP OVERLAY BAR: Badges & Controls */}
+      {/* TOP OVERLAY BAR: Badges & Duration */}
       <div className="relative p-4 sm:p-6 lg:p-8 flex items-center justify-between z-10 gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/80 text-rose-300 border border-rose-600/50 text-[10px] sm:text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-md">
@@ -219,12 +147,6 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
               {video.category}
             </span>
           )}
-
-          {/* Reel Playing Badge */}
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 text-[10px] font-semibold backdrop-blur-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-            <span>Live Reel</span>
-          </span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -239,46 +161,19 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
             </span>
           )}
 
-          {/* Audio / Music Toggle Button (Default ON) */}
+          {/* Audio / Music Toggle Button */}
           {hasVideoUrl && (
             <button
               type="button"
               onClick={toggleSound}
-              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full border text-xs font-semibold backdrop-blur-md transition-all active:scale-95 shadow-sm cursor-pointer pointer-events-auto ${
-                !isMuted
-                  ? 'bg-rose-700/90 hover:bg-rose-600 text-white border-rose-400/80 shadow-rose-900/40 ring-1 ring-rose-400/60'
-                  : 'bg-black/75 hover:bg-stone-900 text-stone-300 border-stone-700/80'
-              }`}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/75 hover:bg-stone-900 border border-stone-700/80 flex items-center justify-center text-white backdrop-blur-md transition-all active:scale-90 hover:scale-105 shadow-sm cursor-pointer pointer-events-auto"
               title={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
               aria-label={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
             >
-              {!isMuted ? (
-                <>
-                  <Volume2 className="w-3.5 h-3.5 text-rose-200 animate-pulse" />
-                  <span className="text-[10px] sm:text-[11px] font-bold tracking-wide">Sound ON</span>
-                </>
+              {isMuted ? (
+                <VolumeX className="w-3.5 h-3.5 text-stone-300" />
               ) : (
-                <>
-                  <VolumeX className="w-3.5 h-3.5 text-stone-300" />
-                  <span className="text-[10px] sm:text-[11px] text-stone-300">Muted</span>
-                </>
-              )}
-            </button>
-          )}
-
-          {/* Quick Play/Pause Control */}
-          {hasVideoUrl && (
-            <button
-              type="button"
-              onClick={togglePlayPause}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/75 hover:bg-stone-900 border border-stone-700/80 flex items-center justify-center text-white backdrop-blur-md transition-all active:scale-90 hover:scale-105 shadow-sm cursor-pointer pointer-events-auto"
-              title={isPlaying ? 'Pause Reel' : 'Play Reel'}
-              aria-label={isPlaying ? 'Pause Reel' : 'Play Reel'}
-            >
-              {isPlaying ? (
-                <Pause className="w-3.5 h-3.5 text-white" />
-              ) : (
-                <Play className="w-3.5 h-3.5 text-rose-400 fill-current ml-0.5" />
+                <Volume2 className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
               )}
             </button>
           )}
@@ -287,19 +182,15 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
 
       {/* CENTER IMMERSIVE PLAY BUTTON */}
       <div className="relative flex items-center justify-center z-10 py-6 my-auto">
-        <div className="relative flex items-center justify-center pointer-events-none">
+        <div className="relative flex items-center justify-center">
           <div className="absolute -inset-4 rounded-full bg-rose-600/30 blur-lg animate-pulse" />
-          <div className="relative w-14 h-14 sm:w-18 sm:h-18 lg:w-20 lg:h-20 rounded-full bg-stone-900/80 text-white border-2 border-rose-500/80 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-700 group-hover:border-white backdrop-blur-md">
-            {isPlaying ? (
-              <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current ml-1 text-white" />
-            ) : (
-              <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current ml-1 text-white" />
-            )}
+          <div className="relative w-14 h-14 sm:w-18 sm:h-18 lg:w-20 lg:h-20 rounded-full bg-stone-900/90 text-white border-2 border-rose-500/80 flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-700 group-hover:border-white backdrop-blur-md">
+            <Play className="w-6 h-6 sm:w-8 sm:h-8 fill-current ml-1 text-white" />
           </div>
         </div>
       </div>
 
-      {/* BOTTOM OVERLAY INFO: Title, Description & Action Button */}
+      {/* BOTTOM OVERLAY INFO: Eyebrow, Title, Description & Action CTA */}
       <div className="relative p-4 sm:p-6 lg:p-8 z-10 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="space-y-1.5 max-w-2xl">
@@ -330,10 +221,10 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
 }
 
 /**
- * 9:16 Vertical Reel Card (Reel ON BY DEFAULT with sound ON)
+ * 9:16 Vertical Reel Card
  */
 export function VideoReelCard({ video, onSelectVideo }) {
-  const [isPlaying, setIsPlaying] = useState(true); // REEL ON BY DEFAULT
+  const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(false); // SOUND ON BY DEFAULT
   const videoPreviewRef = useRef(null);
   const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
@@ -342,7 +233,6 @@ export function VideoReelCard({ video, onSelectVideo }) {
 
   const toggleSound = (e) => {
     e.stopPropagation();
-    e.preventDefault();
     const nextMuted = !isMuted;
     setIsMuted(nextMuted);
     if (videoPreviewRef.current) {
@@ -354,39 +244,32 @@ export function VideoReelCard({ video, onSelectVideo }) {
   };
 
   useEffect(() => {
-    const el = videoPreviewRef.current;
-    if (!el || !hasVideoUrl) return;
-
-    el.muted = isMuted;
-    if (isPlaying) {
-      const playPromise = el.play();
+    if (!videoPreviewRef.current || !hasVideoUrl) return;
+    if (isHovered) {
+      videoPreviewRef.current.currentTime = 0;
+      videoPreviewRef.current.muted = isMuted;
+      const playPromise = videoPreviewRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          if (el) {
-            el.muted = true;
-            el.play().catch(() => {});
+          // Fallback to muted if browser blocks unmuted autoplay prior to interaction
+          if (!isMuted && videoPreviewRef.current) {
+            videoPreviewRef.current.muted = true;
+            videoPreviewRef.current.play().catch(() => {});
           }
-          const unmuteOnInteraction = () => {
-            if (el && !isMuted) {
-              el.muted = false;
-            }
-            window.removeEventListener('click', unmuteOnInteraction);
-            window.removeEventListener('touchstart', unmuteOnInteraction);
-          };
-          window.addEventListener('click', unmuteOnInteraction, { once: true });
-          window.addEventListener('touchstart', unmuteOnInteraction, { once: true });
         });
       }
     } else {
-      el.pause();
+      videoPreviewRef.current.pause();
     }
-  }, [hasVideoUrl, isPlaying, isMuted]);
+  }, [isHovered, hasVideoUrl, isMuted]);
 
   if (!video) return null;
 
   return (
     <div
       className="relative group rounded-2xl overflow-hidden bg-stone-900 border border-stone-800 shadow-md cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-rose-600 hover:-translate-y-1 flex flex-col justify-between aspect-[9/15] sm:aspect-[9/15.5] w-[220px] sm:w-[260px] md:w-[280px] lg:w-[290px] shrink-0 snap-start active:scale-[0.98] select-none"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={() => onSelectVideo(video)}
       tabIndex={0}
       role="button"
@@ -398,13 +281,15 @@ export function VideoReelCard({ video, onSelectVideo }) {
         }
       }}
     >
-      {/* Background Poster / Video Preview (ON BY DEFAULT) */}
+      {/* Background Poster / Video Preview */}
       <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
         {isImageThumb ? (
           <img
             src={resolveImageUrl(video.thumbnail, DEFAULT_SALON_PLACEHOLDER)}
             alt={video.title || 'Salon Reel'}
-            className="w-full h-full object-cover object-top opacity-30 scale-100"
+            className={'w-full h-full object-cover object-top transition-transform duration-700 ' + (
+              isHovered ? 'scale-110 opacity-30' : 'scale-100 opacity-90'
+            )}
             onError={(e) => handleImageError(e, DEFAULT_SALON_PLACEHOLDER)}
           />
         ) : null}
@@ -413,17 +298,18 @@ export function VideoReelCard({ video, onSelectVideo }) {
           <video
             ref={videoPreviewRef}
             src={videoSrc}
-            autoPlay
+            muted={isMuted}
             playsInline
             loop
-            muted={isMuted}
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover object-top opacity-95 transition-opacity duration-300"
+            preload="metadata"
+            className={'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300 ' + (
+              isHovered || !isImageThumb ? 'opacity-90' : 'opacity-0'
+            )}
           />
         ) : null}
 
         {/* Gradient Overlay for Text Visibility */}
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-stone-950/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-stone-950/20" />
       </div>
 
       {/* Top Meta Bar: Category Pill & Duration + Music/Audio Toggle (Default ON) */}
@@ -445,18 +331,14 @@ export function VideoReelCard({ video, onSelectVideo }) {
             <button
               type="button"
               onClick={toggleSound}
-              className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center backdrop-blur-md transition-all active:scale-90 hover:scale-105 shadow-sm cursor-pointer ${
-                !isMuted
-                  ? 'bg-rose-700 text-white border border-rose-400 shadow-rose-950/40'
-                  : 'bg-black/75 hover:bg-stone-900 text-stone-300 border border-stone-700/80'
-              }`}
+              className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/75 hover:bg-stone-900 border border-stone-700/80 flex items-center justify-center text-white backdrop-blur-md transition-all active:scale-90 hover:scale-105 shadow-sm cursor-pointer"
               title={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
               aria-label={isMuted ? 'Turn Sound ON' : 'Mute Sound'}
             >
               {isMuted ? (
                 <VolumeX className="w-3 h-3 text-stone-300" />
               ) : (
-                <Volume2 className="w-3 h-3 text-white animate-pulse" />
+                <Volume2 className="w-3 h-3 text-rose-400 animate-pulse" />
               )}
             </button>
           )}
@@ -471,7 +353,7 @@ export function VideoReelCard({ video, onSelectVideo }) {
       </div>
 
       {/* Bottom Content: Title, Description & Tap Cue */}
-      <div className="relative p-3 sm:p-4 space-y-1 z-10 text-white pointer-events-none">
+      <div className="relative p-3 sm:p-4 space-y-1 z-10 text-white">
         <h4 className="font-serif font-bold text-xs sm:text-sm leading-snug line-clamp-2 group-hover:text-rose-200 transition-colors">
           {video.title}
         </h4>
@@ -533,6 +415,7 @@ export function ReelsCarousel({
     const cardWidth = firstChild ? firstChild.getBoundingClientRect().width + 16 : 280;
 
     if (scrollLeft + clientWidth >= scrollWidth - 25) {
+      // Loop back smoothly to start
       el.scrollTo({ left: 0, behavior: 'smooth' });
     } else {
       el.scrollBy({ left: cardWidth, behavior: 'smooth' });
@@ -587,12 +470,13 @@ export function ReelsCarousel({
   };
 
   const handleTouchEnd = () => {
+    // Resume auto-next 3.5 seconds after user stops touching/swiping
     touchPauseTimerRef.current = setTimeout(() => {
       setIsPaused(false);
-    }, 5000);
+    }, 3500);
   };
 
-  if (!Array.isArray(videos) || videos.length === 0) return null;
+  if (!videos || videos.length === 0) return null;
 
   return (
     <div
@@ -602,25 +486,23 @@ export function ReelsCarousel({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Top Carousel Navigation Toolbar & Auto-Advance Progress */}
-      <div className="flex items-center justify-between gap-3 mb-3 px-1">
+      {/* CONTROLS HEADER BAR: Next / Prev buttons & Auto-Next indicator */}
+      <div className="flex items-center justify-between gap-3 pb-3">
         <div className="flex items-center gap-2">
-          {/* Animated Mini Progress Bar for Auto-Advance */}
-          <div
-            className="w-24 sm:w-32 h-1 bg-stone-200 rounded-full overflow-hidden"
-            title="Auto-advancing story timer"
-          >
+          <span className="text-xs font-medium text-stone-500 flex items-center gap-1.5">
+            <span className={'w-2 h-2 rounded-full ' + (isPaused ? 'bg-amber-400' : 'bg-emerald-500 animate-pulse')} />
+            <span className="text-[11px] font-mono">{isPaused ? 'Paused (hover/touch)' : 'Auto-Advancing'}</span>
+          </span>
+          {/* Subtle auto progress bar */}
+          <div className="w-16 h-1 rounded-full bg-stone-200 overflow-hidden hidden sm:block">
             <div
-              className="h-full bg-rose-700 transition-all duration-75 ease-linear rounded-full"
-              style={{ width: `${progress}%` }}
+              className="h-full bg-rose-600 transition-all duration-75 ease-linear"
+              style={{ width: isPaused ? '0%' : progress + '%' }}
             />
           </div>
-          <span className="text-[10px] sm:text-xs text-stone-500 font-medium">
-            {isPaused ? 'Paused' : 'Playing'}
-          </span>
         </div>
 
-        {/* Previous / Next Arrow Controls */}
+        {/* Explicit Next & Prev Navigation Buttons */}
         <div className="flex items-center gap-1.5">
           <button
             type="button"
@@ -688,20 +570,14 @@ export default function VideoReelsGallery({
   onCategoryChange = () => {},
   onSelectVideo = () => {}
 }) {
-  // Use videos or fallback if empty
-  const effectiveVideos = useMemo(() => {
-    if (Array.isArray(videos) && videos.length > 0) return videos;
-    return DEFAULT_FALLBACK_REELS;
-  }, [videos]);
-
   // Filter videos based on category
   const filteredVideos = useMemo(() => {
-    if (!effectiveVideos || effectiveVideos.length === 0) return [];
-    if (!selectedCategory || selectedCategory === 'All') return effectiveVideos;
-    return effectiveVideos.filter(
+    if (!Array.isArray(videos) || videos.length === 0) return [];
+    if (!selectedCategory || selectedCategory === 'All') return videos;
+    return videos.filter(
       (v) => v?.category?.toLowerCase() === selectedCategory.toLowerCase()
     );
-  }, [effectiveVideos, selectedCategory]);
+  }, [videos, selectedCategory]);
 
   // Featured video selection: pick first item with isFeatured or lowest displayOrder
   const featuredVideo = useMemo(() => {
