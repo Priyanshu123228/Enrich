@@ -16,8 +16,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load .env reliably from backend directory or CWD
+// Load .env reliably from backend directory or CWD
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
+
+// Validate required environment variables safely on startup (without printing secret values)
+const validateEnvironment = () => {
+  const required = ['MONGODB_URI', 'JWT_SECRET'];
+  const missing = required.filter((key) => !process.env[key] || process.env[key].trim().length === 0);
+  if (missing.length > 0) {
+    console.error(`❌ [Fatal Startup Error]: Missing required environment variable(s): ${missing.join(', ')}`);
+    console.error('👉 Please configure these required variables in your server environment.');
+    process.exit(1);
+  }
+};
+validateEnvironment();
 import app from './app.js';
 import { connectDB } from './config/db.js';
 import { verifyEmailTransporter } from './config/nodemailer.js';

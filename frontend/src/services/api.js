@@ -3,18 +3,36 @@ import axios from 'axios';
 /**
  * Global Axios API Client instance configured with base URL and timeouts
  */
+const PRODUCTION_API_URL = 'https://enrich-ffzg.onrender.com/api/v1';
+
+const getBaseURL = () => {
+  // 1. Explicit Vite environment variable takes top priority
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) {
+    const clean = import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '');
+    return clean.endsWith('/api/v1') ? clean : `${clean}/api/v1`;
+  }
+
+  // 2. Safe local development detection
+  if (typeof window !== 'undefined' && window.location?.hostname) {
+    const host = window.location.hostname;
+    const isLocalhost = host === 'localhost' || host === '127.0.0.1';
+    const isLAN = /^192\.168\.\d+\.\d+$|^10\.\d+\.\d+\.\d+$/.test(host);
+    const isDevPort = window.location.port === '5173' || window.location.port === '3000';
+
+    if (isLocalhost) {
+      return 'http://localhost:5000/api/v1';
+    }
+    if (isLAN && isDevPort) {
+      return `${window.location.protocol}//${host}:5000/api/v1`;
+    }
+  }
+
+  // 3. Robust production fallback: Always route to verified production backend
+  return PRODUCTION_API_URL;
+};
+
 const api = axios.create({
-  baseURL: (() => {
-    if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) {
-      const clean = import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '');
-      return clean.endsWith('/api/v1') ? clean : (clean + '/api/v1');
-    }
-    // Automatically route to computer IP when accessed from mobile devices on local Wi-Fi
-    if (typeof window !== 'undefined' && window.location?.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      return `${window.location.protocol}//${window.location.hostname}:5000/api/v1`;
-    }
-    return 'http://localhost:5000/api/v1';
-  })(),
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   },

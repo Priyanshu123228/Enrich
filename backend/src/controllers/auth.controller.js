@@ -350,10 +350,16 @@ export const verifyResetOTP = asyncHandler(async (req, res) => {
     enteredOtp: otp
   });
 
+  // Enforce required JWT secret for reset token
+  const jwtSecret = process.env.JWT_SECRET?.trim();
+  if (!jwtSecret) {
+    throw new ApiError(500, 'Authentication configuration is missing. Cannot issue reset token.');
+  }
+
   // Generate verified reset token valid for 15 minutes
   const resetToken = jwt.sign(
     { userId: user._id, email: normalizedEmail, purpose: 'password_reset' },
-    process.env.JWT_SECRET || 'default_jwt_secret',
+    jwtSecret,
     { expiresIn: '15m' }
   );
 
@@ -382,10 +388,11 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   let isAuthorized = false;
 
-  // 1. Verify resetToken if provided
-  if (resetToken) {
+  // 1. Verify resetToken if provided (Strict secret validation)
+  const jwtSecret = process.env.JWT_SECRET?.trim();
+  if (resetToken && jwtSecret) {
     try {
-      const decoded = jwt.verify(resetToken, process.env.JWT_SECRET || 'default_jwt_secret');
+      const decoded = jwt.verify(resetToken, jwtSecret);
       if (decoded.email === normalizedEmail && decoded.purpose === 'password_reset') {
         isAuthorized = true;
       }

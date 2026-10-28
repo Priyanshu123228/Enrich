@@ -1,15 +1,23 @@
 import { ApiError } from '../utils/apiError.js';
 
-//  Handle 404 Route Not Found
+/**
+ * Sanitize internal filesystem paths, OS directories, or package details from error messages
+ */
+const stripSensitivePaths = (str) => {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/[a-zA-Z]:\\[^:\s'"`]+/g, '[internal-path]')
+    .replace(/\/(?:home|var|usr|app|root)\/[^:\s'"`]+/g, '[internal-path]')
+    .replace(/node_modules\/[^:\s'"`]+/g, '[package]');
+};
 
+//  Handle 404 Route Not Found
 export const notFoundHandler = (req, res, next) => {
   const error = new ApiError(404, `Route not found: ${req.method} ${req.originalUrl}`);
   next(error);
 };
 
-
 //  Global Error Handler Middleware
-
 export const errorHandler = (err, req, res, next) => {
   let error = err;
 
@@ -51,16 +59,30 @@ export const errorHandler = (err, req, res, next) => {
     }
   }
 
-  // Default to 500 if not an ApiError instance
   const statusCode = error.statusCode || 500;
-  const message = error.message || 'Internal Server Error';
-  const errors = error.errors || [];
+
+  // Safe environment check:
+  // ONLY expose stack traces if strictly in local developer environment.
+  // NEVER expose stack traces on Render, Vercel, or non-local loopback requests.
+  const isHosted = Boolean(process.env.RENDER || process.env.VERCEL || process.env.RAILWAY_ENVIRONMENT);
+  const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(req?.hostname);
+  const isSafeDevMode = process.env.NODE_ENV === 'development' && !isHosted && isLocalhost;
+
+  let rawMessage = error.message || 'Internal Server Error';
+  if (statusCode >= 500 && !isSafeDevMode) {
+    rawMessage = 'An unexpected server error occurred. Please try again later.';
+  }
+
+  const sanitizedMessage = stripSensitivePaths(rawMessage);
+  const sanitizedErrors = (error.errors && error.errors.length > 0)
+    ? error.errors.map(stripSensitivePaths)
+    : [sanitizedMessage];
 
   res.status(statusCode).json({
     success: false,
     statusCode,
-    message,
-    errors: errors.length > 0 ? errors : [message],
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    message: sanitizedMessage,
+    errors: sanitizedErrors,
+    ...(isSafeDevMode && err.stack ? { stack: err.stack } : {})
   });
 };
