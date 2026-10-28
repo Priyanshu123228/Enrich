@@ -115,7 +115,7 @@ const socialLinkSchema = new mongoose.Schema(
       default: 0,
       index: true
     },
-    // Extensible configuration object for future official API/embeds integration
+
     embedConfig: {
       type: mongoose.Schema.Types.Mixed,
       default: {}

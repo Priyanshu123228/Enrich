@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&h=630&q=80';
-const DEFAULT_URL = 'https://enrich-mu.vercel.app';
+const DEFAULT_URL = 'https://www.enrichbeautysikar.in';
 const BRAND_SUFFIX = ' | Enrich Ladies Beauty Parlor Sikar';
 
 export default function SEO({
@@ -64,11 +64,11 @@ export default function SEO({
     const schemaData = {
       '@context': 'https://schema.org',
       '@type': 'BeautySalon',
-      '@id': 'https://enrich-mu.vercel.app/#salon',
+      '@id': 'https://www.enrichbeautysikar.in/#salon',
       name: 'Enrich Ladies Beauty Parlor & Cosmetic Clinic',
       alternateName: 'Enrich Beauty Parlour Sikar',
-      url: 'https://enrich-mu.vercel.app',
-      logo: 'https://enrich-mu.vercel.app/favicon.svg',
+      url: 'https://www.enrichbeautysikar.in',
+      logo: 'https://www.enrichbeautysikar.in/favicon.svg',
       image: absoluteImage,
       description: description,
       telephone: '+919667900313',

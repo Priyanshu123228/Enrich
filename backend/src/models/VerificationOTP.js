@@ -23,7 +23,7 @@ const verificationOTPSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: [true, 'Expiration timestamp is required'],
-      index: { expires: 0 } // MongoDB TTL index to auto-remove expired documents
+      index: { expires: 0 }
     },
     attempts: {
       type: Number,
@@ -40,7 +40,6 @@ const verificationOTPSchema = new mongoose.Schema(
   }
 );
 
-// Compound index to quickly look up active OTP by user and verification type
 verificationOTPSchema.index({ userId: 1, type: 1 });
 
 export const VerificationOTP = mongoose.model('VerificationOTP', verificationOTPSchema);

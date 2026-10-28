@@ -1,9 +1,7 @@
 import { ApiError } from '../utils/apiError.js';
 
-/**
- * Role-Based Access Control (RBAC) Middleware
- * @param  {...string} roles - Array of allowed roles (e.g. 'admin', 'staff')
- */
+//  Role-Based Access Control (RBAC) Middleware
+
 export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

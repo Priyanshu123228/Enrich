@@ -2,9 +2,8 @@ import { ApiError } from '../utils/apiError.js';
 
 const ALLOWED_CATEGORIES = ['Hair', 'Skin', 'Makeup', 'Nails', 'Spa', 'Bridal'];
 
-/**
- * Validate service creation payload
- */
+//  Validate service creation payload
+
 export const validateCreateService = (req, res, next) => {
   const { name, description, category, price, duration } = req.body;
   const errors = [];
@@ -32,9 +31,8 @@ export const validateCreateService = (req, res, next) => {
   next();
 };
 
-/**
- * Validate service update payload
- */
+//  Validate service update payload
+
 export const validateUpdateService = (req, res, next) => {
   const { name, description, category, price, duration, discountPrice } = req.body;
   const errors = [];

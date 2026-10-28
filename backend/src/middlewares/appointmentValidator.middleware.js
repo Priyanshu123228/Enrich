@@ -1,8 +1,5 @@
 import { ApiError } from '../utils/apiError.js';
 
-/**
- * Validate appointment creation
- */
 export const validateCreateAppointment = (req, res, next) => {
   const { serviceId, date, startTime } = req.body;
   const errors = [];
@@ -22,9 +19,6 @@ export const validateCreateAppointment = (req, res, next) => {
   next();
 };
 
-/**
- * Validate appointment reschedule
- */
 export const validateRescheduleAppointment = (req, res, next) => {
   const { newDate, newStartTime } = req.body;
   const errors = [];
@@ -43,9 +37,6 @@ export const validateRescheduleAppointment = (req, res, next) => {
   next();
 };
 
-/**
- * Validate status update
- */
 export const validateStatusUpdate = (req, res, next) => {
   const { status } = req.body;
   const allowed = ['pending', 'confirmed', 'completed', 'cancelled'];

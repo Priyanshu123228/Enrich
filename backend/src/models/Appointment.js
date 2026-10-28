@@ -27,16 +27,16 @@ const appointmentSchema = new mongoose.Schema(
       index: true
     },
     date: {
-      type: String, // "YYYY-MM-DD" format
+      type: String,
       required: [true, 'Appointment date is required'],
       index: true
     },
     startTime: {
-      type: String, // "HH:mm" 24h format e.g. "10:30"
+      type: String,
       required: [true, 'Start time is required']
     },
     endTime: {
-      type: String, // "HH:mm" 24h format e.g. "11:15"
+      type: String,
       required: [true, 'End time is required']
     },
     duration: {

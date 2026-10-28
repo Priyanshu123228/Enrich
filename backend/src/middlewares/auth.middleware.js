@@ -3,9 +3,6 @@ import { ApiError } from '../utils/apiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { User } from '../models/User.js';
 
-/**
- * Protect routes by verifying JWT Bearer token
- */
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   let token;
 

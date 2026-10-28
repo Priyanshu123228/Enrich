@@ -75,7 +75,8 @@ app.use(
       if (
         allowedOrigins.includes(cleanOrigin) ||
         /\.vercel\.app$/.test(cleanOrigin) ||
-        /\.onrender\.com$/.test(cleanOrigin)
+        /\.onrender\.com$/.test(cleanOrigin) ||
+        /(^https?:\/\/([^.]+\.)?enrichbeautysikar\.in$)/.test(cleanOrigin)
       ) {
         return callback(null, true);
       }

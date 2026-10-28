@@ -1,16 +1,15 @@
 import { ApiError } from '../utils/apiError.js';
 
-/**
- * Handle 404 Route Not Found
- */
+//  Handle 404 Route Not Found
+
 export const notFoundHandler = (req, res, next) => {
   const error = new ApiError(404, `Route not found: ${req.method} ${req.originalUrl}`);
   next(error);
 };
 
-/**
- * Global Error Handler Middleware
- */
+
+//  Global Error Handler Middleware
+
 export const errorHandler = (err, req, res, next) => {
   let error = err;
 

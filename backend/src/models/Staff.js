@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-// Default weekly schedule template
 const defaultWeeklySchedule = [
   { dayOfWeek: 0, dayName: 'Sunday', isWorking: false, startTime: '10:00', endTime: '17:00', breakStartTime: '13:00', breakEndTime: '14:00' },
   { dayOfWeek: 1, dayName: 'Monday', isWorking: true, startTime: '09:00', endTime: '19:00', breakStartTime: '13:00', breakEndTime: '14:00' },
@@ -74,15 +73,15 @@ const staffSchema = new mongoose.Schema(
       default: 'active',
       index: true
     },
-    // Working schedule designed for slot generation & conflict avoidance
+
     schedule: {
       type: [
         {
           dayOfWeek: {
             type: Number,
             required: true,
-            min: 0, // 0 = Sunday
-            max: 6  // 6 = Saturday
+            min: 0,
+            max: 6
           },
           dayName: {
             type: String,
@@ -94,7 +93,7 @@ const staffSchema = new mongoose.Schema(
           },
           startTime: {
             type: String,
-            default: '09:00' // "HH:mm" 24-hour format
+            default: '09:00'
           },
           endTime: {
             type: String,
@@ -112,11 +111,11 @@ const staffSchema = new mongoose.Schema(
       ],
       default: defaultWeeklySchedule
     },
-    // Specific date exceptions (e.g. sick leave, holidays)
+
     exceptions: [
       {
         date: {
-          type: String // "YYYY-MM-DD"
+          type: String
         },
         isOff: {
           type: Boolean,
