@@ -39,6 +39,7 @@ export const SALON_CONFIG = {
     emailMailto: 'mailto:enrichparlour1212@gmail.com',
     whatsapp: 'https://wa.me/919667900313',
     instagram: 'https://www.instagram.com/enrich_beauty25/',
+    threads: 'https://www.threads.com/@enrich_beauty25',
     facebook: 'https://www.facebook.com/enrichparloursikar',
     address: 'First Floor, Sharda Heights, Ramlila Maidan, Chandpol, Sikar, Rajasthan 332001, India',
     addressShort: 'First Floor, Sharda Heights, Chandpol, Sikar',
@@ -238,39 +239,6 @@ export const SALON_CONFIG = {
     },
   ],
 
-  // Default Offers Fallback
-  defaultOffers: [
-    {
-      _id: 'off_welcome',
-      title: 'Welcome Client Special',
-      code: 'ENRICH15',
-      discountType: 'percentage',
-      discountValue: 15,
-      description: 'Receive 15% off any haircut, skincare, or cosmetic treatment on your first online booking.',
-      validUntil: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-    },
-    {
-      _id: 'off_bridal',
-      title: 'Bridal Package Discount',
-      code: 'BRIDAL500',
-      discountType: 'fixed',
-      discountValue: 500,
-      description: 'Flat ₹500 off on pre-bridal grooming and complete wedding day makeup packages.',
-      validUntil: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-    },
-    {
-      _id: 'off_glow',
-      title: 'Festival Skin Glow Combo',
-      code: 'GLOW20',
-      discountType: 'percentage',
-      discountValue: 20,
-      description: 'Get 20% discount when booking a signature Hydrafacial combined with hair spa.',
-      validUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-    },
-  ],
 
   // Default Reviews Fallback
   defaultReviews: [],

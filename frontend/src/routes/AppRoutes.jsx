@@ -80,7 +80,7 @@ export default function AppRoutes() {
           <Route path="staff" element={<Navigate to="/about" replace />} />
           <Route path="staff/:id" element={<Navigate to="/about" replace />} />
           <Route path="gallery" element={<Gallery />} />
-          <Route path="offers" element={<Offers />} />
+          <Route path="offers" element={<Navigate to="/services" replace />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           
@@ -152,11 +152,9 @@ export default function AppRoutes() {
           <Route path="cosmetics" element={<AdminProducts />} />
           <Route path="inquiries" element={<AdminInquiries />} />
           <Route path="customers" element={<AdminCustomers />} />
-          <Route path="staff" element={<AdminStaff />} />
-          <Route path="services" element={<AdminServices />} />
+                    <Route path="services" element={<AdminServices />} />
           <Route path="categories" element={<AdminCategories />} />
-          <Route path="offers" element={<AdminOffers />} />
-          <Route path="reviews" element={<AdminReviews />} />
+                    <Route path="reviews" element={<AdminReviews />} />
           <Route path="gallery" element={<AdminGallery />} />
           <Route path="social-media" element={<AdminSocialMedia />} />
           <Route path="social-links" element={<AdminSocialMedia />} />

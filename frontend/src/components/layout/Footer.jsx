@@ -143,6 +143,15 @@ export default function Footer() {
                       <SocialIcon platform="instagram" className="w-4 h-4" />
                     </a>
                     <a
+                      href={SALON_CONFIG.contact.threads || 'https://www.threads.com/@enrich_beauty25'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-9 h-9 rounded-xl bg-white hover:bg-rose-50 text-stone-700 hover:text-rose-700 border border-stone-200/80 hover:border-rose-300 flex items-center justify-center transition-all hover:scale-105 shadow-2xs"
+                      title="Threads"
+                    >
+                      <SocialIcon platform="threads" className="w-4 h-4" />
+                    </a>
+                    <a
                       href={SALON_CONFIG.contact.whatsapp}
                       target="_blank"
                       rel="noopener noreferrer"

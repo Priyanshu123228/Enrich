@@ -31,11 +31,9 @@ export default function AdminLayout() {
     { name: 'Cosmetic Products', path: '/admin/products', icon: Sparkles },
     { name: 'Inquiries / Contact', path: '/admin/inquiries', icon: MessageSquare },
     { name: 'Customers', path: '/admin/customers', icon: Users },
-    { name: 'Stylists Roster', path: '/admin/staff', icon: Scissors },
     { name: 'Services Menu', path: '/admin/services', icon: Sparkles },
     { name: 'Categories', path: '/admin/categories', icon: Tag },
     { name: 'Media Gallery', path: '/admin/gallery', icon: Camera },
-    { name: 'Offers & Promos', path: '/admin/offers', icon: Gift },
     { name: 'Reviews Moderation', path: '/admin/reviews', icon: Star },
     { name: 'Social Channels', path: '/admin/social-media', icon: Share2 }
   ];

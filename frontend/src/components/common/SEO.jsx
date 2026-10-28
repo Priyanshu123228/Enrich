@@ -111,6 +111,7 @@ export default function SEO({
       },
       sameAs: [
         'https://www.instagram.com/enrich_beauty25/',
+        'https://www.threads.com/@enrich_beauty25',
         'https://www.facebook.com/enrichparloursikar',
         'https://wa.me/919667900313'
       ]

@@ -5,7 +5,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useLocation } from 'react-router-dom';
 import { serviceService } from '../services/service.service';
-import { offerService } from '../services/offer.service';
 import { reviewService } from '../services/review.service';
 import { mediaService } from '../services/media.service';
 import { SALON_CONFIG } from '../config/salonConfig';
@@ -70,7 +69,6 @@ export default function Home() {
   // Data States
   // ---------------------------------------------------------------------------
   const [services, setServices] = useState([]);
-  const [offers, setOffers] = useState([]);
   const [mediaItems, setMediaItems] = useState({ photos: [], videos: [], transformations: [], all: [] });
 
   // ---------------------------------------------------------------------------
@@ -110,14 +108,12 @@ export default function Home() {
 
         const [
           servicesRes,
-          offersRes,
           mediaRes,
           heroRes,
           ownerRes,
           allVideosRes
         ] = await Promise.allSettled([
           serviceService.getAllServices({ limit: 50 }),
-          offerService.getActiveOffers(),
           mediaService.getFeaturedMedia(),
           mediaService.getHeroPhoto(),
           mediaService.getOwnerPhoto(),
@@ -145,28 +141,6 @@ export default function Home() {
           setServices(SALON_CONFIG.defaultServices);
         }
 
-        // 3. Process Offers (filter active & unexpired)
-        if (offersRes.status === 'fulfilled' && offersRes.value?.data?.offers?.length > 0) {
-          const now = new Date();
-          const activeOffers = offersRes.value.data.offers.filter(o => {
-            if (o.isActive === false) return false;
-            if (o.validUntil && new Date(o.validUntil) < now) return false;
-            if (o.expiryDate && new Date(o.expiryDate) < now) return false;
-            return true;
-          });
-          setOffers(activeOffers.length > 0 ? activeOffers : SALON_CONFIG.defaultOffers);
-        } else if (offersRes.status === 'fulfilled' && Array.isArray(offersRes.value?.data) && offersRes.value.data.length > 0) {
-          const now = new Date();
-          const activeOffers = offersRes.value.data.filter(o => {
-            if (o.isActive === false) return false;
-            if (o.validUntil && new Date(o.validUntil) < now) return false;
-            if (o.expiryDate && new Date(o.expiryDate) < now) return false;
-            return true;
-          });
-          setOffers(activeOffers.length > 0 ? activeOffers : SALON_CONFIG.defaultOffers);
-        } else {
-          setOffers(SALON_CONFIG.defaultOffers);
-        }
 
         // 4. Process Media / Gallery (Sync with live gallery database)
         const def = SALON_CONFIG.defaultMedia || {};

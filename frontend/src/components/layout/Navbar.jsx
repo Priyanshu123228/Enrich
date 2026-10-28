@@ -96,10 +96,8 @@ export default function Navbar() {
     { name: 'Customer Inquiries', path: '/admin/inquiries', icon: MessageSquare },
     { name: 'Customers Roster', path: '/admin/customers', icon: UserCheck },
     { name: 'Services & Pricing', path: '/admin/services', icon: Scissors },
-    { name: 'Stylists & Team', path: '/admin/staff', icon: Users },
     { name: 'Service Categories', path: '/admin/categories', icon: Tag },
     { name: 'Media Gallery', path: '/admin/gallery', icon: Camera },
-    { name: 'Offers & Promos', path: '/admin/offers', icon: Gift },
     { name: 'Reviews Moderation', path: '/admin/reviews', icon: Star },
     { name: 'Social Channels', path: '/admin/social-media', icon: Share2 }
   ];
