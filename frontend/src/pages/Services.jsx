@@ -2,6 +2,7 @@ import SEO from '../components/common/SEO';
 import { useState, useEffect } from 'react';
 import { serviceService } from '../services/service.service';
 import ServiceCard from '../components/services/ServiceCard';
+import { SALON_CONFIG } from '../config/salonConfig';
 import { CATEGORY_HINGLISH_GUIDE } from '../utils/hinglishSubtitles';
 import { Search, SlidersHorizontal, AlertCircle, Database, Phone, MessageCircle } from 'lucide-react';
 
@@ -9,11 +10,13 @@ export default function Services() {
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([
     { name: 'All', count: 0 },
+    { name: 'Bridal', count: 0 },
+    { name: 'Makeup', count: 0 },
     { name: 'Hair', count: 0 },
     { name: 'Skin', count: 0 },
-    { name: 'Makeup', count: 0 },
+    { name: 'Waxing', count: 0 },
     { name: 'Nails', count: 0 },
-    { name: 'Bridal', count: 0 }
+    { name: 'Spa', count: 0 }
   ]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,11 +48,29 @@ export default function Services() {
       };
 
       const res = await serviceService.getServices(params);
-      if (res?.data?.services) {
-        setServices(res.data.services);
-      }
+      const apiServices = res?.data?.services || [];
+      
+      // Combine API services with master defaultServices so all requested treatments always show
+      const existingNames = new Set(apiServices.map(s => (s.name || '').toLowerCase().trim()));
+      const fallbackFiltered = (SALON_CONFIG.defaultServices || []).filter(s => {
+        const matchesCategory = !params.category || s.category.toLowerCase() === params.category.toLowerCase();
+        const matchesSearch = !params.search || 
+          s.name.toLowerCase().includes(params.search.toLowerCase()) || 
+          (s.description || '').toLowerCase().includes(params.search.toLowerCase());
+        const notInApi = !existingNames.has(s.name.toLowerCase().trim());
+        return matchesCategory && matchesSearch && notInApi;
+      });
+
+      const combined = [...apiServices, ...fallbackFiltered];
+      setServices(combined.length > 0 ? combined : (SALON_CONFIG.defaultServices || []));
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to fetch services. Make sure backend is running.');
+      // Graceful offline fallback
+      const fallback = (SALON_CONFIG.defaultServices || []).filter(s => {
+        const matchesCat = !params.category || s.category.toLowerCase() === params.category.toLowerCase();
+        const matchesQuery = !params.search || s.name.toLowerCase().includes(params.search.toLowerCase());
+        return matchesCat && matchesQuery;
+      });
+      setServices(fallback);
     } finally {
       setIsLoading(false);
     }

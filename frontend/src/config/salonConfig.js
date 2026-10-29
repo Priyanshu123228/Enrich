@@ -126,7 +126,7 @@ export const SALON_CONFIG = {
   ],
 
   // Service Categories for Filtering
-  serviceCategories: ['All', 'Hair', 'Makeup', 'Skin', 'Nails', 'Bridal'],
+  serviceCategories: ['All', 'Bridal', 'Makeup', 'Hair', 'Skin', 'Waxing', 'Nails', 'Spa'],
 
   // Gallery Categories for Filtering
   galleryCategories: ['All', 'Photos', 'Videos', 'Before & After', 'Hair', 'Makeup', 'Skin', 'Bridal', 'Nails'],
@@ -167,69 +167,285 @@ export const SALON_CONFIG = {
     'Skin Brightening Treatment In Sikar',
     'Skin Brightening Treatment near me In Sikar'
   ],
-
-  // Default Services Fallback
+  // Default Services Fallback & Master Services Catalog
   defaultServices: [
+    // --- BRIDAL & WEDDING ---
     {
-      _id: 'srv_hair_cut',
-      name: 'Precision Haircut & Styling',
-      category: 'Hair',
-      duration: 45,
-      price: 499,
-      description: 'Comprehensive styling consultation, hair cleanse, custom cut, and blowout finish.',
-      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-      isActive: true,
-    },
-    {
-      _id: 'srv_bridal_hd',
-      name: 'Signature Bridal HD Makeover',
+      _id: 'srv_bridal_signature',
+      name: 'Bridal Makeup In Sikar',
       category: 'Bridal',
-      duration: 120,
-      price: 4999,
-      description: 'High-definition bridal makeup with premium waterproof cosmetics, lash extension, and hair setting.',
+      duration: 150,
+      price: 6999,
+      discountPrice: 5999,
+      description: 'Signature bridal makeover with luxury HD waterproof cosmetics, matching jewelry setting, dupatta draping, and customized lash extensions.',
       image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80',
       isActive: true,
+      features: ['HD Waterproof Makeup', 'Dupatta & Jewelry Draping', 'Premium Eyelashes', 'Hair Styling Included']
     },
     {
-      _id: 'srv_skin_hydra',
-      name: 'Clinical Hydrafacial Treatment',
-      category: 'Skin',
-      duration: 60,
-      price: 1899,
-      description: 'Deep pore vacuum extraction, antioxidant serum infusion, and ultrasound skin brightening.',
-      image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80',
+      _id: 'srv_bridal_artist',
+      name: 'Best Bridal Makeup Artist In Sikar',
+      category: 'Bridal',
+      duration: 180,
+      price: 9999,
+      discountPrice: 8499,
+      description: 'Airbrush & HD royal bridal package by our master cosmetologist. Longest-wearing flawless glow for wedding photography.',
+      image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
       isActive: true,
+      features: ['Airbrush Makeup Finish', 'Pre-Bridal Skin Prep', 'Complete Bridal Accessories Setting']
     },
     {
-      _id: 'srv_hair_color',
-      name: 'Balayage & Global Highlights',
-      category: 'Hair',
-      duration: 90,
-      price: 2499,
-      description: 'Custom hand-painted multidimensional balayage with bonded gloss tone treatment.',
+      _id: 'srv_bridal_hairstyle',
+      name: 'Bridal Hairstyle In Sikar',
+      category: 'Bridal',
+      duration: 60,
+      price: 1999,
+      discountPrice: 1699,
+      description: 'Traditional rose bun, contemporary textured braids, or Hollywood waves crafted with real hair florals and accessories.',
       image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
       isActive: true,
+      features: ['Floral Setting', 'Hair Padding & Volume', 'Long-Lasting Hold']
     },
     {
-      _id: 'srv_nails_gel',
-      name: 'Luxury Gel Nail Extensions & Art',
-      category: 'Nails',
-      duration: 60,
-      price: 999,
-      description: 'Cuticle restoration, sculpted tips, non-chipping LED gel lacquer, and bespoke nail design.',
-      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80',
+      _id: 'srv_wedding_event_prep',
+      name: 'Wedding and event preparation',
+      category: 'Bridal',
+      duration: 120,
+      price: 3499,
+      discountPrice: 2999,
+      description: 'Full pre-wedding grooming package: custom D-tan, radiant facial clean-up, full waxing, and nail care for the bride and family.',
+      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
       isActive: true,
+      features: ['Pre-Event Glow', 'Full Body Prep', 'Complete Family Grooming']
     },
     {
-      _id: 'srv_makeup_party',
-      name: 'Party Glam Makeup & Hair',
+      _id: 'srv_mobile_salon',
+      name: 'Mobile salon service',
+      category: 'Bridal',
+      duration: 120,
+      price: 2999,
+      discountPrice: 2499,
+      description: 'Doorstep bridal makeup, family hair styling, and event dressing at your home or wedding venue in Sikar.',
+      image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['At-Home Service', 'Full Professional Kit', 'Wedding Venue Visits']
+    },
+
+    // --- MAKEUP & OCCASION ---
+    {
+      _id: 'srv_party_makeup',
+      name: 'Party Makeup Near me in Sikar',
       category: 'Makeup',
       duration: 60,
       price: 1499,
-      description: 'Smokey or soft dewy look with professional setting mist, lashes, and curls.',
+      discountPrice: 1299,
+      description: 'HD glowing party makeup for weddings, sangeet, reception, or anniversary functions with smudge-proof eye makeup.',
       image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80',
       isActive: true,
+      features: ['HD Foundation Finish', 'Smokey or Shimmer Eyes', 'Hairstyling Included']
     },
+    {
+      _id: 'srv_eyebrow_beautification',
+      name: 'Eyebrow beautification',
+      category: 'Makeup',
+      duration: 20,
+      price: 99,
+      discountPrice: 79,
+      description: 'Hygienic threading, brow shaping, mapping, and tinted brow definition for crisp, elegant arches.',
+      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Precise Shaping', 'Painless Threading', 'Brow Calming Gel']
+    },
+    {
+      _id: 'srv_eyelashes',
+      name: 'Eyelashes',
+      category: 'Makeup',
+      duration: 45,
+      price: 999,
+      discountPrice: 799,
+      description: 'Individual cluster lashes or classic volume lash extensions for naturally dense, long, and dramatic eyes.',
+      image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Weightless Feel', 'Waterproof Adhesive', 'Up to 3 Weeks Hold']
+    },
+    {
+      _id: 'srv_permanent_makeup',
+      name: 'Permanent makeup',
+      category: 'Makeup',
+      duration: 90,
+      price: 3999,
+      discountPrice: 3499,
+      description: 'Semi-permanent microblading, ombre powder brows, and natural lip blush pigments for effortless daily beauty.',
+      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Certified Pigments', 'Smudge-Proof', 'Lasts 1–2 Years']
+    },
+
+    // --- HAIR CARE & CHEMICAL TREATMENTS ---
+    {
+      _id: 'srv_keratin_treatment',
+      name: 'Keratin Treatment In Sikar',
+      category: 'Hair',
+      duration: 150,
+      price: 2999,
+      discountPrice: 2499,
+      description: 'Formaldehyde-free intensive keratin smoothing therapy. Eliminates 95% frizz and leaves hair mirror-shiny and manageable.',
+      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Frizz-Free Silk Finish', 'Lasts 3–5 Months', 'Deep Protein Infusion']
+    },
+    {
+      _id: 'srv_hair_color',
+      name: 'Hair Color In Sikar',
+      category: 'Hair',
+      duration: 120,
+      price: 2499,
+      discountPrice: 1999,
+      description: 'Ammonia-free global hair color, fashion balayage, honey blonde streaks, or gray root coverage with gloss toner.',
+      image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Ammonia-Free', 'Bond Protection Shield', 'Vibrant Shine']
+    },
+    {
+      _id: 'srv_hair_extensions',
+      name: 'Hair extensions',
+      category: 'Hair',
+      duration: 90,
+      price: 4999,
+      discountPrice: 3999,
+      description: '100% human remy hair extensions: clip-on, micro-ring, or tape-in extensions for instant length, thickness, and volume.',
+      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['100% Remy Human Hair', 'Heat-Stylable', 'Seamless Color Blend']
+    },
+    {
+      _id: 'srv_haircut_styling',
+      name: 'Haircut',
+      category: 'Hair',
+      duration: 45,
+      price: 399,
+      discountPrice: 299,
+      description: 'Precision layered cut, feather cut, blunt bob, or split-ends trim finished with a high-volume bouncy blowdry.',
+      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Personalized Consultation', 'Scalp Wash', 'Thermal Blowdry Finish']
+    },
+    {
+      _id: 'srv_shampoo_conditioning',
+      name: 'Shampoo & conditioning',
+      category: 'Hair',
+      duration: 30,
+      price: 299,
+      discountPrice: 199,
+      description: 'Therapeutic scalp wash with sulfate-free salon shampoo, followed by deep conditioning hair mask and blast dry.',
+      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Relaxing Scalp Wash', 'Hydrating Hair Mask', 'Fresh Blowdry']
+    },
+
+    // --- SKIN CARE & CLINICAL FACIALS ---
+    {
+      _id: 'srv_skin_brightening',
+      name: 'Skin Brightening Treatment In Sikar',
+      category: 'Skin',
+      duration: 60,
+      price: 1499,
+      discountPrice: 1199,
+      description: 'D-tan exfoliation, vitamin C serum infusion, ultrasonic brightening peel, and whitening mask for a clean, fair radiant tone.',
+      image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Instant Tan Removal', 'Vitamin C Infusion', 'Long-Lasting Radiance']
+    },
+    {
+      _id: 'srv_anti_ageing_facial',
+      name: 'Anti Ageing Facial Sikar',
+      category: 'Skin',
+      duration: 75,
+      price: 1899,
+      discountPrice: 1599,
+      description: 'Collagen-boosting microcurrent lift, hyaluronic peptide infusion, and firming mask targeting fine lines and loose skin.',
+      image: 'https://images.unsplash.com/photo-1512290900672-1f5be6f9e0eb?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Collagen Lift Mask', 'Skin Tightening', 'Wrinkle Softening']
+    },
+    {
+      _id: 'srv_facials_cleanse',
+      name: 'Facials',
+      category: 'Skin',
+      duration: 60,
+      price: 999,
+      discountPrice: 799,
+      description: 'Gold, Diamond, O3+, or Fruit facials with herbal steam, deep pore blackhead removal, face massage, and glow mask.',
+      image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Customized Skin Choice', 'Herbal Face Massage', 'Blackhead Removal']
+    },
+
+    // --- WAXING & GROOMING ---
+    {
+      _id: 'srv_body_waxing',
+      name: 'Body waxing',
+      category: 'Waxing',
+      duration: 60,
+      price: 1199,
+      discountPrice: 999,
+      description: 'Full arms, full legs, underarms, and stomach waxing using premium painless Rica Italian wax or organic honey wax.',
+      image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Gentle Rica Wax', 'Tan-Free Smooth Skin', 'Post-Wax Soothing Lotion']
+    },
+    {
+      _id: 'srv_shaving_grooming',
+      name: 'Shaving',
+      category: 'Waxing',
+      duration: 20,
+      price: 199,
+      discountPrice: 149,
+      description: 'Hygienic single-use dermaplaning facial razor or grooming for smooth peach-fuzz free foundation base.',
+      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Sterilized Single-Use Blade', 'Soothing Aloe Vera', 'Flawless Base Prep']
+    },
+
+    // --- NAILS, HANDS & FEET ---
+    {
+      _id: 'srv_manicure',
+      name: 'Manicure',
+      category: 'Nails',
+      duration: 40,
+      price: 499,
+      discountPrice: 399,
+      description: 'Hand soak, nail trimming, cuticle treatment, exfoliating walnut scrub, relaxing hand massage, and long-lasting polish.',
+      image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Deep Cuticle Care', 'Aromatherapy Hand Massage', 'Glossy Polish']
+    },
+    {
+      _id: 'srv_pedicure',
+      name: 'Pedicure',
+      category: 'Nails',
+      duration: 50,
+      price: 699,
+      discountPrice: 599,
+      description: 'Warm foot spa with dead skin heel filing, callus softening scrub, cooling peppermint pack, and foot reflexology massage.',
+      image: 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Heel Crack Softening', 'Dead Skin Filing', 'Foot Massage']
+    },
+
+    // --- SPA & MASSAGE ---
+    {
+      _id: 'srv_spa_massage',
+      name: 'Massage & Spa services',
+      category: 'Spa',
+      duration: 60,
+      price: 1499,
+      discountPrice: 1299,
+      description: 'Full body Swedish oil massage, head champi, and hot towel wipe down for total muscle relief and peaceful relaxation.',
+      image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80',
+      isActive: true,
+      features: ['Ayurvedic & Essential Oils', 'Head & Back Relief', 'Private Cozy Cabin']
+    }
   ],
 
   // Default Stylists Fallback
