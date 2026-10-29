@@ -6,7 +6,8 @@ import {
   updateService,
   deleteService,
   getServiceCategories,
-  seedDefaultServices
+  seedDefaultServices,
+  syncMasterCatalog
 } from '../controllers/service.controller.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 import { authorizeRoles } from '../middlewares/role.middleware.js';
@@ -23,6 +24,14 @@ router.get('/', getServices);
 router.get('/categories', getServiceCategories);
 router.post('/seed', seedDefaultServices);
 router.get('/:id', validateObjectId('id'), getServiceById);
+
+// Admin-Only: Sync master catalog to DB (safe upsert, no data loss)
+router.post(
+  '/admin/sync-catalog',
+  verifyJWT,
+  authorizeRoles('admin'),
+  syncMasterCatalog
+);
 
 // Admin-Only Protected Routes
 router.post(

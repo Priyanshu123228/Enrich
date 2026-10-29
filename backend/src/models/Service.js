@@ -24,7 +24,7 @@ const serviceSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Category is required'],
       enum: {
-        values: ['Hair', 'Skin', 'Makeup', 'Nails', 'Spa', 'Bridal'],
+        values: ['Hair', 'Skin', 'Makeup', 'Nails', 'Spa', 'Bridal', 'Waxing'],
         message: '{VALUE} is not a supported category'
       },
       index: true

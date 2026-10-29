@@ -101,11 +101,11 @@ export default function AdminDashboard() {
           </div>
           <div>
             <span className="text-3xl font-serif font-bold text-stone-900">
-              ${overview?.totalRevenue || 0}
+              Rs {overview?.totalRevenue || 0}
             </span>
             <p className="text-[11px] text-emerald-700 font-semibold flex items-center mt-1">
               <TrendingUp className="w-3 h-3 mr-1" />
-              +${overview?.todayRevenue || 0} earned today
+              +Rs {overview?.todayRevenue || 0} earned today
             </p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
 
           <div className="flex justify-between text-xs text-stone-500 pt-1">
             <span>Aggregated Gross Sales</span>
-            <span className="font-bold text-stone-900 font-serif">Lifetime: ${overview?.totalRevenue || 0}</span>
+            <span className="font-bold text-stone-900 font-serif">Lifetime: Rs {overview?.totalRevenue || 0}</span>
           </div>
         </div>
 
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="text-right shrink-0">
-                    <span className="font-bold text-stone-900">${service.totalRevenue}</span>
+                    <span className="font-bold text-stone-900">Rs {service.totalRevenue}</span>
                     <span className="text-[10px] text-stone-400 block">{service.bookingsCount} booked</span>
                   </div>
                 </div>

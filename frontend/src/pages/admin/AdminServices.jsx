@@ -12,14 +12,15 @@ import {
   AlertCircle,
   Loader2,
   X,
-  Tag
+  Tag,
+  RefreshCw
 } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
 export default function AdminServices() {
   const [services, setServices] = useState([]);
-  const [categories, setCategories] = useState(['Hair', 'Skin', 'Makeup', 'Nails', 'Spa', 'Bridal']);
+  const [categories, setCategories] = useState(['Hair', 'Skin', 'Makeup', 'Nails', 'Spa', 'Bridal', 'Waxing']);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
@@ -41,6 +42,7 @@ export default function AdminServices() {
   });
   const [formErrors, setFormErrors] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const fetchServices = async () => {
     setIsLoading(true);
@@ -59,6 +61,24 @@ export default function AdminServices() {
   useEffect(() => {
     fetchServices();
   }, []);
+
+  const handleSyncCatalog = async () => {
+    if (!window.confirm('Sync all 33 master Enrich services to the database? This is safe - existing services will be preserved.')) return;
+    setIsSyncing(true);
+    try {
+      const res = await serviceService.syncMasterCatalog();
+      const { total, inserted, updated } = res?.data || {};
+      setActionFeedback({
+        type: 'success',
+        message: `Catalog synced! Total: ${total || 0} services (${inserted || 0} new, ${updated || 0} updated)`
+      });
+      await fetchServices();
+    } catch (err) {
+      setActionFeedback({ type: 'error', message: err.message || 'Sync failed. Please try again.' });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const openCreateModal = () => {
     setEditingServiceId(null);
@@ -184,13 +204,23 @@ export default function AdminServices() {
           </p>
         </div>
 
-        <button
-          onClick={openCreateModal}
-          className="inline-flex items-center px-5 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer"
-        >
-          <Plus className="w-4 h-4 mr-1.5" />
-          Add New Service
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSyncCatalog}
+            disabled={isSyncing}
+            className="inline-flex items-center px-4 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-semibold text-xs transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`w-4 h-4 mr-1.5 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing...' : 'Sync Catalog'}
+          </button>
+          <button
+            onClick={openCreateModal}
+            className="inline-flex items-center px-5 py-2.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4 mr-1.5" />
+            Add New Service
+          </button>
+        </div>
       </div>
 
       {/* Action Notification Alert */}
@@ -296,10 +326,10 @@ export default function AdminServices() {
 
                     {/* Price */}
                     <td className="py-4 px-4">
-                      <span className="font-bold text-stone-900">${service.price}</span>
+                      <span className="font-bold text-stone-900">Rs {service.price}</span>
                       {service.discountPrice > 0 && (
                         <span className="text-[10px] text-emerald-700 block">
-                          Sale: ${service.discountPrice}
+                          Sale: Rs {service.discountPrice}
                         </span>
                       )}
                     </td>
@@ -416,7 +446,7 @@ export default function AdminServices() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block font-semibold uppercase text-stone-700 mb-1">
-                    Regular Price ($) *
+                    Regular Price (Rs) *
                   </label>
                   <input
                     type="number"
@@ -432,7 +462,7 @@ export default function AdminServices() {
 
                 <div>
                   <label className="block font-semibold uppercase text-stone-700 mb-1">
-                    Discount Price ($)
+                    Discount Price (Rs)
                   </label>
                   <input
                     type="number"

@@ -62,5 +62,12 @@ export const serviceService = {
    */
   seedDefaultServices: async () => {
     return await api.post('/services/seed');
+  },
+
+  /**
+   * Admin-only: Sync master Enrich catalog to MongoDB (safe upsert)
+   */
+  syncMasterCatalog: async () => {
+    return await api.post('/services/admin/sync-catalog');
   }
 };

@@ -1,6 +1,6 @@
 import { ApiError } from '../utils/apiError.js';
 
-const ALLOWED_CATEGORIES = ['Hair', 'Skin', 'Makeup', 'Nails', 'Spa', 'Bridal'];
+const ALLOWED_CATEGORIES = ['Hair', 'Skin', 'Makeup', 'Nails', 'Spa', 'Bridal', 'Waxing'];
 
 //  Validate service creation payload
 
