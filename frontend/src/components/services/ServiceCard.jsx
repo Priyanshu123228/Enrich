@@ -10,8 +10,7 @@ import { MessageCircle } from 'lucide-react';
  * 1. Service Image with category badge
  * 2. Service Name in English
  * 3. Conversational Hinglish Subtitle (explains what it actually does in simple words)
- * 4. Transparent Price (No hidden cost fear)
- * 5. 1-Tap Direct 'Book on WhatsApp' CTA
+ * 4. 1-Tap Direct 'Book on WhatsApp' CTA
  */
 export default function ServiceCard({ service }) {
   const rawImage =
@@ -54,12 +53,6 @@ export default function ServiceCard({ service }) {
           </span>
         )}
 
-        {/* Optional price tag on top-right */}
-        {service.price > 0 && (
-          <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[11px] font-bold bg-white/95 text-stone-900 shadow-xs backdrop-blur-xs">
-            ₹{service.discountPrice && service.discountPrice < service.price ? service.discountPrice : service.price}
-          </span>
-        )}
       </a>
 
       {/* 2. Service Name & Hinglish Subtitle */}

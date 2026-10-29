@@ -255,7 +255,7 @@ export default function ServiceDetail() {
 
         </div>
 
-        {/* Right Column: Booking Card & Price Summary */}
+        {/* Right Column: Booking Card */}
         <div className="lg:col-span-5">
           <div className="sticky top-28 bg-white p-6 sm:p-8 rounded-xl border border-stone-200 shadow-sm space-y-6">
             
