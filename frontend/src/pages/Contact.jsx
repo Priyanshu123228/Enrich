@@ -267,7 +267,7 @@ export default function Contact() {
                   <PhoneCall className="w-6 h-6" />
                 </div>
                 <span className="text-[11px] font-bold text-stone-400">
-                  10:00 AM – 8:00 PM
+                  9:30 AM – 7:30 PM
                 </span>
               </div>
 
@@ -288,7 +288,7 @@ export default function Contact() {
                   +91 96679 00313
                 </p>
                 <p className="text-[11px] text-stone-400">
-                  Daily Open (Sunday Open till 5:00 PM)
+                  Daily Open (All 7 Days: 9:30 AM – 7:30 PM)
                 </p>
               </div>
             </div>

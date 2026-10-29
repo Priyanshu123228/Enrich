@@ -310,7 +310,7 @@ export default function BookingWizard() {
       <div className="p-4 sm:p-5 rounded-2xl bg-stone-100 border border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-700">
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-rose-700 shrink-0" />
-          <span>Sharda Heights, Chandpol, Sikar • Open Daily 9:00 AM – 8:00 PM</span>
+          <span>Sharda Heights, Chandpol, Sikar • Open Daily 9:30 AM – 7:30 PM</span>
         </div>
 
         <a

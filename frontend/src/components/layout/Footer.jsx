@@ -43,24 +43,18 @@ export default function Footer() {
     try {
       const now = new Date();
       const istTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-      const day = istTime.getDay(); // 0 is Sunday, 1-6 Mon-Sat
       const minutes = istTime.getHours() * 60 + istTime.getMinutes();
 
-      if (day === 0) {
-        // Sunday: 10:00 AM (600) to 5:00 PM (1020)
-        if (minutes >= 600 && minutes < 1020) {
-          return { isOpen: true, label: 'Open Now • Closes 5:00 PM' };
-        }
-        return { isOpen: false, label: minutes < 600 ? 'Opens Today 10:00 AM' : 'Closed • Opens Mon 9:00 AM' };
-      } else {
-        // Mon - Sat: 9:00 AM (540) to 8:00 PM (1200)
-        if (minutes >= 540 && minutes < 1200) {
-          return { isOpen: true, label: 'Open Now • Closes 8:00 PM' };
-        }
-        return { isOpen: false, label: minutes < 540 ? 'Opens Today 9:00 AM' : 'Closed • Opens Tomorrow 9:00 AM' };
+      // All 7 Days: 9:30 AM (570) to 7:30 PM (1170)
+      if (minutes >= 570 && minutes < 1170) {
+        return { isOpen: true, label: 'Open Now • Closes 7:30 PM' };
       }
+      return {
+        isOpen: false,
+        label: minutes < 570 ? 'Opens Today 9:30 AM' : 'Closed • Opens Tomorrow 9:30 AM'
+      };
     } catch (_) {
-      return { isOpen: true, label: 'Open Mon–Sat 9AM–8PM' };
+      return { isOpen: true, label: 'Open Daily 9:30 AM – 7:30 PM' };
     }
   };
 

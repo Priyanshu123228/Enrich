@@ -68,7 +68,7 @@ export default function About() {
             First Floor, Sharda Heights, Chandpol, Sikar
           </h3>
           <p className="text-xs sm:text-sm text-stone-600 font-light">
-            Near Ramlila Maidan / Parshuram Park, Rajasthan 332001. Open daily 9:00 AM – 8:00 PM.
+            Near Ramlila Maidan / Parshuram Park, Rajasthan 332001. Open daily 9:30 AM – 7:30 PM.
           </p>
         </div>
 

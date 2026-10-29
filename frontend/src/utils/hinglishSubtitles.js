@@ -1,11 +1,4 @@
-/**
- * Hinglish Subtitles & Explanations for Salon Services & Categories
- * Tailored for local customers in small towns/Tier-2/3 cities (e.g. Sikar, Rajasthan)
- * 
- * Provides simple, everyday conversational Hindi/Hinglish explanations
- * so customers immediately understand the benefit of treatments
- * without getting confused by technical salon jargon.
- */
+//local hindi for salon services
 
 export const SERVICE_HINGLISH_MAP = [
   // 1. Bridal & Engagement Makeup

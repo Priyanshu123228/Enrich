@@ -51,12 +51,12 @@ export const SALON_CONFIG = {
 
     // Operating Hours
   hours: {
-    monSat: '9:00 AM – 8:00 PM',
-    weekday: '9:00 AM – 8:00 PM',
-    weekdays: '9:00 AM – 8:00 PM',
-    saturday: '9:00 AM – 8:00 PM',
-    sunday: '10:00 AM – 5:00 PM',
-    summary: 'Mon – Sat: 9:00 AM – 8:00 PM | Sun: 10:00 AM – 5:00 PM',
+    monSat: '9:30 AM – 7:30 PM',
+    weekday: '9:30 AM – 7:30 PM',
+    weekdays: '9:30 AM – 7:30 PM',
+    saturday: '9:30 AM – 7:30 PM',
+    sunday: '9:30 AM – 7:30 PM',
+    summary: 'Open All 7 Days: 9:30 AM – 7:30 PM',
   },
 
   // Transit & Parking / Location Details
