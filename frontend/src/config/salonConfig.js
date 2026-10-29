@@ -131,6 +131,43 @@ export const SALON_CONFIG = {
   // Gallery Categories for Filtering
   galleryCategories: ['All', 'Photos', 'Videos', 'Before & After', 'Hair', 'Makeup', 'Skin', 'Bridal', 'Nails'],
 
+  // Official Service Menu & Local Sikar Keywords
+  serviceList: [
+    'Body waxing',
+    'Bridal services',
+    'Eyebrow beautification',
+    'Eyelashes',
+    'Facials',
+    'Haircut',
+    'Hair extensions',
+    'Hairstyling',
+    'Make-up',
+    'Manicure',
+    'Massage',
+    'Mobile salon service',
+    'Online beauty salon booking',
+    'Pedicure',
+    'Permanent makeup',
+    'Shampoo & conditioning',
+    'Shaving',
+    'Skin care',
+    'Spa services',
+    'Waxing',
+    'Wedding and event preparation',
+    'Bridal Makeup In Sikar',
+    'Best Bridal Makeup Artist In Sikar',
+    'Bridal Hairstyle In Sikar',
+    'Wedding Makeup Near Me In Sikar',
+    'Hair Color In Sikar',
+    'Keratin Treatment In Sikar',
+    'Anti Ageing Facial Sikar',
+    'Bridal Makeup near me',
+    'Party Makeup Near me',
+    'Party makeup near me in Sikar',
+    'Skin Brightening Treatment In Sikar',
+    'Skin Brightening Treatment near me In Sikar'
+  ],
+
   // Default Services Fallback
   defaultServices: [
     {

@@ -7,7 +7,7 @@ const BRAND_SUFFIX = ' | Enrich Ladies Beauty Parlor Sikar';
 export default function SEO({
   title = 'Enrich Ladies Beauty Parlor & Cosmetic Clinic | Best Salon in Sikar (4.9★)',
   description = 'Premier beauty parlour & cosmetic clinic in Sikar at Sharda Heights, Chandpol. HD bridal makeup, hydrafacial, hair styling with 512+ Google reviews.',
-  keywords = 'beauty parlour in sikar, best salon in sikar, enrich ladies beauty parlor, bridal makeup artist sikar, cosmetic clinic sikar, hydrafacial in sikar',
+  keywords = 'beauty parlour in sikar, best salon in sikar, bridal makeup in sikar, best bridal makeup artist in sikar, bridal hairstyle in sikar, wedding makeup near me in sikar, hair color in sikar, keratin treatment in sikar, anti ageing facial sikar, skin brightening treatment in sikar, party makeup near me in sikar, hydrafacial in sikar, body waxing, hair extensions, permanent makeup, eyelashes, manicure, pedicure, spa services, enrich ladies beauty parlor',
   image = DEFAULT_IMAGE,
   url = DEFAULT_URL,
   type = 'website'
@@ -114,7 +114,33 @@ export default function SEO({
         'https://www.threads.com/@enrich_beauty25',
         'https://www.facebook.com/enrichparloursikar',
         'https://wa.me/919667900313'
-      ]
+      ],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Enrich Beauty & Bridal Services Menu',
+        itemListElement: [
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bridal Makeup in Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Best Bridal Makeup Artist in Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bridal Hairstyle in Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Wedding and Event Preparation' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Party Makeup in Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Keratin Treatment in Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Hair Color in Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Haircut & Hairstyling' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Hair Extensions' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Skin Brightening Treatment in Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Anti Ageing Facial Sikar' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Facials & Skin Care' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Eyebrow Beautification' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Eyelashes' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Permanent Makeup' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Manicure & Pedicure' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Body Waxing' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Massage & Spa Services' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shampoo & Conditioning' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Online Beauty Salon Booking' } }
+        ]
+      }
     };
 
     let scriptElement = document.querySelector('#schema-structured-data');
