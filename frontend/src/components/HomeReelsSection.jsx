@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Clock, Sparkles, Film, ArrowRight, Sparkle, ChevronDown, ChevronUp, Volume2, VolumeX, MessageCircle } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../utils/imageUrl';
@@ -58,11 +58,51 @@ const DEFAULT_FALLBACK_REELS = [
 
 /**
  * Individual Smartphone Reel Card
+ * 
+ * Uses IntersectionObserver to auto-pause video + mute audio when card scrolls out of view.
+ * This prevents audio bleed from one reel leaking into other reels on mobile scroll.
  */
-function HomeReelCard({ video, onSelectVideo }) {
+function HomeReelCard({ video, onSelectVideo, activeAudioId, onRequestAudio }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Start muted — required for mobile autoplay
+  const [isVisible, setIsVisible] = useState(false);
   const videoPreviewRef = useRef(null);
+  const cardRef = useRef(null);
+
+  const videoId = video._id || video.id || video.title;
+
+  // ── IntersectionObserver: track visibility ──
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.3 } // Card must be at least 30% visible
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // ── Pause & mute when scrolled out of view ──
+  useEffect(() => {
+    if (!isVisible && videoPreviewRef.current) {
+      videoPreviewRef.current.pause();
+      videoPreviewRef.current.muted = true;
+      setIsMuted(true);
+    }
+  }, [isVisible]);
+
+  // ── If another reel takes audio focus, mute this one ──
+  useEffect(() => {
+    if (activeAudioId && activeAudioId !== videoId && videoPreviewRef.current) {
+      videoPreviewRef.current.muted = true;
+      setIsMuted(true);
+    }
+  }, [activeAudioId, videoId]);
 
   const handleToggleMute = (e) => {
     e.stopPropagation();
@@ -72,6 +112,8 @@ function HomeReelCard({ video, onSelectVideo }) {
     videoPreviewRef.current.muted = nextMuted;
     setIsMuted(nextMuted);
     if (!nextMuted) {
+      // This reel is now unmuted — tell parent to mute all others
+      onRequestAudio(videoId);
       videoPreviewRef.current.play().catch(() => {});
     }
   };
@@ -84,9 +126,12 @@ function HomeReelCard({ video, onSelectVideo }) {
     !video.thumbnail.includes('.webm') &&
     video.thumbnail !== video?.url;
 
+  // ── Play/pause on hover (desktop) or visibility (mobile) ──
   useEffect(() => {
     if (!videoPreviewRef.current || !hasVideoUrl) return;
-    if (isHovered) {
+    const shouldPlay = isHovered || isVisible;
+
+    if (shouldPlay) {
       videoPreviewRef.current.currentTime = 0;
       videoPreviewRef.current.muted = isMuted;
       const playPromise = videoPreviewRef.current.play();
@@ -96,6 +141,7 @@ function HomeReelCard({ video, onSelectVideo }) {
           // fallback gracefully to muted playback
           if (videoPreviewRef.current) {
             videoPreviewRef.current.muted = true;
+            setIsMuted(true);
             videoPreviewRef.current.play().catch(() => {});
           }
         });
@@ -103,10 +149,11 @@ function HomeReelCard({ video, onSelectVideo }) {
     } else {
       videoPreviewRef.current.pause();
     }
-  }, [isHovered, hasVideoUrl, isMuted]);
+  }, [isHovered, isVisible, hasVideoUrl, isMuted]);
 
   return (
     <div
+      ref={cardRef}
       role="button"
       tabIndex={0}
       aria-label={`Watch reel: ${video.title || 'Salon transformation'}`}
@@ -237,12 +284,20 @@ function HomeReelCard({ video, onSelectVideo }) {
  * 
  * Luminous Atelier Homepage Section with Smartphone Video Reels.
  * Features tight, comfortable section spacing and interactive "More Reels" toggle.
+ * 
+ * Audio management: Only one reel can play audio at a time.
+ * When a reel scrolls out of view, it is paused and muted automatically.
  */
 export default function HomeReelsSection({
   videos = [],
   onSelectVideo = () => {}
 }) {
   const [showMore, setShowMore] = useState(false);
+  const [activeAudioId, setActiveAudioId] = useState(null);
+
+  const handleRequestAudio = useCallback((videoId) => {
+    setActiveAudioId(videoId);
+  }, []);
 
   // Normalize full list of reels
   const allAvailableReels = useMemo(() => {
@@ -303,6 +358,8 @@ export default function HomeReelsSection({
               key={reel._id || reel.id || reel.title}
               video={reel}
               onSelectVideo={onSelectVideo}
+              activeAudioId={activeAudioId}
+              onRequestAudio={handleRequestAudio}
             />
           ))}
         </div>
