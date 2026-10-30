@@ -44,11 +44,52 @@ export function formatVideoDuration(seconds) {
  */
 export function FeaturedHeroCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isMuted, setIsMuted] = useState(false); // SOUND ON BY DEFAULT
+  const [isMuted, setIsMuted] = useState(true); // Muted by default on mobile & desktop
+  const [isVisible, setIsVisible] = useState(false);
   const videoPreviewRef = useRef(null);
+  const cardRef = useRef(null);
   const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
   const videoSrc = resolveImageUrl(video?.url || video?.videoUrl);
   const isImageThumb = video?.thumbnail && !video.thumbnail.includes('.mp4') && !video.thumbnail.includes('.webm') && video.thumbnail !== video?.url;
+  const videoId = video?._id || video?.id || '4k-studio-spotlight-hero';
+
+  // IntersectionObserver: Auto-pause & mute when scrolled out of view
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // When scrolled out of view, halt sound & playback immediately
+  useEffect(() => {
+    if (!isVisible && videoPreviewRef.current) {
+      videoPreviewRef.current.pause();
+      videoPreviewRef.current.muted = true;
+      setIsMuted(true);
+      setIsHovered(false);
+    }
+  }, [isVisible]);
+
+  // Global audio exclusivity: mute if another video starts audio
+  useEffect(() => {
+    const handleGlobalAudio = (e) => {
+      if (e.detail?.id !== videoId && videoPreviewRef.current) {
+        videoPreviewRef.current.muted = true;
+        setIsMuted(true);
+      }
+    };
+    window.addEventListener('enrich-audio-focus', handleGlobalAudio);
+    return () => window.removeEventListener('enrich-audio-focus', handleGlobalAudio);
+  }, [videoId]);
 
   const toggleSound = (e) => {
     e.stopPropagation();
@@ -57,6 +98,7 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
     if (videoPreviewRef.current) {
       videoPreviewRef.current.muted = nextMuted;
       if (!nextMuted) {
+        window.dispatchEvent(new CustomEvent('enrich-audio-focus', { detail: { id: videoId } }));
         videoPreviewRef.current.play().catch(() => {});
       }
     }
@@ -64,15 +106,15 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
 
   useEffect(() => {
     if (!videoPreviewRef.current || !hasVideoUrl) return;
-    if (isHovered) {
-      videoPreviewRef.current.currentTime = 0;
+    const shouldPlay = isHovered || isVisible;
+    if (shouldPlay) {
       videoPreviewRef.current.muted = isMuted;
       const playPromise = videoPreviewRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Fallback to muted if browser blocks unmuted autoplay prior to interaction
-          if (!isMuted && videoPreviewRef.current) {
+          if (videoPreviewRef.current) {
             videoPreviewRef.current.muted = true;
+            setIsMuted(true);
             videoPreviewRef.current.play().catch(() => {});
           }
         });
@@ -80,12 +122,13 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
     } else {
       videoPreviewRef.current.pause();
     }
-  }, [isHovered, hasVideoUrl, isMuted]);
+  }, [isHovered, isVisible, hasVideoUrl, isMuted]);
 
   if (!video) return null;
 
   return (
     <div
+      ref={cardRef}
       className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-950 border border-stone-800 shadow-2xl group cursor-pointer transition-all duration-300 hover:border-rose-700/60 min-h-[380px] sm:min-h-[440px] lg:min-h-[500px] flex flex-col justify-between active:scale-[0.99]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -225,11 +268,52 @@ export function FeaturedHeroCard({ video, onSelectVideo }) {
  */
 export function VideoReelCard({ video, onSelectVideo }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isMuted, setIsMuted] = useState(false); // SOUND ON BY DEFAULT
+  const [isMuted, setIsMuted] = useState(true); // Muted by default
+  const [isVisible, setIsVisible] = useState(false);
   const videoPreviewRef = useRef(null);
+  const cardRef = useRef(null);
   const hasVideoUrl = Boolean(video?.url || video?.videoUrl);
   const videoSrc = resolveImageUrl(video?.url || video?.videoUrl);
   const isImageThumb = video?.thumbnail && !video.thumbnail.includes('.mp4') && !video.thumbnail.includes('.webm') && video.thumbnail !== video?.url;
+  const videoId = video?._id || video?.id || video?.title;
+
+  // IntersectionObserver: Auto-pause & mute when scrolled out of view
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // When scrolled out of view, halt sound & playback immediately
+  useEffect(() => {
+    if (!isVisible && videoPreviewRef.current) {
+      videoPreviewRef.current.pause();
+      videoPreviewRef.current.muted = true;
+      setIsMuted(true);
+      setIsHovered(false);
+    }
+  }, [isVisible]);
+
+  // Global audio exclusivity
+  useEffect(() => {
+    const handleGlobalAudio = (e) => {
+      if (e.detail?.id !== videoId && videoPreviewRef.current) {
+        videoPreviewRef.current.muted = true;
+        setIsMuted(true);
+      }
+    };
+    window.addEventListener('enrich-audio-focus', handleGlobalAudio);
+    return () => window.removeEventListener('enrich-audio-focus', handleGlobalAudio);
+  }, [videoId]);
 
   const toggleSound = (e) => {
     e.stopPropagation();
@@ -238,6 +322,7 @@ export function VideoReelCard({ video, onSelectVideo }) {
     if (videoPreviewRef.current) {
       videoPreviewRef.current.muted = nextMuted;
       if (!nextMuted) {
+        window.dispatchEvent(new CustomEvent('enrich-audio-focus', { detail: { id: videoId } }));
         videoPreviewRef.current.play().catch(() => {});
       }
     }
@@ -245,15 +330,15 @@ export function VideoReelCard({ video, onSelectVideo }) {
 
   useEffect(() => {
     if (!videoPreviewRef.current || !hasVideoUrl) return;
-    if (isHovered) {
-      videoPreviewRef.current.currentTime = 0;
+    const shouldPlay = isHovered || isVisible;
+    if (shouldPlay) {
       videoPreviewRef.current.muted = isMuted;
       const playPromise = videoPreviewRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Fallback to muted if browser blocks unmuted autoplay prior to interaction
-          if (!isMuted && videoPreviewRef.current) {
+          if (videoPreviewRef.current) {
             videoPreviewRef.current.muted = true;
+            setIsMuted(true);
             videoPreviewRef.current.play().catch(() => {});
           }
         });
@@ -261,12 +346,13 @@ export function VideoReelCard({ video, onSelectVideo }) {
     } else {
       videoPreviewRef.current.pause();
     }
-  }, [isHovered, hasVideoUrl, isMuted]);
+  }, [isHovered, isVisible, hasVideoUrl, isMuted]);
 
   if (!video) return null;
 
   return (
     <div
+      ref={cardRef}
       className="relative group rounded-2xl overflow-hidden bg-stone-900 border border-stone-800 shadow-md cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-rose-600 hover:-translate-y-1 flex flex-col justify-between aspect-[9/15] sm:aspect-[9/15.5] w-[220px] sm:w-[260px] md:w-[280px] lg:w-[290px] shrink-0 snap-start active:scale-[0.98] select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

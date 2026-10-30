@@ -104,6 +104,18 @@ function HomeReelCard({ video, onSelectVideo, activeAudioId, onRequestAudio }) {
     }
   }, [activeAudioId, videoId]);
 
+  // ── Global audio exclusivity across all pages & spotlight hero ──
+  useEffect(() => {
+    const handleGlobalAudio = (e) => {
+      if (e.detail?.id !== videoId && videoPreviewRef.current) {
+        videoPreviewRef.current.muted = true;
+        setIsMuted(true);
+      }
+    };
+    window.addEventListener('enrich-audio-focus', handleGlobalAudio);
+    return () => window.removeEventListener('enrich-audio-focus', handleGlobalAudio);
+  }, [videoId]);
+
   const handleToggleMute = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -112,8 +124,9 @@ function HomeReelCard({ video, onSelectVideo, activeAudioId, onRequestAudio }) {
     videoPreviewRef.current.muted = nextMuted;
     setIsMuted(nextMuted);
     if (!nextMuted) {
-      // This reel is now unmuted — tell parent to mute all others
+      // This reel is now unmuted — tell parent and global bus to mute all others
       onRequestAudio(videoId);
+      window.dispatchEvent(new CustomEvent('enrich-audio-focus', { detail: { id: videoId } }));
       videoPreviewRef.current.play().catch(() => {});
     }
   };

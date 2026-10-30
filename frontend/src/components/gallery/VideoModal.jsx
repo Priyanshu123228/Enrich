@@ -268,12 +268,25 @@ export default function VideoModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNextReel, handlePrevReel, onClose]);
 
-  // Prevent background body scroll when open
+  // Prevent background body scroll & mute/pause all page videos when modal opens
   useEffect(() => {
+    // Notify all background hero/reel videos to pause sound
+    window.dispatchEvent(new CustomEvent('enrich-audio-focus', { detail: { id: 'video-modal' } }));
+    document.querySelectorAll('video').forEach((v) => {
+      if (v !== videoRef.current) {
+        v.pause();
+        v.muted = true;
+      }
+    });
+
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = originalStyle;
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.muted = true;
+      }
     };
   }, []);
 
