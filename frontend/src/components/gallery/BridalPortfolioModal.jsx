@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   X,
   Sparkles,
@@ -131,29 +131,83 @@ export default function BridalPortfolioModal({ isOpen, onClose }) {
     };
   }, [isOpen]);
 
+  const MODAL_HISTORY_KEY = 'enrich_modal_bridal';
+  const hasPushedHistoryRef = useRef(false);
+  const isClosedByPopstateRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  const handleCloseRequest = useCallback(() => {
+    if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
+      isClosedByPopstateRef.current = true;
+      if (window.history.state?.[MODAL_HISTORY_KEY]) {
+        window.history.back();
+      }
+    }
+    onCloseRef.current?.();
+  }, []);
+
   // Handle escape key to close modal
   const handleKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape' && activeLightboxIdx === null) {
-        onClose?.();
+        handleCloseRequest();
       }
     },
-    [onClose, activeLightboxIdx]
+    [handleCloseRequest, activeLightboxIdx]
   );
 
   useEffect(() => {
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+    if (!isOpen) {
+      hasPushedHistoryRef.current = false;
+      isClosedByPopstateRef.current = false;
+      return;
     }
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+    const savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
+    if (!hasPushedHistoryRef.current) {
+      window.history.pushState({ [MODAL_HISTORY_KEY]: true }, '', window.location.href);
+      hasPushedHistoryRef.current = true;
+    }
+
+    const handlePopState = () => {
+      if (activeLightboxIdx !== null) return;
+      isClosedByPopstateRef.current = true;
+      onCloseRef.current?.();
     };
-  }, [isOpen, handleKeyDown]);
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('keydown', handleKeyDown);
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalStyle;
+
+      if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
+        isClosedByPopstateRef.current = true;
+        if (window.history.state?.[MODAL_HISTORY_KEY]) {
+          window.history.back();
+        }
+      }
+
+      try {
+        window.scrollTo({
+          top: savedScrollY,
+          left: 0,
+          behavior: 'instant'
+        });
+      } catch (_) {
+        window.scrollTo(0, savedScrollY);
+      }
+    };
+  }, [isOpen, handleKeyDown, activeLightboxIdx]);
 
   // Filter photos by subcategory
   const filteredPhotos = useMemo(() => {
@@ -176,7 +230,7 @@ export default function BridalPortfolioModal({ isOpen, onClose }) {
       <div
         className="fixed inset-0 z-50 bg-stone-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-in fade-in duration-200"
         onClick={(e) => {
-          if (e.target === e.currentTarget) onClose?.();
+          if (e.target === e.currentTarget) handleCloseRequest();
         }}
         role="dialog"
         aria-modal="true"

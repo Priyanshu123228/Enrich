@@ -244,11 +244,59 @@ export default function VideoModal({
     }
   };
 
+  const MODAL_HISTORY_KEY = 'enrich_modal_reel';
+  const hasPushedHistoryRef = useRef(false);
+  const isClosedByPopstateRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Unified close requester: if closed by UI (X button, Esc, backdrop), pop history state cleanly
+  const handleCloseRequest = useCallback(() => {
+    if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
+      isClosedByPopstateRef.current = true;
+      if (window.history.state?.[MODAL_HISTORY_KEY]) {
+        window.history.back();
+      }
+    }
+    onCloseRef.current?.();
+  }, []);
+
+  // History & Mobile Back Button Hook (Mount only: avoids re-pushing when swiping between reels)
+  useEffect(() => {
+    if (!hasPushedHistoryRef.current) {
+      window.history.pushState({ [MODAL_HISTORY_KEY]: true }, '', window.location.href);
+      hasPushedHistoryRef.current = true;
+    }
+
+    const handlePopState = () => {
+      // Android hardware Back button, browser Back button, or mobile back gesture triggered
+      isClosedByPopstateRef.current = true;
+      onCloseRef.current?.();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+
+      // Clean up modal history entry if unmounted without a popstate event
+      if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
+        isClosedByPopstateRef.current = true;
+        if (window.history.state?.[MODAL_HISTORY_KEY]) {
+          window.history.back();
+        }
+      }
+    };
+  }, []);
+
   // Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        onClose();
+        handleCloseRequest();
       } else if (e.key === 'ArrowDown' || e.key === 'j') {
         e.preventDefault();
         handleNextReel();
@@ -266,10 +314,13 @@ export default function VideoModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNextReel, handlePrevReel, onClose]);
+  }, [handleNextReel, handlePrevReel, handleCloseRequest]);
 
-  // Prevent background body scroll & mute/pause all page videos when modal opens
+  // Prevent background body scroll, mute/pause page videos, and restore exact scroll position
   useEffect(() => {
+    // Record exact scroll position before locking body scroll
+    const savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
     // Notify all background hero/reel videos to pause sound
     window.dispatchEvent(new CustomEvent('enrich-audio-focus', { detail: { id: 'video-modal' } }));
     document.querySelectorAll('video').forEach((v) => {
@@ -281,11 +332,23 @@ export default function VideoModal({
 
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
+
     return () => {
       document.body.style.overflow = originalStyle;
       if (videoRef.current) {
         videoRef.current.pause();
         videoRef.current.muted = true;
+      }
+
+      // Restore exact scroll position on the page where user opened the reel
+      try {
+        window.scrollTo({
+          top: savedScrollY,
+          left: 0,
+          behavior: 'instant'
+        });
+      } catch (_) {
+        window.scrollTo(0, savedScrollY);
       }
     };
   }, []);
@@ -316,7 +379,7 @@ export default function VideoModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/95 backdrop-blur-md select-none transition-opacity duration-300"
-      onClick={onClose}
+      onClick={handleCloseRequest}
       onWheel={handleWheel}
       role="dialog"
       aria-modal="true"
@@ -369,7 +432,7 @@ export default function VideoModal({
           </button>
 
           <button
-            onClick={onClose}
+            onClick={handleCloseRequest}
             aria-label="Close Reels Player"
             className="p-2 sm:p-2.5 rounded-full bg-stone-900/90 hover:bg-rose-900 text-white transition-all cursor-pointer border border-stone-700/80 hover:border-rose-600 shadow-md active:scale-95"
             title="Close (Esc)"

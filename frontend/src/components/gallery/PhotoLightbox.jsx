@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2, Sparkles } from 'lucide-react';
 import { resolveImageUrl, handleImageError, DEFAULT_SALON_PLACEHOLDER } from '../../utils/imageUrl';
 
@@ -15,22 +15,73 @@ export default function PhotoLightbox({
     setIsLoading(true);
   }, [currentIndex]);
 
+  const MODAL_HISTORY_KEY = 'enrich_modal_lightbox';
+  const hasPushedHistoryRef = useRef(false);
+  const isClosedByPopstateRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  const handleCloseRequest = useCallback(() => {
+    if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
+      isClosedByPopstateRef.current = true;
+      if (window.history.state?.[MODAL_HISTORY_KEY]) {
+        window.history.back();
+      }
+    }
+    onCloseRef.current?.();
+  }, []);
+
   const handleKeyDown = useCallback(
     (e) => {
-      if (e.key === 'Escape') onClose?.();
+      if (e.key === 'Escape') handleCloseRequest();
       if (e.key === 'ArrowLeft' && currentIndex > 0) onNavigate?.(currentIndex - 1);
       if (e.key === 'ArrowRight' && currentIndex < mediaList.length - 1) onNavigate?.(currentIndex + 1);
     },
-    [currentIndex, mediaList.length, onClose, onNavigate]
+    [currentIndex, mediaList.length, handleCloseRequest, onNavigate]
   );
 
   useEffect(() => {
+    const savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
+    if (!hasPushedHistoryRef.current) {
+      window.history.pushState({ [MODAL_HISTORY_KEY]: true }, '', window.location.href);
+      hasPushedHistoryRef.current = true;
+    }
+
+    const handlePopState = () => {
+      isClosedByPopstateRef.current = true;
+      onCloseRef.current?.();
+    };
+
+    window.addEventListener('popstate', handlePopState);
     window.addEventListener('keydown', handleKeyDown);
+    const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
 
     return () => {
+      window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = originalStyle;
+
+      if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
+        isClosedByPopstateRef.current = true;
+        if (window.history.state?.[MODAL_HISTORY_KEY]) {
+          window.history.back();
+        }
+      }
+
+      try {
+        window.scrollTo({
+          top: savedScrollY,
+          left: 0,
+          behavior: 'instant'
+        });
+      } catch (_) {
+        window.scrollTo(0, savedScrollY);
+      }
     };
   }, [handleKeyDown]);
 
@@ -43,7 +94,7 @@ export default function PhotoLightbox({
     <div
       className="fixed inset-0 z-50 bg-stone-950/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 select-none animate-in fade-in duration-200"
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose?.();
+        if (e.target === e.currentTarget) handleCloseRequest();
       }}
       role="dialog"
       aria-modal="true"
@@ -62,7 +113,7 @@ export default function PhotoLightbox({
         </div>
 
         <button
-          onClick={onClose}
+          onClick={handleCloseRequest}
           aria-label="Close lightbox"
           className="p-2 sm:p-2.5 rounded-full bg-stone-900/90 hover:bg-rose-900/80 text-white transition-all cursor-pointer border border-stone-700/80 hover:border-rose-600/80 hover:scale-105 shadow-md active:scale-95"
           title="Close (Esc)"
