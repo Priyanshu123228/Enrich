@@ -150,16 +150,12 @@ export default function BridalPortfolioModal({ isOpen, onClose }) {
     onCloseRef.current?.();
   }, []);
 
-  // Handle escape key to close modal
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.key === 'Escape' && activeLightboxIdx === null) {
-        handleCloseRequest();
-      }
-    },
-    [handleCloseRequest, activeLightboxIdx]
-  );
+  const activeLightboxIdxRef = useRef(activeLightboxIdx);
+  useEffect(() => {
+    activeLightboxIdxRef.current = activeLightboxIdx;
+  }, [activeLightboxIdx]);
 
+  // History & Back button effect (strictly controlled by isOpen)
   useEffect(() => {
     if (!isOpen) {
       hasPushedHistoryRef.current = false;
@@ -175,19 +171,17 @@ export default function BridalPortfolioModal({ isOpen, onClose }) {
     }
 
     const handlePopState = () => {
-      if (activeLightboxIdx !== null) return;
+      if (activeLightboxIdxRef.current !== null) return;
       isClosedByPopstateRef.current = true;
       onCloseRef.current?.();
     };
 
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener('keydown', handleKeyDown);
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = originalStyle;
 
       if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
@@ -207,7 +201,21 @@ export default function BridalPortfolioModal({ isOpen, onClose }) {
         window.scrollTo(0, savedScrollY);
       }
     };
-  }, [isOpen, handleKeyDown, activeLightboxIdx]);
+  }, [isOpen]);
+
+  // Keyboard Navigation (Escape key)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && activeLightboxIdx === null) {
+        handleCloseRequest();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, activeLightboxIdx, handleCloseRequest]);
 
   // Filter photos by subcategory
   const filteredPhotos = useMemo(() => {

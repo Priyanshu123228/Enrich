@@ -11,19 +11,51 @@ export default function PhotoLightbox({
   const [isLoading, setIsLoading] = useState(true);
   const currentItem = mediaList[currentIndex];
 
-  useEffect(() => {
-    setIsLoading(true);
-  }, [currentIndex]);
-
   const MODAL_HISTORY_KEY = 'enrich_modal_lightbox';
   const hasPushedHistoryRef = useRef(false);
   const isClosedByPopstateRef = useRef(false);
   const onCloseRef = useRef(onClose);
+  const onNavigateRef = useRef(onNavigate);
 
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  // Sync callbacks without triggering re-subscriptions
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
 
+  useEffect(() => {
+    onNavigateRef.current = onNavigate;
+  }, [onNavigate]);
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, [currentIndex]);
+
+  // Navigate to Next Photo (with loop-around support)
+  const handleNext = useCallback(
+    (e) => {
+      e?.stopPropagation();
+      if (!mediaList || mediaList.length <= 1) return;
+      const nextIdx = (currentIndex + 1) % mediaList.length;
+      onNavigateRef.current?.(nextIdx);
+    },
+    [currentIndex, mediaList]
+  );
+
+  // Navigate to Previous Photo (with loop-around support)
+  const handlePrev = useCallback(
+    (e) => {
+      e?.stopPropagation();
+      if (!mediaList || mediaList.length <= 1) return;
+      const prevIdx = (currentIndex - 1 + mediaList.length) % mediaList.length;
+      onNavigateRef.current?.(prevIdx);
+    },
+    [currentIndex, mediaList]
+  );
+
+  // Unified close requester: pops history state cleanly when closed via UI
   const handleCloseRequest = useCallback(() => {
     if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
       isClosedByPopstateRef.current = true;
@@ -34,18 +66,8 @@ export default function PhotoLightbox({
     onCloseRef.current?.();
   }, []);
 
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.key === 'Escape') handleCloseRequest();
-      if (e.key === 'ArrowLeft' && currentIndex > 0) onNavigate?.(currentIndex - 1);
-      if (e.key === 'ArrowRight' && currentIndex < mediaList.length - 1) onNavigate?.(currentIndex + 1);
-    },
-    [currentIndex, mediaList.length, handleCloseRequest, onNavigate]
-  );
-
+  // 1. History & Back Button Hook (Mount only: avoids closing modal on photo navigation)
   useEffect(() => {
-    const savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-
     if (!hasPushedHistoryRef.current) {
       window.history.pushState({ [MODAL_HISTORY_KEY]: true }, '', window.location.href);
       hasPushedHistoryRef.current = true;
@@ -57,14 +79,9 @@ export default function PhotoLightbox({
     };
 
     window.addEventListener('popstate', handlePopState);
-    window.addEventListener('keydown', handleKeyDown);
-    const originalStyle = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = originalStyle;
 
       if (hasPushedHistoryRef.current && !isClosedByPopstateRef.current) {
         isClosedByPopstateRef.current = true;
@@ -72,7 +89,17 @@ export default function PhotoLightbox({
           window.history.back();
         }
       }
+    };
+  }, []);
 
+  // 2. Body scroll lock and exact scroll position restoration (Mount only)
+  useEffect(() => {
+    const savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalStyle;
       try {
         window.scrollTo({
           top: savedScrollY,
@@ -83,7 +110,47 @@ export default function PhotoLightbox({
         window.scrollTo(0, savedScrollY);
       }
     };
-  }, [handleKeyDown]);
+  }, []);
+
+  // 3. Keyboard Navigation (Arrow keys & Escape)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleCloseRequest();
+      } else if (e.key === 'ArrowLeft') {
+        handlePrev();
+      } else if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleNext, handlePrev, handleCloseRequest]);
+
+  // Touch Swipe Gestures for Mobile
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const diffX = touchStartX.current - endX;
+    const diffY = touchStartY.current - endY;
+
+    // Horizontal swipe: threshold 40px, predominantly horizontal
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+      if (diffX > 0) {
+        // Swiped Left -> Next Photo
+        handleNext();
+      } else {
+        // Swiped Right -> Previous Photo
+        handlePrev();
+      }
+    }
+  };
 
   if (!currentItem) return null;
 
@@ -96,6 +163,8 @@ export default function PhotoLightbox({
       onClick={(e) => {
         if (e.target === e.currentTarget) handleCloseRequest();
       }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       role="dialog"
       aria-modal="true"
       aria-label={currentItem.title || 'Photo Lightbox'}
@@ -113,7 +182,10 @@ export default function PhotoLightbox({
         </div>
 
         <button
-          onClick={handleCloseRequest}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCloseRequest();
+          }}
           aria-label="Close lightbox"
           className="p-2 sm:p-2.5 rounded-full bg-stone-900/90 hover:bg-rose-900/80 text-white transition-all cursor-pointer border border-stone-700/80 hover:border-rose-600/80 hover:scale-105 shadow-md active:scale-95"
           title="Close (Esc)"
@@ -123,31 +195,31 @@ export default function PhotoLightbox({
       </div>
 
       {/* Prev Navigation Arrow */}
-      {currentIndex > 0 && (
+      {mediaList.length > 1 && (
         <button
-          onClick={() => onNavigate?.(currentIndex - 1)}
+          onClick={handlePrev}
           aria-label="Previous photo"
           className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-stone-900/85 hover:bg-stone-800 text-white border border-stone-700/80 transition-all cursor-pointer z-30 shadow-xl hover:scale-110 active:scale-95"
-          title="Previous (Left Arrow)"
+          title="Previous (Left Arrow or Swipe Right)"
         >
           <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       )}
 
       {/* Next Navigation Arrow */}
-      {currentIndex < mediaList.length - 1 && (
+      {mediaList.length > 1 && (
         <button
-          onClick={() => onNavigate?.(currentIndex + 1)}
+          onClick={handleNext}
           aria-label="Next photo"
           className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-stone-900/85 hover:bg-stone-800 text-white border border-stone-700/80 transition-all cursor-pointer z-30 shadow-xl hover:scale-110 active:scale-95"
-          title="Next (Right Arrow)"
+          title="Next (Right Arrow or Swipe Left)"
         >
           <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       )}
 
       {/* Center Image Cinema Box */}
-      <div className="max-w-5xl w-full max-h-[85vh] flex flex-col items-center justify-center space-y-3.5 relative z-10">
+      <div className="max-w-5xl w-full max-h-[85vh] flex flex-col items-center justify-center space-y-3.5 relative z-10 pointer-events-auto">
         <div className="relative max-h-[70vh] max-w-full flex items-center justify-center">
           {isLoading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-stone-400 bg-stone-900/50 rounded-2xl min-h-[280px]">
